@@ -1,0 +1,16 @@
+{
+  "name": "单词闪过",
+  "short_name": "单词闪过",
+  "description": "红宝书单词自评闪卡：认识 / 不认识两键判定，当天重学 + 艾宾浩斯复习。",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f4f5f7",
+  "theme_color": "#2f6bff",
+  "lang": "zh-CN",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
