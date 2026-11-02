@@ -201,14 +201,13 @@ details.adv[open]>summary:after{content:" ▴"}
 .gcol-side{display:flex;flex-direction:column}
 
 body.wide{
-  html,body{overflow:hidden}
+  overflow:hidden;
   #app{padding:8px calc(14px + env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) calc(14px + env(safe-area-inset-left,0px));max-width:1000px}
   #btn-swap,#btn-lock{display:inline-flex;align-items:center;justify-content:center}
   #scr-game .game{height:calc(100dvh - 16px - env(safe-area-inset-bottom,0px));min-height:0;padding-bottom:0}
   #scr-game .gbar{padding-bottom:4px}
   #scr-game .timer{margin-bottom:4px}
   #scr-game .gmain{flex:1;min-height:0;flex-direction:row;gap:18px;overflow:hidden}
-  body.wide-swap #scr-game .gmain{flex-direction:row-reverse}
   #scr-game .gcol{flex:1 1 0;min-height:0;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
   #scr-game .gcol-side{justify-content:flex-start;overflow-y:auto;-webkit-overflow-scrolling:touch}
   #scr-game #reveal-box{margin:auto 0;width:100%}
@@ -227,6 +226,9 @@ body.wide{
   #scr-game .fixhint{font-size:11px;padding-bottom:2px}
   #scr-game .showans{margin:auto 0;padding:14px}
 }
+
+/* 换边：宽版两栏左右对调（必须写在 body.wide 之外，否则会被编译成 body.wide body.wide-swap 永不命中） */
+body.wide.wide-swap #scr-game .gmain{flex-direction:row-reverse}
 
 /* ============ 底部标签栏 ============ */
 .tabs{display:none;position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(255,255,255,.97);
@@ -307,6 +309,51 @@ body.wide .linkrow{margin-top:12px}
 body.wide #scr-list,body.wide #scr-books,body.wide #scr-stats,body.wide #scr-me,body.wide #scr-setup{padding-bottom:16px}
 body.wide .tabs{position:fixed}
 
+/* ---- 首页：每日额度快捷调整 ---- */
+.quick{margin-top:14px;padding:12px 14px}
+.qrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0}
+.qrow+.qrow{border-top:1px solid #eef0f3}
+.ql{font-size:14px;font-weight:600;color:#2b2f36}
+.qsub{font-size:11.5px;color:#9aa1ab;margin-top:2px}
+.stepper{display:flex;align-items:center;gap:10px}
+.st{width:34px;height:34px;border-radius:10px;border:0;background:#eef1f6;color:#3b4250;font-size:19px;font-weight:700;line-height:1;cursor:pointer}
+.st:active{transform:scale(.94)}
+.sv{min-width:44px;text-align:center;font-size:19px;font-weight:800;font-variant-numeric:tabular-nums}
+/* ---- 词书 / 生词本：分组、行 ---- */
+.searchbox{width:100%;border:1px solid #e3e6ec;border-radius:12px;padding:10px 12px;font-size:14px;background:#fff;color:#2b2f36;outline:none}
+.searchbox:focus{border-color:#2f6bff}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.bgroup{overflow:hidden}
+.bgrouphead{display:flex;align-items:center;justify-content:space-between;padding:10px 2px;font-size:14px;font-weight:700;color:#2b2f36;cursor:pointer}
+.bgrouphead .cov{font-weight:500;font-size:12px;color:#9aa1ab}
+.listrow{display:flex;align-items:center;gap:10px;padding:10px 2px;border-top:1px solid #f0f2f5}
+.listrow.clickable{cursor:pointer}
+.listrow.on{background:#f2f7ff}
+.lmain{flex:1;min-width:0}
+.lw{font-size:15.5px;font-weight:700;color:#1b1d21;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lm{font-size:12.5px;color:#7a828c;margin-top:2px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.lright{display:flex;align-items:center;gap:6px;flex:0 0 auto}
+.selbox{width:20px;height:20px;border-radius:6px;border:1.5px solid #cfd5de;flex:0 0 auto}
+.selbox.on{background:#2f6bff;border-color:#2f6bff;position:relative}
+.selbox.on::after{content:"";position:absolute;left:6px;top:2px;width:5px;height:10px;border:2px solid #fff;border-top:0;border-left:0;transform:rotate(40deg)}
+
+/* ---- 横屏宽版收尾：栏目最大宽度、大屏字号、平板一栏 ---- */
+@media (orientation: landscape) and (max-height: 560px) {
+  .gmain{gap:22px;justify-content:center}
+  .gcol{max-width:560px}
+  #gword{word-break:keep-all;overflow-wrap:normal;max-width:100%}
+}
+body.wide.onecol #scr-game .gmain{flex-direction:column;gap:10px}
+body.wide.onecol .gcol{max-width:100%;margin:0;flex:0 0 auto}
+body.wide.onecol .gcol-side{overflow:visible}
+body.wide.onecol .qbox{padding:6px 0}
+body.wide.onecol #gword{font-size:min(11vh,9vw)}
+@media (min-width:1200px){
+  body.wide .gbar{font-size:14px}
+  body.wide #app{max-width:1200px}
+  body.wide .word{font-size:min(13vh,7vw)}
+}
+
 </style>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
@@ -326,6 +373,31 @@ body.wide .tabs{position:fixed}
       </span>
     </div>
 
+    <div class="card quick" id="home-quick">
+      <div class="qrow">
+        <div class="ql">
+          <div class="strong">今天要复习</div>
+          <div class="tiny muted" id="q-rev-sub">到期 0 个</div>
+        </div>
+        <div class="stepper">
+          <button class="st" id="q-rev-m" data-step="rev" data-d="-20">−</button>
+          <span class="sv" id="q-rev">100</span>
+          <button class="st" id="q-rev-p" data-step="rev" data-d="20">+</button>
+        </div>
+      </div>
+      <div class="qrow">
+        <div class="ql">
+          <div class="strong">今天新学</div>
+          <div class="tiny muted" id="q-new-sub">新词 20 个</div>
+        </div>
+        <div class="stepper">
+          <button class="st" id="q-new-m" data-step="new" data-d="-5">−</button>
+          <span class="sv" id="q-new">20</span>
+          <button class="st" id="q-new-p" data-step="new" data-d="5">+</button>
+        </div>
+      </div>
+    </div>
+
     <div class="hero">
       <div class="k" id="home-kicker">今天还没开始</div>
       <div class="v" id="home-today">0 词</div>
@@ -335,11 +407,6 @@ body.wide .tabs{position:fixed}
 
     <div class="statgrid" id="home-stats"></div>
 
-    <div class="linkrow">
-      <button class="btn ghost small" id="btn-book">生词本</button>
-      <button class="btn ghost small" id="btn-drill">加练</button>
-      <button class="btn ghost small" id="btn-go-stats">看统计</button>
-    </div>
     <div class="tiny muted" style="margin-top:18px;text-align:center">
       数据只存在这台设备的浏览器里 · 记得偶尔导出备份
     </div>
@@ -352,8 +419,12 @@ body.wide .tabs{position:fixed}
       <button class="btn ghost small" id="btn-new-deck">+ 新建</button>
     </div>
     <div id="deck-list"></div>
-    <div class="linkrow" style="margin-top:14px">
-      <button class="btn ghost small" id="btn-lib-book">生词本</button>
+    <div class="card" style="margin-top:12px">
+      <div class="linkrow">
+        <button class="btn ghost small" id="btn-lib-book">生词本 <span id="lib-book-n">0</span></button>
+        <button class="btn ghost small" id="btn-lib-drill">加练</button>
+        <button class="btn ghost small" id="btn-lib-new">+ 新建词库</button>
+      </div>
     </div>
   </section>
 
@@ -605,6 +676,7 @@ function defaultSettings() {
     fastUndo: true, fastUndoMs: 1200,
     // 熟词回放：本轮判「认识」的词，隔几道题再回来确认一次（答错就按不认识处理）
     orientMode: "portrait",
+  wideTwoCol: false,
     knownReplay: true, knownReplayGap: 10, knownReplayTimes: 1,
     // 模糊：隔几道题回看一次（当天只回看一次，再答错就按不认识）
     slowRevisitGap: 5,
@@ -959,7 +1031,7 @@ function countN() {
   return clamp(Math.round(num(cv, 20)), 1, 99999);
 }
 
-function buildSession(deckId, mode) {
+function buildSession(deckId, mode, customKeys) {
   var st = S.settings, t = today();
   var ws = wordsOf(deckId);
   if (!ws.length) return null;
@@ -967,7 +1039,15 @@ function buildSession(deckId, mode) {
   var entries = [];
   var rnd = st.randomPick !== false; // 默认随机选词
 
-  if (mode === "weak") {
+  // 手动选词加练：只用指定的词（不受额度/due 限制）
+  if (mode === "drill" && customKeys && customKeys.length) {
+    var pick = customKeys.slice(0, 200);
+    if (rnd) shuffle(pick);
+    entries = pick.map(function (k) {
+      var r = getRec(deckId, k);
+      return { k: k, mode: (r && !r.graduated) ? "review" : "first" };
+    });
+  } else if (mode === "weak") {
     var wl = weakList(deckId);
     entries = (rnd ? shuffle(wl) : wl).slice(0, N).map(function (x) { return { k: x.k, mode: "review" }; });
   } else if (mode === "drill") {
@@ -1348,8 +1428,9 @@ function finishSession() {
   }
   S.session = sess;
   saveNow();
+  navStack.length = 0;
   renderResult();
-  show("result");
+  show("result", { noPush: true });
 }
 
 /* ---------------- 界面：通用 ---------------- */
@@ -1411,6 +1492,7 @@ function deckStats(deck) {
   var d = daily(id);
   return {
     total: ws.length, learned: learned, graduated: graduated, due: due, weak: l0,
+    fresh: Math.max(0, ws.length - learned),
     mastery: learned ? Math.round(ms / learned) : 0,
     newDone: d.newDone, reviewDone: d.reviewDone, streak: d.streak || 0,
     newLeft: Math.max(0, num(S.settings.newPerDay, 20) - d.newDone),
@@ -1418,6 +1500,7 @@ function deckStats(deck) {
   };
 }
 
+var liveSessionOn = false;
 function renderHome() {
   daily(S.decks.length ? S.decks[0].id : "");
   var deck = S.decks[0];
@@ -1438,16 +1521,28 @@ function renderHome() {
   var blN = (S.backlog && Array.isArray(S.backlog[deck.id])) ? S.backlog[deck.id].length : 0;
   $("#home-today").textContent = (total + blN) + " 词";
   var modeName = (S.settings.mode === "learn") ? "背记" : "闪过";
-  $("#home-kicker").textContent = (s.newDone + s.reviewDone > 0)
-    ? ("今天已完成 " + (s.newDone + s.reviewDone) + " · 继续 · " + modeName)
-    : ("今天还没开始 · " + modeName + "模式");
-  $("#btn-start").disabled = (total + blN) === 0;
-  $("#btn-start").textContent = (total + blN) === 0 ? "今天已经完成了 🎉" : (blN && !total ? "继续巩固（" + blN + " 个）" : "开始今天的学习");
-  var sub = [];
-  sub.push("复习 " + revTake + " · 新词 " + newTake);
-  if (s.due > s.reviewLeft) sub.push("到期积压 " + s.due + " 个");
-  if (blN) sub.push("待巩固 " + blN + " 个（先补这个）");
-  $("#home-sub").textContent = sub.join(" · ");
+  var live = (S.session && !S.session.finished && S.session.queue) ? S.session : null;
+  if (live) {
+    var liveLeft = live.queue.length + (live.pending ? live.pending.length : 0);
+    $("#home-kicker").textContent = "上次还没做完 · " + modeName + "模式";
+    $("#home-today").textContent = "已答 " + (live.firstDone || 0) + " / 共 " + (live.firstTotal || 0);
+    $("#btn-start").disabled = false;
+    $("#btn-start").textContent = "继续上次（还剩 " + liveLeft + " 题）";
+    $("#home-sub").textContent = "暂停在「" + (live.cur && live.cur.w ? live.cur.w : "这一题") + "」· 点继续接着来";
+    liveSessionOn = true;
+  } else {
+    liveSessionOn = false;
+    $("#home-kicker").textContent = (s.newDone + s.reviewDone > 0)
+      ? ("今天已完成 " + (s.newDone + s.reviewDone) + " · 继续 · " + modeName)
+      : ("今天还没开始 · " + modeName + "模式");
+    $("#btn-start").disabled = (total + blN) === 0;
+    $("#btn-start").textContent = (total + blN) === 0 ? "今天已经完成了 🎉" : (blN && !total ? "继续巩固（" + blN + " 个）" : "开始今天的学习");
+    var sub = [];
+    sub.push("复习 " + revTake + " · 新词 " + newTake);
+    if (s.due > s.reviewLeft) sub.push("到期积压 " + s.due + " 个");
+    if (blN) sub.push("待巩固 " + blN + " 个（先补这个）");
+    $("#home-sub").textContent = sub.join(" · ");
+  }
 
   $("#home-stats").innerHTML = [
     cell(s.newDone + "/" + num(S.settings.newPerDay, 20), "今日新学", "todayNew"),
@@ -1455,9 +1550,25 @@ function renderHome() {
     cell(String(s.due), "到期积压", "due"),
     cell(String(s.graduated), "已掌握", "mastered"),
     cell(s.mastery + "%", "平均掌握度", "level"),
-    cell(String(s.weak), "生词(L0-L1)", "weak")
+    cell(String(s.weak), "生词(L0-L2)", "weak")
   ].join("");
 
+  // 首页两栏快捷调整（改的是「每日额度」，明天同样生效）
+  var revQ = num(S.settings.reviewPerDay, 100), newQ = num(S.settings.newPerDay, 20);
+  if ($("#q-rev")) $("#q-rev").textContent = revQ;
+  if ($("#q-new")) $("#q-new").textContent = newQ;
+  if ($("#q-rev-sub")) $("#q-rev-sub").textContent = "今天到期 " + s.due + " 个 · 还剩 " + s.reviewLeft + " 个额度";
+  if ($("#q-new-sub")) $("#q-new-sub").textContent = "未学 " + s.fresh + " 个 · 还剩 " + s.newLeft + " 个额度";
+}
+
+/* 首页两栏：+ / − 调整每日额度 */
+function quickAdjust(kind, delta) {
+  var st = S.settings;
+  if (kind === "rev") st.reviewPerDay = clamp(num(st.reviewPerDay, 100) + delta, 0, 999);
+  else st.newPerDay = clamp(num(st.newPerDay, 20) + delta, 0, 300);
+  saveNow();
+  renderHome();
+  toast(kind === "rev" ? ("每天复习 " + st.reviewPerDay + " 个") : ("每天新学 " + st.newPerDay + " 个"));
 }
 
 /* ---------------- 界面：词库 ---------------- */
@@ -1471,10 +1582,28 @@ function deckCardsHtml() {
       '<button class="btn small" data-setup="' + esc(dk.id) + '">设置</button></div>';
   }).join("");
 }
+function openNewDeck() {
+  var name = window.prompt("新词库的名字", "我的词库");
+  if (!name) return;
+  var id = "dk_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  S.decks.push({ id: id, name: name, words: [], createdAt: Date.now() });
+  invalidateMaps(id);
+  saveNow();
+  renderHome();
+  renderLib();
+  renderSetup(id); show("setup");
+}
+
 function renderLib() {
   var el = $("#deck-list");
   if (!el) return;
   el.innerHTML = S.decks.length ? deckCardsHtml() : '<div class="empty">还没有词库，点右上「+ 新建」导入一份</div>';
+  var bn = $("#lib-book-n"), n = 0, d0 = S.decks[0];
+  if (d0) {
+    var rr = recsOf(d0.id);
+    for (var kk in rr) { var r0 = rr[kk]; if (!r0.graduated && (r0.weak || num(r0.L, 0) <= 2)) n++; }
+  }
+  if (bn) bn.textContent = n ? "（" + n + "）" : "";
 }
 
 /* ---------------- 界面：统计 ---------------- */
@@ -1749,6 +1878,8 @@ function renderSetup(deckId) {
     '<div class="switch' + (st.fastUndo ? " on" : "") + '" id="set-undo"></div></div>';
   html += '<div class="field"><div><div class="lab">随机选词</div><div class="sub">关掉后按词库原顺序出词（书里的 Unit 顺序）</div></div>' +
     '<div class="switch' + (st.randomPick !== false ? " on" : "") + '" id="set-random"></div></div>';
+  html += '<div class="field"><div><div class="lab">横屏两栏</div><div class="sub">平板横屏默认是一栏；打开后单词和释义分左右两栏</div></div>' +
+    '<div class="switch' + (st.wideTwoCol ? " on" : "") + '" id="set-widecol"></div></div>';
   html += '<hr>';
   html += '<div class="field"><div><div class="lab">熟词回放</div><div class="sub">本轮判「认识」的词，隔几道题再考你一次；答错就当其实不熟</div></div>' +
     '<div class="switch' + (st.knownReplay !== false ? " on" : "") + '" id="set-replay"></div></div>';
@@ -1853,6 +1984,18 @@ function sessionTag(cur, sess) {
   return null;
 }
 
+function setWordSize(word) {
+  var el = $("#gword");
+  if (!el) return;
+  var txt = String(word || "");
+  var wl = Math.max(1, txt.length);
+  var vw = window.innerWidth, vh = window.innerHeight;
+  var base = Math.min(vw * 0.2, vh * 0.28, 150);
+  var byWidth = (vw * 0.86) / (wl * 0.6);
+  var size = Math.max(24, Math.min(base, byWidth));
+  el.style.fontSize = Math.round(size) + "px";
+}
+
 function nextQuestion() {
   var sess = S.session;
   if (!sess) { show("home"); return; }
@@ -1865,6 +2008,7 @@ function nextQuestion() {
   var st = S.settings;
 
   $("#gword").textContent = w.w;
+  setWordSize(w.w);
   $("#gphon").textContent = w.p || "";
   $("#gphon").style.display = w.p ? "" : "none";
   var tag = sessionTag(cur, sess);
@@ -2208,19 +2352,31 @@ function prevQuestion() {
   toast("已回到上一题");
 }
 
+function pauseSession() {
+  var sess = S.session;
+  if (!sess || sess.finished) { renderResult(); show("result"); return; }
+  sess.pausedAt = Date.now();
+  S.session = sess;
+  saveNow();
+  navStack.length = 0;
+  renderHome();
+  show("home", { noPush: true });
+  toast("进度已保存，点「继续」接着来");
+}
+
 function quitSession() {
   var sess = S.session;
   if (!sess) { show("home"); renderHome(); return; }
   if (sess.finished) { renderResult(); show("result"); return; }
   var left = sess.queue.length + sess.pending.length;
   var relN = Object.keys(sess.relearn || {}).length;
-  if (left || relN) {
-    var msg = "这轮还没做完：已答 " + (sess.firstDone || 0) + " / 共 " + (sess.firstTotal || 0) + " 个新词，" +
-      "还剩 " + left + " 题没看" + (relN ? "，" + relN + " 个词还在巩固" : "") + "。\n\n" +
-      "确定现在结束吗？\n· 没答的词不写记录，以后还会出现\n· 在巩固的词会存进「待巩固」，下一轮自动先补\n· 本轮认识的词先按明天再确认处理";
-    if (!window.confirm(msg)) return;
-  }
-  finishSession();
+  var msg = "暂停这一轮？\n\n已答 " + (sess.firstDone || 0) + " / 共 " + (sess.firstTotal || 0) + " 个新词" +
+    (left ? "，还剩 " + left + " 题" : "") + (relN ? "，" + relN + " 个词还在巩固" : "") + "。\n" +
+    "进度会保存，下次点「继续」从这道题接着来。\n\n" +
+    "想直接结算这一轮：点「取消」，我再问你一次。";
+  if (window.confirm(msg)) { pauseSession(); return; }
+  var msg2 = "现在结算这一轮吗？\n\n· 没答的词不写记录，以后还会出现\n· 在巩固的词会进「待巩固」，下一轮先补\n· 本轮认识的词先按明天再确认处理";
+  if (window.confirm(msg2)) { finishSession(); }
 }
 
 /* ---------------- 界面：结算 ---------------- */
@@ -2338,31 +2494,48 @@ function histogram(list, T) {
 }
 
 /* ---------------- 界面：生词本 ---------------- */
+var bookFoldOpen = {};   // 生词本按等级折叠
 function renderBook() {
   var deck = S.decks[0];
   if (!deck) { show("home"); return; }
-  var st = S.settings, ws = wordsOf(deck.id), recs = S.records[deck.id] || {};
+  var ws = wordsOf(deck.id), recs = S.records[deck.id] || {};
   var list = [];
   for (var i = 0; i < ws.length; i++) {
     var k = normKey(ws[i].w), r = recs[k];
-    if (r && !r.graduated && r.L <= 1) list.push({ w: ws[i], r: r });
+    if (!r || r.graduated) continue;
+    if (!(r.weak || num(r.L, 0) <= 2)) continue;   // 生词本 = L0–L2 自动收录 + 手动加入
+    list.push({ w: ws[i], r: r, k: k });
   }
   list.sort(function (a, b) { return masteryOf(a.r) - masteryOf(b.r); });
-  var html = '<div class="card"><div class="spread"><h2 style="margin:0">生词库 · ' + list.length + ' 个</h2>' +
-    '<button class="btn small primary" id="btn-book-drill">只刷这些</button></div></div>';
+  var groups = { L0: [], L1: [], L2: [] }, order = ["L0", "L1", "L2"];
+  for (var j = 0; j < list.length; j++) {
+    var L2 = clamp(num(list[j].r.L, 0), 0, 2);
+    if (!groups["L" + L2]) groups["L" + L2] = [];
+    groups["L" + L2].push(list[j]);
+  }
+  var html = '<div class="card"><div class="spread"><div class="strong">生词库 · ' + list.length + ' 个</div>' +
+    '<button class="btn small primary" id="btn-book-drill">只刷这些</button></div>' +
+    '<div class="tiny muted" style="margin-top:4px">L0–L2 自动收录；手动加入的词会一直留着，直到你移出</div></div>';
   if (!list.length) {
-    html += '<div class="empty">还没有生词。学过的词里判过「不认识」的会出现在这里。</div>';
+    html += '<div class="empty">还没有生词。判过「不认识」的词会出现在这里。</div>';
   } else {
-    html += '<div class="card" style="margin-top:12px">' + list.map(function (x) {
-      var r = x.r, w = x.w;
-      return '<div class="bookrow clickable" data-key="' + esc(normKey(w.w)) + '"><div class="top"><div class="w">' + esc(w.w) + '</div>' +
-        '<span class="lv L' + r.L + '">L' + r.L + " " + LV_NAME[r.L] + '</span>' + (r.leech ? '<span class="badge no" style="margin-left:6px">顽固</span>' : '') + '</div>' +
-        '<div class="tiny muted" style="margin-top:2px">' + esc(w.p || "") + '　掌握度 ' + masteryOf(r) + '%</div>' +
-        '<div class="ex">' + esc(w.m || "") + '</div>' +
-        (w.e ? '<div class="ex" style="color:#9aa0a8">' + esc(w.e) + '</div>' : '') +
-        '<div class="tiny muted" style="margin-top:6px">下次复习 ' + esc(r.due || "-") + ' · 累计答错 ' + (r.lapses || 0) + ' 次 · 复习 ' + (r.reviewCount || 0) + ' 次</div>' +
-        '</div>';
-    }).join("") + '</div>';
+    html += order.map(function (gk) {
+      var arr = groups[gk];
+      if (!arr || !arr.length) return "";
+      var open = bookFoldOpen[gk] !== false;
+      var head = '<div class="bgrouphead" data-gk="' + esc(gk) + '"><span>' + gk + " " + (LV_NAME[gk.slice(1)] || "") + '</span>' +
+        '<span class="cov">' + arr.length + ' 个 ' + (open ? "▾" : "▸") + '</span></div>';
+      if (!open) return '<div class="card bgroup" style="margin-top:10px">' + head + '</div>';
+      return '<div class="card bgroup" style="margin-top:10px">' + head + arr.map(function (x) {
+        var r = x.r, w = x.w;
+        return '<div class="bookrow clickable" data-key="' + esc(x.k) + '"><div class="top"><div class="w">' + esc(w.w) + '</div>' +
+          '<span class="lv L' + r.L + '">L' + r.L + " " + LV_NAME[r.L] + '</span>' + (r.leech ? '<span class="badge no" style="margin-left:6px">顽固</span>' : '') + '</div>' +
+          '<div class="tiny muted" style="margin-top:2px">' + esc(w.p || "") + '　掌握度 ' + masteryOf(r) + '%</div>' +
+          '<div class="ex">' + esc(w.m || "") + '</div>' +
+          '<div class="tiny muted" style="margin-top:6px">下次复习 ' + esc(r.due || "-") + ' · 累计答错 ' + (r.lapses || 0) + ' 次 · 复习 ' + (r.reviewCount || 0) + ' 次</div>' +
+          '</div>';
+      }).join("") + '</div>';
+    }).join("");
   }
   $("#book-body").innerHTML = html;
 }
@@ -2440,6 +2613,7 @@ function on(sel, ev, fn) { var el = $(sel); if (el) el.addEventListener(ev, fn);
 function bind() {
   on("#btn-start", "click", function () {
     if (!S.decks[0]) return;
+    if (S.session && !S.session.finished) { resumeSession(); return; }
     startSession(S.decks[0].id, "normal");
   });
   on("#btn-home-settings", "click", function () { renderSetup(S.decks[0].id); show("setup"); });
@@ -2613,16 +2787,7 @@ function bind() {
     }
   });
 
-  on("#btn-new-deck", "click", function () {
-    var name = window.prompt("新词库的名字", "我的词库");
-    if (!name) return;
-    var id = "dk_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-    S.decks.push({ id: id, name: name, words: [], createdAt: Date.now() });
-    invalidateMaps(id);
-    saveNow();
-    renderHome();
-    renderSetup(id); show("setup");
-  });
+  on("#btn-new-deck", "click", openNewDeck);
 
   on("#btn-book", "click", function () { renderBook(); show("book"); });
 
@@ -2686,6 +2851,7 @@ function bind() {
     if (t.id === "set-random") { S.settings.randomPick = (S.settings.randomPick === false); saveNow(); renderSetup(setupDeckId); return; }
     if (t.id === "set-replay") { S.settings.knownReplay = (S.settings.knownReplay === false); saveNow(); renderSetup(setupDeckId); return; }
     if (t.id === "set-hold") { S.settings.unfinishedHold = (S.settings.unfinishedHold === false); saveNow(); renderSetup(setupDeckId); return; }
+    if (t.id === "set-widecol") { S.settings.wideTwoCol = !S.settings.wideTwoCol; saveNow(); applyLayout(); renderSetup(setupDeckId); return; }
     if (t.id === "btn-export-slim") { doExport(true); return; }
     if (t.id === "btn-export") { doExport(false); return; }
     if (t.id === "btn-reset-adv") {
@@ -2768,8 +2934,60 @@ function bind() {
     else if (act === "weak") { S.session = null; startSession(deckId, "weak"); }
     else if (act === "home") { S.session = null; saveNow(); renderHome(); show("home"); }
   });
+  on("#q-rev-m", "click", function () { quickAdjust("review", -20); });
+  on("#q-rev-p", "click", function () { quickAdjust("review", 20); });
+  on("#q-new-m", "click", function () { quickAdjust("new", -5); });
+  on("#q-new-p", "click", function () { quickAdjust("new", 5); });
+  on("#btn-lib-book", "click", function () { renderBook(); show("book"); });
+  on("#btn-lib-drill", "click", function () { if (S.decks[0]) startSession(S.decks[0].id, "drill"); });
+  on("#btn-lib-new", "click", openNewDeck);
+  on("#books-body", "click", function (ev) {
+    var t = ev.target;
+    var fb = t.closest && t.closest("#books-filters [data-f]");
+    if (fb) { booksFilter = fb.getAttribute("data-f"); bookLimit = {}; renderBooks(booksDeckId); return; }
+    var gb = t.closest && t.closest("[data-g]");
+    if (gb) { bookGroupMode = gb.getAttribute("data-g"); renderBooks(booksDeckId); return; }
+    if (t.id === "books-manage") { bookManage = !bookManage; bookSel = {}; renderBooks(booksDeckId); return; }
+    if (t.id === "books-selclear") { bookSel = {}; renderBooks(booksDeckId); return; }
+    if (t.id === "books-selall") {
+      bookSel = {};
+      var rows = document.querySelectorAll("#books-body .listrow[data-key]"), cnt = 0;
+      for (var i = 0; i < rows.length && cnt < BOOK_SEL_MAX; i++) {
+        var kk = rows[i].getAttribute("data-key");
+        if (kk) { bookSel[kk] = true; cnt++; }
+      }
+      renderBooks(booksDeckId); toast("已选 " + cnt + " 个"); return;
+    }
+    var act = t.closest && t.closest("[data-act]");
+    if (act) { bookApply(act.getAttribute("data-act")); return; }
+    var more = t.closest && t.closest("[data-more]");
+    if (more) {
+      var gkm = more.getAttribute("data-more");
+      bookLimit[gkm] = num(bookLimit[gkm], BOOK_BATCH) + BOOK_BATCH;
+      renderBooks(booksDeckId); return;
+    }
+    var head = t.closest && t.closest(".bgrouphead[data-gk]");
+    if (head) { var gk = head.getAttribute("data-gk"); bookOpen[gk] = !bookOpen[gk]; renderBooks(booksDeckId); return; }
+    var row = t.closest && t.closest(".listrow[data-key]");
+    if (row) {
+      var key = row.getAttribute("data-key");
+      if (bookManage) {
+        if (!bookSel[key] && bookSelectedKeys().length >= BOOK_SEL_MAX) { toast("一次最多选 " + BOOK_SEL_MAX + " 个"); return; }
+        bookSel[key] = !bookSel[key];
+        renderBooks(booksDeckId);
+      } else {
+        renderBookDetail(booksDeckId, key); show("word");
+      }
+    }
+  });
   $("#book-body").addEventListener("click", function (ev) {
     if (ev.target.id === "btn-book-drill") { startSession(S.decks[0].id, "weak"); return; }
+    var bh = ev.target.closest && ev.target.closest(".bgrouphead[data-gk]");
+    if (bh) {
+      var bgk = bh.getAttribute("data-gk");
+      bookFoldOpen[bgk] = !bookFoldOpen[bgk];
+      renderBook(); return;
+    }
     var row = ev.target.closest(".bookrow[data-key]");
     if (row) renderBookDetail(S.decks[0].id, row.getAttribute("data-key"));
   });
@@ -2894,6 +3112,8 @@ function isWideNow() {
 function applyLayout() {
   var wide = isWideNow();
   document.body.classList.toggle("wide", wide);
+  var oneCol = wide && window.innerWidth >= 1000 && !(S && S.settings && S.settings.wideTwoCol);
+  document.body.classList.toggle("onecol", oneCol);
   var b = $("#btn-orient");
   if (b) b.textContent = wide ? "竖屏" : "横屏";
 }
@@ -2911,10 +3131,8 @@ function renderScreenByName(n) {
 }
 function goBack() {
   if (curScreen === "game") {
-    var sess = S.session;
-    if (sess && !sess.finished && !window.confirm("正在做题，返回会把这一轮先结束（已答的保留，没答的不写记录）。\n\n确定返回吗？")) return;
-    if (sess && !sess.finished) finishSession();
-    renderHome(); show("home");
+    // 答题中按返回 = 暂停（保存进度回首页），不结算、不跳结算页
+    pauseSession();
     return;
   }
   if (navStack.length) {
@@ -2929,6 +3147,7 @@ function goBack() {
 }
 function onPopState() {
   if (suppressPop) { suppressPop = false; return; }   // 自己触发的返回，不再重复回退
+  if (curScreen === "game") { pauseSession(); return; }
   if (navStack.length) {
     var prev = navStack.pop();
     renderScreenByName(prev);
@@ -2994,6 +3213,15 @@ function renderList(kind) {
 }
 
 /* ---------------- 界面：词书 / 单词表 ---------------- */
+var bookGroupMode = "level";   // level | unit
+var bookOpen = {};             // 分组展开状态
+var bookLimit = {};            // 每个分组已显示条数（分批渲染，避免一次画 6000 行）
+var bookManage = false;        // 管理模式
+var bookSel = {};              // 已选中的词 key
+var BOOK_BATCH = 200, BOOK_SEL_MAX = 500;
+
+function bookSelectedKeys() { return Object.keys(bookSel).filter(function (k) { return bookSel[k]; }); }
+
 function renderBooks(deckId) {
   booksDeckId = deckId;
   var deck = deckById(deckId);
@@ -3002,56 +3230,160 @@ function renderBooks(deckId) {
   var ws = wordsOf(deckId), recs = recsOf(deckId);
   $("#books-title").textContent = deck.name;
   var q = booksQuery.trim().toLowerCase();
-  var learned = 0;
-  for (var i = 0; i < ws.length; i++) { if (recs[normKey(ws[i].w)]) learned++; }
-  var filters = [
-    ["all", "全部"], ["new", "未学"], ["doing", "学中"], ["mastered", "已掌握"], ["leech", "顽固"]
-  ];
-  var html = '<div class="card">' +
-    '<div class="strong small">' + (learned === 0 ? "还没开始，点开始学习就从这里出词" : "已经学过 " + learned + " 个") + '</div>' +
-    '<div class="tiny muted" style="margin-top:4px">共 ' + ws.length + ' 词 · 已学 ' + learned + ' · 未学 ' + (ws.length - learned) + '</div>' +
-    '<div class="bar" style="margin-top:8px"><i style="width:' + (ws.length ? Math.round(learned / ws.length * 100) : 0) + '%"></i></div>' +
-    '<input class="searchbox" id="books-q" placeholder="搜单词或释义" style="margin-top:10px" value="' + esc(booksQuery) + '">' +
-    '<div class="filters" id="books-filters">' + filters.map(function (f) {
-      return '<button class="chip' + (booksFilter === f[0] ? " on" : "") + '" data-f="' + f[0] + '">' + f[1] + '</button>';
-    }).join("") + '</div></div>';
 
-  var rows = [], unit = "", unitRows = [], shown = 0;
-  function flushUnit() {
-    if (!unitRows.length) return;
-    rows.push('<div class="unithead">' + esc(unit || "未分组") + '<span class="cov">' + unitRows.length + ' 词</span></div>' + unitRows.join(""));
-    unitRows = [];
-  }
-  for (var j = 0; j < ws.length && shown < 400; j++) {
-    var w = ws[j], k = normKey(w.w), r = recs[k] || null;
+  // 过滤
+  var list = [];
+  for (var i = 0; i < ws.length; i++) {
+    var w = ws[i], k = normKey(w.w), r = recs[k] || null;
     if (q && (w.w || "").toLowerCase().indexOf(q) < 0 && (w.m || "").toLowerCase().indexOf(q) < 0) continue;
     if (booksFilter === "new" && r) continue;
     if (booksFilter === "doing" && (!r || r.graduated || num(r.L, 0) >= 5)) continue;
     if (booksFilter === "mastered" && !(r && r.graduated)) continue;
     if (booksFilter === "leech" && !(r && r.leech)) continue;
-    var g = w.g || "未分组";
-    if (g !== unit) { flushUnit(); unit = g; }
-    unitRows.push(rowHtml(w, "", (r ? lvBadge(r.L) : '<span class="lvbadge">未学</span>')));
-    shown++;
+    list.push({ w: w, k: k, r: r });
   }
-  flushUnit();
-  html += shown ? '<div class="card" style="margin-top:10px">' + rows.join("") + '</div>' : '<div class="empty">没有符合条件的词。</div>';
+  var learned = 0;
+  for (var i2 = 0; i2 < ws.length; i2++) if (recs[normKey(ws[i2].w)]) learned++;
+
+  var filters = [["all", "全部"], ["new", "未学"], ["doing", "学中"], ["mastered", "已掌握"], ["leech", "顽固"]];
+  var selN = bookSelectedKeys().length;
+  var html = '<div class="card">' +
+    '<div class="tiny muted">共 ' + ws.length + ' 词 · 已学 ' + learned + ' · 未学 ' + (ws.length - learned) + '</div>' +
+    '<div class="bar" style="margin-top:8px"><i style="width:' + (ws.length ? Math.round(learned / ws.length * 100) : 0) + '%"></i></div>' +
+    '<input class="searchbox" id="books-q" placeholder="搜单词或释义" style="margin-top:10px" value="' + esc(booksQuery) + '">' +
+    '<div class="filters" id="books-filters">' + filters.map(function (f) {
+      return '<button class="chip' + (booksFilter === f[0] ? " on" : "") + '" data-f="' + f[0] + '">' + f[1] + '</button>';
+    }).join("") + '</div>' +
+    '<div class="filters" style="margin-top:6px">' +
+    '<button class="chip' + (bookGroupMode === "level" ? " on" : "") + '" data-g="level">按等级</button>' +
+    '<button class="chip' + (bookGroupMode === "unit" ? " on" : "") + '" data-g="unit">按 Unit</button>' +
+    '<button class="chip' + (bookManage ? " on" : "") + '" id="books-manage">' + (bookManage ? "退出管理" : "管理") + '</button>' +
+    '</div></div>';
+
+  // 管理模式工具条
+  if (bookManage) {
+    html += '<div class="card" style="margin-top:10px"><div class="spread"><div class="strong small">已选 ' + selN + ' 个</div>' +
+      '<span class="gbar-r"><button class="btn ghost small" id="books-selall">全选（' + Math.min(list.length, BOOK_SEL_MAX) + '）</button>' +
+      '<button class="btn ghost small" id="books-selclear">清空</button></span></div>' +
+      '<div class="linkrow" style="margin-top:10px">' +
+      '<button class="btn ghost small" data-act="mastered">标记已掌握</button>' +
+      '<button class="btn ghost small" data-act="reset">重置为未学</button>' +
+      '<button class="btn ghost small" data-act="pause">设为暂停</button>' +
+      '<button class="btn ghost small" data-act="unpause">取消暂停</button>' +
+      '<button class="btn ghost small" data-act="weakadd">加入生词本</button>' +
+      '<button class="btn ghost small" data-act="weakdel">移出生词本</button>' +
+      '<button class="btn ghost small primary" data-act="drill">用所选加练</button>' +
+      '<button class="btn ghost small" data-act="export">导出所选</button>' +
+      '</div><div class="tiny muted" style="margin-top:6px">一次最多选 ' + BOOK_SEL_MAX + ' 个；破坏性操作会再确认一次</div></div>';
+  }
+
+  // 分组
+  var groups = {}, order = [];
+  for (var j = 0; j < list.length; j++) {
+    var it = list[j], gkey;
+    if (bookGroupMode === "unit") gkey = it.w.g || "未分组";
+    else {
+      if (!it.r) gkey = "未学";
+      else if (it.r.graduated) gkey = "已掌握";
+      else gkey = "L" + clamp(num(it.r.L, 0), 0, 5);
+    }
+    if (!groups[gkey]) { groups[gkey] = []; order.push(gkey); }
+    groups[gkey].push(it);
+  }
+  var levelOrder = ["未学", "L0", "L1", "L2", "L3", "L4", "L5", "已掌握"];
+  if (bookGroupMode === "level") {
+    order = levelOrder.filter(function (x) { return groups[x]; });
+  }
+  if (q) order.forEach(function (gk) { bookOpen[gk] = true; });   // 搜索时自动展开
+
+  if (!list.length) {
+    html += '<div class="empty">没有符合条件的词。</div>';
+  } else {
+    html += order.map(function (gk) {
+      var arr = groups[gk];
+      var open = !!bookOpen[gk];
+      var lim = num(bookLimit[gk], BOOK_BATCH);
+      var head = '<div class="bgrouphead" data-gk="' + esc(gk) + '">' +
+        '<span>' + esc(gk === "未学" ? "未学" : (gk.indexOf("L") === 0 ? "L" + gk.slice(1) + " " + (LV_NAME[gk.slice(1)] || "") : gk)) + '</span>' +
+        '<span class="cov">' + arr.length + ' 词 ' + (open ? "▾" : "▸") + '</span></div>';
+      if (!open) return '<div class="card bgroup">' + head + '</div>';
+      var shownRows = '';
+      var upto = Math.min(arr.length, lim);
+      for (var m = 0; m < upto; m++) {
+        var x = arr[m];
+        var on = !!bookSel[x.k];
+        var right = (x.r ? lvBadge(x.r.L) : '<span class="lvbadge">未学</span>') + (x.r && x.r.leech ? ' <span class="badge no">顽固</span>' : '');
+        shownRows += '<div class="listrow clickable' + (bookManage ? " managing" : "") + (on ? " on" : "") + '" data-key="' + esc(x.k) + '">' +
+          (bookManage ? '<span class="selbox' + (on ? " on" : "") + '"></span>' : '') +
+          '<div class="lmain"><div class="lw">' + esc(x.w.w) + '</div><div class="lm">' + esc(x.w.m || "") + '</div></div>' +
+          '<div class="lright">' + right + '</div></div>';
+      }
+      return '<div class="card bgroup">' + head + shownRows +
+        (arr.length > upto ? '<button class="btn ghost small" data-more="' + esc(gk) + '" style="margin-top:8px;width:100%">再多显示 ' + Math.min(BOOK_BATCH, arr.length - upto) + ' 个</button>' : '') +
+        '</div>';
+    }).join("");
+  }
   body.innerHTML = html;
+
   var inp = $("#books-q");
   if (inp) {
-    inp.addEventListener("input", function () { booksQuery = inp.value; renderBooks(booksDeckId); var f = $("#books-q"); if (f) { f.focus(); f.setSelectionRange(f.value.length, f.value.length); } });
+    inp.addEventListener("input", function () {
+      booksQuery = inp.value;
+      renderBooks(booksDeckId);
+      var f = $("#books-q");
+      if (f && f.focus) { f.focus(); if (f.setSelectionRange) f.setSelectionRange(f.value.length, f.value.length); }
+    });
   }
+}
+
+/* 批量操作：应用到选中的词 */
+function bookApply(act) {
+  var keys = bookSelectedKeys();
+  if (!keys.length) { toast("先在列表里选几个词"); return; }
+  var deckId = booksDeckId, recs = recsOf(deckId), i, r;
+  var destructive = (act === "mastered" || act === "reset" || act === "pause" || act === "weakdel");
+  if (destructive && !window.confirm("确定要对选中的 " + keys.length + " 个词执行这个操作吗？")) return;
+  if (act === "export") {
+    var out = keys.map(function (k) { var w = wordByKey(deckId, k); return { w: w ? w.w : k, m: w ? w.m : "", e: w ? w.e : "" }; });
+    downloadText("选中的词-" + keys.length + ".txt", out.map(function (x) { return x.w + "\t" + x.m + "\t" + x.e; }).join("\n"));
+    toast("已导出 " + keys.length + " 个词");
+    return;
+  }
+  if (act === "drill") {
+    bookManage = false; bookSel = {};
+    startSession(deckId, "drill", keys);
+    return;
+  }
+  for (i = 0; i < keys.length; i++) {
+    var k = keys[i];
+    r = recs[k];
+    if (!r) { if (act === "mastered" || act === "weakadd" || act === "pause") r = ensureRec(deckId, k); else continue; }
+    if (!r) continue;
+    if (act === "mastered") { r.L = 5; r.stage = 5; r.graduated = true; r.due = addDays(today(), 3650); r.leech = false; }
+    else if (act === "reset") { r.L = 0; r.stage = 0; r.graduated = false; r.provisional = false; r.due = today(); r.weak = false; }
+    else if (act === "pause") { r.paused = true; }
+    else if (act === "unpause") { r.paused = false; }
+    else if (act === "weakadd") { r.weak = true; }
+    else if (act === "weakdel") { r.weak = false; if (!r.graduated && num(r.L, 0) <= 2) { r.L = 3; } }
+  }
+  saveNow();
+  bookSel = {};
+  renderBooks(deckId);
+  toast("已处理 " + keys.length + " 个词");
 }
 
 /* ---------------- 启动 ---------------- */
 function boot() {
   S = loadState();
   bind();
-  if (S.session && !S.session.finished) { resumeSession(); }
-  else { show("home"); renderHome(); }
+  // 开机永远先进首页：不再自动跳进答题页（安卓切方向/全屏/后台回来都会重载页面，
+  // 以前这里 resumeSession() 会导致「莫名其妙跳出背单词界面」）
+  show("home");
+  renderHome();
   try { history.replaceState({ s: "home" }, ""); } catch (e) {}
   applyLayout();
-  if (!storageGet(LS_KEY)) saveNow();
+  // 无条件落库一次：让 loadState() 里的迁移（hist 紧凑编码、字段补齐）真正写回
+  saveNow();
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
 else boot();
