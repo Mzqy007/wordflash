@@ -661,7 +661,12 @@ var $$ = function (s, r) { return Array.prototype.slice.call((r || document).que
 var ENT = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
 var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return ENT[c]; }); };
 function fmtDate(d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
-function today() { return fmtDate(new Date()); }
+/* 一天从几点开始：默认凌晨 4 点，0 点之后但没到 4 点仍算前一天 */
+function today() {
+  var cut = 0;
+  try { if (typeof S !== "undefined" && S && S.settings) cut = clamp(num(S.settings.dayCutoff, 4), 0, 6); } catch (e) {}
+  return fmtDate(new Date(Date.now() - cut * 3600000));
+}
 function addDays(ds, n) {
   var p = ds.split("-").map(Number);
   var d = new Date(p[0], p[1] - 1, p[2]);
@@ -694,14 +699,20 @@ function statDay(ds) {
 function logAnswer(mode, kind, ms, L0, L1, key) {
   var s = ensureStats(), ds = today(), d = statDay(ds);
   d.count++;
-  if (kind === "fast") d.fast++;
-  else if (kind === "slow") d.slow++;
-  else if (kind === "know") d.know++;
-  else if (kind === "fuzzy") d.fuzzy++;
-  else if (kind === "no") d.no++;
-  else d.timeout++;
-  if (mode === "first") d.new++;
-  else if (mode === "review" || mode === "replay" || mode === "revisit") d.review++;
+  var real = (mode === "first" || mode === "review");
+  if (real) {
+    if (kind === "fast") d.fast++;
+    else if (kind === "slow") d.slow++;
+    else if (kind === "know") d.know++;
+    else if (kind === "fuzzy") d.fuzzy++;
+    else if (kind === "no") d.no++;
+    else d.timeout++;
+    if (mode === "first") d.new++;
+    else d.review++;
+  } else {
+    /* 回放 / 回看 / 巩固 / 加练：只记「确认次数」，不算新学也不算复习 */
+    d.practiceN = num(d.practiceN, 0) + 1;
+  }
   d.ms += num(ms, 0);
   try {
     var h = new Date().getHours();
@@ -772,6 +783,7 @@ function defaultSettings() {
     gaps: [5, 10, 15, 20],
     // 顽固词：累计错误到这个次数就打标（只在统计/生词本里提示，不影响调度）
     leechAt: 8,
+  dayCutoff: 4,
     // 最大间隔上限（天）：防止 ebb×倍率 把复习推到几年以后
     maxInterval: 365
   };
@@ -895,6 +907,7 @@ function loadState() {
 
 var saveTimer = null;
 var storeWarn = false;
+var storeHinted = false;
 function scheduleSave() { clearTimeout(saveTimer); saveTimer = setTimeout(saveNow, 300); }
 
 /* 把字节数写成人类可读的大小 */
@@ -942,6 +955,14 @@ function showStoreWarn() {
   }
   el.style.display = "flex";
 }
+function checkStoreUsage() {
+  var bytes = usedBytes();
+  if (bytes <= 4 * 1024 * 1024) return;
+  if (storeHinted) return;
+  storeHinted = true;
+  toast("存档已用 " + fmtSize(bytes) + "，接近浏览器上限，建议导出备份");
+}
+
 function hideStoreWarn() {
   var el = document.querySelector("#store-warn");
   if (el) el.style.display = "none";
@@ -1300,7 +1321,8 @@ function submitAnswer(kind, ms) {
     var sc = scoreFor(kind);
     sess.score += sc; bump(kind);
     r.reviewCount++; r.lastSeen = t; r.lastMs = ms; r.lastMode = st.mode;
-    r.avgMs = prevCount ? (r.avgMs * prevCount + ms) / (prevCount + 1) : ms;
+    /* 背记模式不计时，ms=0，别污染平均反应 */
+    if (st.mode !== "learn") r.avgMs = prevCount ? (r.avgMs * prevCount + ms) / (prevCount + 1) : ms;
     r.provisional = false;
     pushHist(key, kind, ms);
     if (kind === "fast") {
@@ -1341,7 +1363,7 @@ function submitAnswer(kind, ms) {
     var sc2 = scoreFor(kind);
     sess.score += sc2; bump(kind);
     rr.reviewCount++; rr.lastSeen = t; rr.lastMs = ms; rr.lastMode = st.mode;
-    rr.avgMs = c0 ? (rr.avgMs * c0 + ms) / (c0 + 1) : ms;
+    if (st.mode !== "learn") rr.avgMs = c0 ? (rr.avgMs * c0 + ms) / (c0 + 1) : ms;
     pushHist(key, kind, ms);
     rr.provisional = false;
     if (isKnown) {
@@ -1724,7 +1746,7 @@ function retention() {
   for (var i = s.logs.length - 1; i >= 0; i--) {
     var l = s.logs[i];
     if (dayDiff(l.d, t) > 30) break;
-    if (l.m === "review" || l.m === "replay" || l.m === "revisit") {
+    if (l.m === "review") {
       tot++;
       if (l.k === "fast" || l.k === "slow" || l.k === "know") ok++;
     }
@@ -1813,6 +1835,8 @@ function renderStats() {
     ["模糊", num(tot.fuzzy, 0)], ["不认识", num(tot.no, 0)], ["超时", num(tot.timeout, 0)]
   ];
   var dmax = Math.max.apply(null, dist.map(function (x) { return x[1]; }).concat([1]));
+  dist.push(["回放/巩固", num(tot.practiceN, 0)]);
+  dmax = Math.max.apply(null, dist.map(function (x) { return x[1]; }).concat([1]));
   html += '<div class="card" style="margin-top:12px"><h2 style="margin:0 0 10px">答过的题（累计）</h2><div class="bars">' +
     dist.map(function (x) { return barRow(x[0], x[1], dmax, ""); }).join("") + '</div></div>';
 
@@ -2027,7 +2051,8 @@ function renderSetup(deckId) {
     }).join("") + '</div></div>';
   html += '<div class="advgrp"><div class="grid2">' +
     '<label class="advcell"><span class="tiny muted">毕业条件（阶段 ≥）</span><input type="number" id="adv-gradStage" value="' + num(st.gradStage, 3) + '"></label>' +
-    '<label class="advcell"><span class="tiny muted">最大间隔（天）</span><input type="number" id="adv-maxInterval" value="' + num(st.maxInterval, 365) + '"></label>' +
+    '<label class="advcell"><span class="tiny muted">一天从几点开始（0–6 点）</span><input type="number" id="adv-dayCutoff" value="' + num(st.dayCutoff, 4) + '"></label>' +
+      '<label class="advcell"><span class="tiny muted">最大间隔（天）</span><input type="number" id="adv-maxInterval" value="' + num(st.maxInterval, 365) + '"></label>' +
     '</div><div class="grid2" style="margin-top:8px">' +
     '<label class="advcell"><span class="tiny muted">顽固词阈值（累计错误次数）</span><input type="number" id="adv-leechAt" value="' + num(st.leechAt, 8) + '"></label>' +
     '</div></div>';
@@ -2228,13 +2253,12 @@ function doAnswer(kind) {
   } else {
     var react = now - G.startAt;
     if (react < 250) {
+      /* 手抖/双击：只抖一下不判定，不扣分也不记超时 */
       G.invalid++;
-      if (G.invalid >= 2) { kind = "timeout"; ms = st.limitMs; }
-      else {
-        var box = $("#qbox");
-        box.classList.remove("shake"); void box.offsetWidth; box.classList.add("shake");
-        return;
-      }
+      var box = $("#qbox");
+      box.classList.remove("shake"); void box.offsetWidth; box.classList.add("shake");
+      toast("点太快啦，慢一点");
+      return;
     } else {
       if (G.lastClick && now - G.lastClick < 500) return;
       G.lastClick = now;
@@ -3031,7 +3055,8 @@ function bind() {
       } else if (t.id === "adv-rollSteps") { S.settings.rollSteps = clamp(Math.round(sv), 1, 8); }
       else if (t.id === "adv-gradStage") { S.settings.gradStage = clamp(Math.round(sv), 0, 5); }
       else if (t.id === "adv-slowRevisitGap") { S.settings.slowRevisitGap = clamp(Math.round(sv), 1, 60); }
-      else if (t.id === "adv-maxInterval") { S.settings.maxInterval = clamp(Math.round(sv), 1, 36500); }
+      else if (t.id === "adv-dayCutoff") { S.settings.dayCutoff = clamp(Math.round(sv), 0, 6); }
+    else if (t.id === "adv-maxInterval") { S.settings.maxInterval = clamp(Math.round(sv), 1, 36500); }
       else if (t.id === "adv-leechAt") { S.settings.leechAt = clamp(Math.round(sv), 1, 99); }
       saveNow(); return;
     }
@@ -3605,6 +3630,7 @@ function boot() {
   applyLayout();
   // 无条件落库一次：让 loadState() 里的迁移（hist 紧凑编码、字段补齐）真正写回
   saveNow();
+  checkStoreUsage();
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
 else boot();
