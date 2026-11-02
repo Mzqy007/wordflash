@@ -201,7 +201,6 @@ details.adv[open]>summary:after{content:" ▴"}
 .gcol-side{display:flex;flex-direction:column}
 
 body.wide{
-  overflow:hidden;
   #app{padding:8px calc(14px + env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) calc(14px + env(safe-area-inset-left,0px));max-width:1000px}
   #btn-swap,#btn-lock{display:inline-flex;align-items:center;justify-content:center}
   #scr-game .game{height:calc(100dvh - 16px - env(safe-area-inset-bottom,0px));min-height:0;padding-bottom:0}
@@ -354,6 +353,53 @@ body.wide.onecol #gword{font-size:min(11vh,9vw)}
   body.wide .word{font-size:min(13vh,7vw)}
 }
 
+
+/* ---- 首页入口卡（加练 / 生词本） ---- */
+.entry{margin-top:12px;display:flex;align-items:center;justify-content:space-between;gap:12px;
+  background:#fff;border-radius:16px;padding:14px 16px;border:0;width:100%;text-align:left;box-shadow:0 1px 2px rgba(20,30,50,.05)}
+.entry .et{font-size:16px;font-weight:750;color:#1b1d21;display:flex;align-items:center;gap:8px}
+.entry .es{font-size:12px;color:#8b929c;margin-top:3px}
+.entry .arrow{font-size:20px;color:#c2c8d2}
+.entry:active{transform:scale(.995)}
+/* ---- 加练选词页 ---- */
+.pickbar{position:fixed;left:0;right:0;bottom:calc(0px + env(safe-area-inset-bottom,0px));padding:10px 14px;background:rgba(255,255,255,.98);
+  border-top:1px solid #eef0f3;z-index:50}
+.pickgroup{border-top:1px solid #f0f2f5}
+.pickhead{display:flex;align-items:center;gap:10px;padding:11px 2px;cursor:pointer}
+.pickhead .gk{flex:1;font-size:14px;font-weight:700;color:#2b2f36}
+.pickhead .gn{font-size:12px;color:#9aa1ab;min-width:52px;text-align:right}
+.pickhead .box{width:20px;height:20px;border-radius:6px;border:1.5px solid #cfd5de;flex:0 0 auto;position:relative}
+.pickhead .box.all{background:#2f6bff;border-color:#2f6bff}
+.pickhead .box.some{background:#2f6bff;border-color:#2f6bff;opacity:.55}
+.pickhead .box.all::after,.pickhead .box.some::after{content:"";position:absolute;left:6px;top:2px;width:5px;height:10px;border:2px solid #fff;border-top:0;border-left:0;transform:rotate(40deg)}
+.pickrow{display:flex;align-items:center;gap:10px;padding:9px 2px;border-top:1px solid #f4f6f9;font-size:14px;color:#2b2f36}
+.pickrow .pk{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pickrow .box{width:18px;height:18px;border-radius:5px;border:1.5px solid #cfd5de}
+.pickrow .box.on{background:#2f6bff;border-color:#2f6bff;position:relative}
+.pickrow .box.on::after{content:"";position:absolute;left:5px;top:1px;width:5px;height:9px;border:2px solid #fff;border-top:0;border-left:0;transform:rotate(40deg)}
+
+/* 答题屏：去掉底部为 tab 预留的留白，横屏才不会被挤出滚动条 */
+body.in-game #app{padding-bottom:0}
+body.wide.in-game{height:100dvh;overflow:hidden}
+
+/* 横屏答题：隐藏底部提示，右栏空时给一句引导 */
+body.wide.in-game .hint{display:none}
+@media (orientation:landscape) and (max-height:560px){
+  body.wide.in-game .gcol-side:empty::after{content:"点下面的按钮判定";color:#9aa0a8;font-size:13px;margin:auto}
+}
+
+/* 改判条：和判定按钮同一个底部位置 */
+#fixbar{display:flex;gap:8px;margin-top:10px}
+#fixbar .fix{flex:1;min-height:48px;border-radius:12px;font-size:15px;font-weight:650;background:#fff;color:#4a5058;box-shadow:inset 0 0 0 1.5px #e3e6ea}
+#fixbar .fix.on{background:#1b1d21;color:#fff;box-shadow:none}
+#fixbar .fix.on::after{content:" ✓"}
+
+/* 暂停遮罩 */
+.pausemask{position:fixed;inset:0;background:rgba(18,20,24,.42);display:flex;align-items:center;justify-content:center;z-index:60}
+.pausepanel{background:#fff;border-radius:18px;padding:22px 20px;width:min(320px,82vw);display:flex;flex-direction:column;gap:10px;box-shadow:0 18px 40px rgba(0,0,0,.18)}
+.pausepanel .pt{font-size:19px;font-weight:750}
+.pausepanel .ps{font-size:13px;color:#8a9099;margin-bottom:4px}
+
 </style>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
@@ -373,7 +419,15 @@ body.wide.onecol #gword{font-size:min(11vh,9vw)}
       </span>
     </div>
 
-    <div class="card quick" id="home-quick">
+    <button class="entry" id="btn-home-drill">
+      <div>
+        <div class="et">加练</div>
+        <div class="es">自己挑词练，不影响记录和排期</div>
+      </div>
+      <span class="arrow">›</span>
+    </button>
+
+    <div class="card quick" id="home-quick" style="margin-top:12px">
       <div class="qrow">
         <div class="ql">
           <div class="strong">今天要复习</div>
@@ -405,6 +459,14 @@ body.wide.onecol #gword{font-size:min(11vh,9vw)}
       <div class="tiny" id="home-sub" style="opacity:.85;margin-top:10px"></div>
     </div>
 
+    <button class="entry" id="btn-home-book">
+      <div>
+        <div class="et">生词本 <span class="badge" id="home-book-n">0</span></div>
+        <div class="es">不认识和模糊的词，点进去看详情</div>
+      </div>
+      <span class="arrow">›</span>
+    </button>
+
     <div class="statgrid" id="home-stats"></div>
 
     <div class="tiny muted" style="margin-top:18px;text-align:center">
@@ -422,8 +484,6 @@ body.wide.onecol #gword{font-size:min(11vh,9vw)}
     <div class="card" style="margin-top:12px">
       <div class="linkrow">
         <button class="btn ghost small" id="btn-lib-book">生词本 <span id="lib-book-n">0</span></button>
-        <button class="btn ghost small" id="btn-lib-drill">加练</button>
-        <button class="btn ghost small" id="btn-lib-new">+ 新建词库</button>
       </div>
     </div>
   </section>
@@ -481,7 +541,7 @@ body.wide.onecol #gword{font-size:min(11vh,9vw)}
         <span class="gbar-r">
           <button class="btn ghost small" id="btn-swap" title="左右换边">⇄</button>
           <button class="btn ghost small" id="btn-lock" title="锁定横屏">⤢</button>
-          <button class="btn ghost small" id="btn-prev" title="回到上一个词">上一词</button>
+          <button class="btn ghost small" id="btn-pause">暂停</button><button class="btn ghost small" id="btn-prev" title="回到上一个词">上一词</button>
           <button class="btn ghost small" id="btn-quit">结束本轮</button>
         </span>
       </div>
@@ -504,7 +564,13 @@ body.wide.onecol #gword{font-size:min(11vh,9vw)}
         <button class="big fuzzy" id="btn-fuzzy">模糊<small>2</small></button>
         <button class="big no" id="btn-no">不认识<small>3</small></button>
       </div>
+      <div class="fixbar" id="fixbar" style="display:none"></div>
       <div class="hint" id="ghint">1 认识 · 2 模糊 · 3 不认识 · Esc 结束</div>
+      <div class="pausemask" id="pause-mask" style="display:none"><div class="pausepanel">
+        <div class="pt">已暂停</div><div class="ps">计时已冻结，进度不会丢</div>
+        <button class="btn primary" id="btn-resume">继续</button>
+        <button class="btn" id="btn-pause-quit">保存并退出</button>
+      </div></div>
     </div>
   </section>
 
@@ -553,6 +619,18 @@ body.wide.onecol #gword{font-size:min(11vh,9vw)}
   </section>
 
   <!-- ============ 底部标签 ============ -->
+  <!-- ============ 加练选词 ============ -->
+  <section id="scr-pick" class="screen">
+    <div class="spread" style="margin:6px 2px 14px">
+      <div class="h1">加练选词</div>
+      <button class="btn ghost small" id="btn-pick-back">返回</button>
+    </div>
+    <div class="tiny muted" style="margin:0 2px 10px">点「组」整组加入，点单词单独加减；一次最多 200 个。</div>
+    <div id="pick-body"></div>
+    <div style="height:76px"></div>
+    <div class="pickbar"><button class="btn primary block" id="btn-pick-start">开始加练（0）</button></div>
+  </section>
+
   <nav class="tabs" id="tabs">
     <button class="tab on" data-tab="home">学习</button>
     <button class="tab" data-tab="lib">词库</button>
@@ -567,6 +645,7 @@ window.WORD_DATA={"id":"hongbaoshu","name":"红宝书考研词汇","words":[{"w"
 
 </script>
 <script>
+
 (function () {
 "use strict";
 
@@ -1461,6 +1540,7 @@ function show(name, opts) {
   var tabs = $("#tabs");
   if (tabs) tabs.classList.toggle("on", isTab);
   document.body.classList.toggle("has-tabs", isTab);
+  document.body.classList.toggle("in-game", name === "game");
   if (isTab) {
     $$("#tabs .tab").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-tab") === name); });
   }
@@ -1557,6 +1637,17 @@ function renderHome() {
   var revQ = num(S.settings.reviewPerDay, 100), newQ = num(S.settings.newPerDay, 20);
   if ($("#q-rev")) $("#q-rev").textContent = revQ;
   if ($("#q-new")) $("#q-new").textContent = newQ;
+  // 首页生词本入口数量
+  (function () {
+    var el0 = $("#home-book-n");
+    if (!el0) return;
+    var d0 = S.decks[0], n0 = 0;
+    if (d0) {
+      var rr0 = recsOf(d0.id);
+      for (var k0 in rr0) { var r0 = rr0[k0]; if (!r0.graduated && (r0.weak || num(r0.L, 0) <= 2)) n0++; }
+    }
+    el0.textContent = n0;
+  })();
   if ($("#q-rev-sub")) $("#q-rev-sub").textContent = "今天到期 " + s.due + " 个 · 还剩 " + s.reviewLeft + " 个额度";
   if ($("#q-new-sub")) $("#q-new-sub").textContent = "未学 " + s.fresh + " 个 · 还剩 " + s.newLeft + " 个额度";
 }
@@ -1989,10 +2080,12 @@ function setWordSize(word) {
   if (!el) return;
   var txt = String(word || "");
   var wl = Math.max(1, txt.length);
-  var vw = window.innerWidth, vh = window.innerHeight;
-  var base = Math.min(vw * 0.2, vh * 0.28, 150);
-  var byWidth = (vw * 0.86) / (wl * 0.6);
-  var size = Math.max(24, Math.min(base, byWidth));
+  var qbox = el.parentElement;
+  var wide = document.body.classList.contains("wide");
+  var availW = (qbox && qbox.clientWidth) ? qbox.clientWidth - 10 : window.innerWidth * (wide ? 0.46 : 0.9);
+  var availH = window.innerHeight * (wide ? 0.32 : 0.34);
+  var byWidth = availW / (wl * 0.6);
+  var size = Math.max(18, Math.min(availH, byWidth, wide ? 104 : 150));
   el.style.fontSize = Math.round(size) + "px";
 }
 
@@ -2026,6 +2119,8 @@ function nextQuestion() {
   }
 
   $("#reveal-box").innerHTML = "";
+  var fb0 = $("#fixbar");
+  if (fb0) { fb0.style.display = "none"; fb0.innerHTML = ""; }
   var learnMode = (st.mode === "learn");
   if (learnMode) {
     // 背记：先只给单词，点「显示释义」再看含义，然后三选一（不计时）
@@ -2074,7 +2169,29 @@ function showMeaning() {
     (w.e ? '<div class="ex">' + esc(w.e) + '</div>' : '') + '</div>';
 }
 
+/* 暂停：冻结计时，随时接着来 */
+function pauseRound() {
+  if (!S.session || G.paused || G.revealing) return;
+  G.paused = true;
+  G.pauseAt = performance.now();
+  cancelAnimationFrame(G.raf);
+  var pm = $("#pause-mask");
+  if (pm) pm.style.display = "";
+  saveNow();
+}
+
+function resumeRound() {
+  if (!G.paused) return;
+  G.paused = false;
+  var d = performance.now() - (G.pauseAt || performance.now());
+  G.startAt += d;
+  var pm = $("#pause-mask");
+  if (pm) pm.style.display = "none";
+  if (S.settings.mode !== "learn" && !G.revealing) G.raf = requestAnimationFrame(tickTimer);
+}
+
 function tickTimer() {
+  if (G.paused) return;
   var st = S.settings;
   var el = performance.now() - G.startAt;
   var pct = Math.min(100, el / st.limitMs * 100);
@@ -2087,7 +2204,7 @@ function tickTimer() {
 
 function doAnswer(kind) {
   if (!S.session || !S.session.cur) return;
-  if (G.answered) return;
+  if (G.answered || G.paused) return;
   var st = S.settings;
   var now = performance.now();
   var ms;
@@ -2185,27 +2302,22 @@ function renderReveal(out) {
     var dd = out.due === today() ? "今天" : out.due;
     html += '<div class="tiny muted" style="margin-top:10px">下次复习：' + esc(dd) + "</div>";
   }
-  // 改判条：三个判定都能反悔（回滚到作答前的快照再重算）
-  if (st.fastUndo) {
-    html += '<div class="fixrow"><span class="lbl">判错了？</span>' +
-      '<button class="fix' + (knownNow ? " on" : "") + '" id="btn-fix-known" data-fix="known">认识</button>' +
-      '<button class="fix' + (fuzzyNow ? " on" : "") + '" id="btn-fix-fuzzy" data-fix="fuzzy">模糊</button>' +
-      '<button class="fix' + ((!knownNow && !fuzzyNow) ? " on" : "") + '" id="btn-fix-no" data-fix="no">不认识</button></div>' +
-      '<div class="fixhint">点另一项即可改判，分数和复习计划会一起重算</div>';
-  }
-  if (out.mode === "relearn") {
-    var rl0 = (sess.relearn && sess.relearn[out.k]) || null;
-    if (rl0 && num(rl0.fails, 0) >= 3) {
-      html += '<button class="btn block" id="btn-giveup" style="margin-top:12px">跳过，明天再来</button>';
-    }
-  }
   html += '<div class="hint" id="reveal-hint">点任意处继续</div></div>';
   $("#reveal-box").innerHTML = html;
-  var gb = $("#btn-giveup");
-  if (gb) gb.addEventListener("click", function (ev) {
-    if (ev && ev.stopPropagation) ev.stopPropagation();
-    giveUpRelearn();
-  });
+  // 三个判定按钮整排收起来，改判条放到同一个底部区域（位置不再跳来跳去）
+  $("#gbtns").style.display = "none";
+  var fbar = $("#fixbar");
+  if (fbar) {
+    if (st.fastUndo) {
+      fbar.style.display = "";
+      fbar.innerHTML = '<button class="fix' + (knownNow ? " on" : "") + '" id="btn-fix-known" data-fix="known">认识</button>' +
+        '<button class="fix' + (fuzzyNow ? " on" : "") + '" id="btn-fix-fuzzy" data-fix="fuzzy">模糊</button>' +
+        '<button class="fix' + ((!knownNow && !fuzzyNow) ? " on" : "") + '" id="btn-fix-no" data-fix="no">不认识</button>';
+    } else {
+      fbar.style.display = "none";
+      fbar.innerHTML = "";
+    }
+  }
 
   G.canUndo = !!st.fastUndo;
   G.undoDeadline = performance.now() + num(st.fastUndoMs, 1200);
@@ -2689,6 +2801,9 @@ function bind() {
     }, { passive: true });
   })();
   on("#btn-prev", "click", prevQuestion);
+  on("#btn-pause", "click", function () { if (G.revealing) { toast("这题已判完，点一下继续就行"); return; } pauseRound(); });
+  on("#btn-resume", "click", resumeRound);
+  on("#btn-pause-quit", "click", function () { resumeRound(); pauseSession(); });
 
   // 横屏两栏：左右换边（记住选择）
   on("#btn-swap", "click", function (ev) {
@@ -2939,6 +3054,36 @@ function bind() {
   on("#q-new-m", "click", function () { quickAdjust("new", -5); });
   on("#q-new-p", "click", function () { quickAdjust("new", 5); });
   on("#btn-lib-book", "click", function () { renderBook(); show("book"); });
+  on("#btn-home-book", "click", function () { renderBook(); show("book"); });
+  on("#btn-home-drill", "click", function () {
+    pickDeckId = S.decks[0] && S.decks[0].id;
+    pickSel = {}; pickOpen = {};
+    renderPick(); show("pick");
+  });
+  on("#btn-pick-back", "click", function () { goBack(); });
+  on("#btn-pick-start", "click", function () {
+    var keys = pickKeys();
+    if (!keys.length) { toast("先选几个词"); return; }
+    var d = pickDeckId || (S.decks[0] && S.decks[0].id);
+    pickSel = {};
+    startSession(d, "drill", keys);
+  });
+  on("#pick-body", "click", function (ev) {
+    var t = ev.target;
+    var pm = t.closest && t.closest("[data-pm]");
+    if (pm) { pickMode = pm.getAttribute("data-pm"); renderPick(); return; }
+    var head = t.closest && t.closest(".pickhead[data-pg]");
+    if (head) {
+      var gk = head.getAttribute("data-pg");
+      var g = null, gs = pickGroups();
+      for (var i = 0; i < gs.length; i++) if (gs[i].gk === gk) { g = gs[i]; break; }
+      if (!g) return;
+      if (ev.target.classList && ev.target.classList.contains("box")) { pickToggleGroup(g.list); return; }
+      pickOpen[gk] = !pickOpen[gk]; renderPick(); return;
+    }
+    var row = t.closest && t.closest("[data-pk]");
+    if (row) { pickToggleKey(row.getAttribute("data-pk")); return; }
+  });
   on("#btn-lib-drill", "click", function () { if (S.decks[0]) startSession(S.decks[0].id, "drill"); });
   on("#btn-lib-new", "click", openNewDeck);
   on("#books-body", "click", function (ev) {
@@ -3105,15 +3250,20 @@ var booksQuery = "";
 
 function isWideNow() {
   var m = (S && S.settings && S.settings.orientMode) || "portrait";
-  if (m === "landscape") return true;
+  var landscape = window.innerWidth > window.innerHeight;
   if (m === "portrait") return false;
-  return window.innerWidth > window.innerHeight && window.innerHeight <= 560;
+  if (m === "landscape") return landscape && window.innerWidth >= 640;
+  return landscape && window.innerHeight <= 560;
 }
 function applyLayout() {
   var wide = isWideNow();
   document.body.classList.toggle("wide", wide);
   var oneCol = wide && window.innerWidth >= 1000 && !(S && S.settings && S.settings.wideTwoCol);
   document.body.classList.toggle("onecol", oneCol);
+  if (S && S.session && S.session.cur) {
+    var cw = wordByKey(S.session.deckId, S.session.cur.k);
+    if (cw) setWordSize(cw.w);
+  }
   var b = $("#btn-orient");
   if (b) b.textContent = wide ? "竖屏" : "横屏";
 }
@@ -3126,6 +3276,7 @@ function renderScreenByName(n) {
   else if (n === "word" && wordView && wordView.key) renderBookDetail(wordView.deckId, wordView.key);
   else if (n === "setup" && setupDeckId) renderSetup(setupDeckId);
   else if (n === "list" && listKind) renderList(listKind);
+  else if (n === "pick") renderPick();
   else if (n === "books" && booksDeckId) renderBooks(booksDeckId);
   else if (n === "result") renderResult();
 }
@@ -3209,6 +3360,76 @@ function renderList(kind) {
     else html = '<div class="tiny muted" style="margin:4px 0 8px">共 ' + filtered.length + ' 个' +
       (filtered.length > cap ? '（只显示前 ' + cap + ' 个）' : '') + '</div><div class="card">' + rows.join("") + '</div>';
   }
+  body.innerHTML = html;
+}
+
+/* ---------------- 界面：加练选词 ---------------- */
+var pickDeckId = null, pickSel = {}, pickOpen = {}, pickMode = "level";
+var PICK_MAX = 200;
+
+function pickKeys() { return Object.keys(pickSel).filter(function (k) { return pickSel[k]; }); }
+
+function pickGroups() {
+  var deckId = pickDeckId || (S.decks[0] && S.decks[0].id);
+  var ws = wordsOf(deckId), recs = recsOf(deckId), groups = {}, order = [];
+  for (var i = 0; i < ws.length; i++) {
+    var w = ws[i], k = normKey(w.w), r = recs[k] || null, gk;
+    if (pickMode === "unit") gk = w.g || "未分组";
+    else if (!r) gk = "未学";
+    else if (r.graduated) gk = "已掌握";
+    else gk = "L" + clamp(num(r.L, 0), 0, 5);
+    if (!groups[gk]) { groups[gk] = []; order.push(gk); }
+    groups[gk].push({ w: w, k: k, r: r });
+  }
+  if (pickMode === "level") order = ["未学", "L0", "L1", "L2", "L3", "L4", "L5", "已掌握"].filter(function (x) { return groups[x]; });
+  return order.map(function (gk) { return { gk: gk, list: groups[gk] }; });
+}
+
+function pickToggleKey(k) {
+  if (!pickSel[k] && pickKeys().length >= PICK_MAX) { toast("一次最多选 " + PICK_MAX + " 个"); return; }
+  pickSel[k] = !pickSel[k];
+  renderPick();
+}
+
+function pickToggleGroup(list) {
+  var allOn = list.every(function (x) { return pickSel[x.k]; });
+  if (allOn) { list.forEach(function (x) { pickSel[x.k] = false; }); }
+  else {
+    var room = PICK_MAX - pickKeys().length, added = 0;
+    for (var i = 0; i < list.length && added < room; i++) {
+      if (!pickSel[list[i].k]) { pickSel[list[i].k] = true; added++; }
+    }
+    if (added < list.length) toast("最多 " + PICK_MAX + " 个，选了前 " + added + " 个");
+  }
+  renderPick();
+}
+
+function renderPick() {
+  var body = $("#pick-body");
+  if (!body) return;
+  if (!pickDeckId) pickDeckId = S.decks[0] && S.decks[0].id;
+  var n = pickKeys().length, bs = $("#btn-pick-start");
+  if (bs) { bs.textContent = n ? "开始加练（" + n + " 个）" : "开始加练"; bs.disabled = !n; }
+  var groups = pickGroups();
+  var html = '<div class="card"><div class="filters">' +
+    '<button class="chip' + (pickMode === "level" ? " on" : "") + '" data-pm="level">按等级</button>' +
+    '<button class="chip' + (pickMode === "unit" ? " on" : "") + '" data-pm="unit">按 Unit</button>' +
+    '</div><div class="tiny muted" style="margin-top:8px">已选 ' + n + " / " + PICK_MAX + ' 个</div></div>';
+  html += '<div class="card" style="margin-top:10px">' + groups.map(function (g) {
+    var selN = g.list.filter(function (x) { return pickSel[x.k]; }).length;
+    var cls = selN === 0 ? "" : (selN === g.list.length ? " all" : " some");
+    var open = !!pickOpen[g.gk];
+    var nm = (g.gk === "未学" || g.gk === "已掌握") ? g.gk : (pickMode === "level" ? "L" + g.gk.slice(1) + " " + (LV_NAME[g.gk.slice(1)] || "") : g.gk);
+    var head = '<div class="pickhead" data-pg="' + esc(g.gk) + '"><span class="box' + cls + '"></span>' +
+      '<span class="gk">' + esc(nm) + '</span>' +
+      '<span class="gn">' + g.list.length + " 词 " + (open ? "▾" : "▸") + '</span></div>';
+    if (!open) return head;
+    return head + g.list.slice(0, 200).map(function (x) {
+      return '<div class="pickrow" data-pk="' + esc(x.k) + '"><span class="box' + (pickSel[x.k] ? " on" : "") + '"></span>' +
+        '<span class="pk">' + esc(x.w.w) + '</span>' +
+        '<span class="tiny muted">' + (x.r ? "L" + x.r.L : "未学") + '</span></div>';
+    }).join("");
+  }).join("") + '</div>';
   body.innerHTML = html;
 }
 
@@ -3389,6 +3610,7 @@ if (document.readyState === "loading") document.addEventListener("DOMContentLoad
 else boot();
 
 })();
+
 
 </script>
 <script>
