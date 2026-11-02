@@ -1,5 +1,5 @@
-var CACHE = "wordflash-v1";
-var ASSETS = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png"];
+var CACHE = "wordflash-v5";
+var ASSETS = ["./manifest.json", "./icon-192.png", "./icon-512.png"];
 self.addEventListener("install", function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(ASSETS); }).then(function () { return self.skipWaiting(); }));
 });
@@ -9,12 +9,18 @@ self.addEventListener("activate", function (e) {
   }).then(function () { return self.clients.claim(); }));
 });
 self.addEventListener("fetch", function (e) {
-  if (e.request.method !== "GET") return;
-  e.respondWith(caches.match(e.request).then(function (hit) {
+  var req = e.request;
+  if (req.method !== "GET") return;
+  var isHTML = req.mode === "navigate" || (req.headers.get("accept") || "").indexOf("text/html") >= 0;
+  if (isHTML) {
+    e.respondWith(fetch(req).catch(function () { return caches.match("./index.html") || caches.match("./"); }));
+    return;
+  }
+  e.respondWith(caches.match(req).then(function (hit) {
     if (hit) return hit;
-    return fetch(e.request).then(function (res) {
+    return fetch(req).then(function (res) {
       var copy = res.clone();
-      caches.open(CACHE).then(function (c) { c.put(e.request, copy); }).catch(function () {});
+      caches.open(CACHE).then(function (c) { c.put(req, copy); }).catch(function () {});
       return res;
     }).catch(function () { return caches.match("./index.html"); });
   }));
