@@ -400,6 +400,15 @@ body.wide.in-game .hint{display:none}
 .pausepanel .pt{font-size:19px;font-weight:750}
 .pausepanel .ps{font-size:13px;color:#8a9099;margin-bottom:4px}
 
+/* 隐藏 Netlify 注入的右下角徽章（<iframe id="nl-badge-frame">，纯前端站点用不到它） */
+#nl-badge-frame{display:none!important}
+
+/* 首页提示条 / 表格内联按钮 */
+.tipline{margin-top:10px}
+.tipline-row{background:#fff8e6;border:1px solid #f3e3bc;color:#8a6a12;font-size:13px;line-height:1.5;border-radius:12px;padding:10px 12px;margin-top:8px}
+.tipline-row.blue{background:#eef4ff;border-color:#d6e4ff;color:#2f5bb7}
+.linkbtn{background:none;border:0;padding:0 0 0 6px;color:#2f6bff;font-size:13px;font-weight:650;cursor:pointer;text-decoration:underline}
+
 </style>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
@@ -458,6 +467,7 @@ body.wide.in-game .hint{display:none}
       <button class="btn" id="btn-start">开始今天的学习</button>
       <div class="tiny" id="home-sub" style="opacity:.85;margin-top:10px"></div>
     </div>
+    <div class="tipline" id="home-tip" style="display:none"></div>
 
     <button class="entry" id="btn-home-book">
       <div>
@@ -520,7 +530,7 @@ body.wide.in-game .hint{display:none}
         <button class="btn ghost small" id="btn-me-settings">学习设置</button>
       </div>
     </div>
-    <div class="tiny muted" style="margin-top:16px;text-align:center">单词闪过 · 纯前端 · 离线可用</div>
+    <div class="tiny muted" style="margin-top:16px;text-align:center">单词闪过 · 纯前端 · 离线可用 · v6.2 · 2026-11-03</div>
     <input type="file" id="file-import" accept=".json" hidden>
   </section>
 
@@ -892,6 +902,11 @@ function loadState() {
         }
         st.updatedAt = o.updatedAt || 0;
         st.lastExportAt = o.lastExportAt || null;
+        // 修复历史误设：每组题数 < 5 视为无效，回到默认 20（旧版输入框下限是 1，可能被误触成 1）
+        if (st.settings && st.settings.countValue !== "all") {
+          var cvFix = num(st.settings.countValue, 20);
+          if (!isFinite(cvFix) || cvFix < 5) st.settings.countValue = 20;
+        }
       }
     } catch (e) { /* 损坏则重置 */ }
   }
@@ -1011,6 +1026,83 @@ function doExport(slim) {
   toast(slim ? "已导出精简备份（不含判定历史）" : "已导出备份");
 }
 
+/* ---------- 合并导入：同词取"更熟"的一条，不覆盖本机其它数据 ---------- */
+/* 更熟 = 已毕业 > due 更靠后 > L 更高 > stage 更高 > lastSeen 更新 */
+function pickBetter(a, b) {
+  if (!a) return b;
+  if (!b) return a;
+  if (!!a.graduated !== !!b.graduated) return a.graduated ? a : b;
+  var ad = String(a.due || ""), bd = String(b.due || "");
+  if (ad !== bd) return ad > bd ? a : b;
+  if (num(a.L, 0) !== num(b.L, 0)) return num(a.L, 0) > num(b.L, 0) ? a : b;
+  if (num(a.stage, 0) !== num(b.stage, 0)) return num(a.stage, 0) > num(b.stage, 0) ? a : b;
+  return num(b.lastSeen, 0) > num(a.lastSeen, 0) ? b : a;
+}
+
+function previewMerge(o) {
+  var total = 0, added = 0, updated = 0;
+  var recs = (o && o.records) || {};
+  for (var dk in recs) {
+    var m = recs[dk];
+    if (!m || typeof m !== "object") continue;
+    var local = (S.records && S.records[dk]) || {};
+    for (var wk in m) {
+      if (!m[wk]) continue;
+      total++;
+      if (local[wk]) updated++; else added++;
+    }
+  }
+  return { total: total, added: added, updated: updated };
+}
+
+function applyMerge(o) {
+  var recs = (o && o.records) || {};
+  S.records = S.records || {};
+  for (var dk in recs) {
+    var m = recs[dk];
+    if (!m || typeof m !== "object") continue;
+    if (!S.records[dk]) S.records[dk] = {};
+    for (var wk in m) {
+      if (!m[wk]) continue;
+      S.records[dk][wk] = pickBetter(S.records[dk][wk], m[wk]);
+    }
+  }
+  // 备份里有、本机没有的词库，补进来（同 id 的以本机为准）
+  var incDecks = (o && o.decks) || [];
+  for (var i = 0; i < incDecks.length; i++) {
+    var d = incDecks[i];
+    if (!d || !d.id) continue;
+    if (!deckById(d.id)) S.decks.push(d);
+  }
+  // 每日额度计数取两边较大值（避免合并后"今日已完成"倒退）
+  var incDaily = (o && o.daily) || {};
+  S.daily = S.daily || {};
+  for (var dk2 in incDaily) {
+    var a = S.daily[dk2] || {}, b = incDaily[dk2] || {};
+    S.daily[dk2] = {
+      date: a.date || b.date || today(),
+      newDone: Math.max(num(a.newDone, 0), num(b.newDone, 0)),
+      reviewDone: Math.max(num(a.reviewDone, 0), num(b.reviewDone, 0)),
+      streak: num(a.streak, 0) || num(b.streak, 0)
+    };
+  }
+  // 待巩固取并集
+  var incBack = (o && o.backlog) || {};
+  S.backlog = S.backlog || {};
+  for (var dk3 in incBack) {
+    if (!Array.isArray(incBack[dk3])) continue;
+    var cur = S.backlog[dk3] || [], seen = {};
+    for (var j = 0; j < cur.length; j++) seen[cur[j].k] = 1;
+    for (var j2 = 0; j2 < incBack[dk3].length; j2++) {
+      var it = incBack[dk3][j2];
+      if (it && it.k && !seen[it.k]) { cur.push(it); seen[it.k] = 1; }
+    }
+    S.backlog[dk3] = cur;
+  }
+  mapCache = {};
+  // settings / stats 保留本机（更安全，也避免备份里的旧设置覆盖当前偏好）
+}
+
 /* ---------------- 词库访问 ---------------- */
 var mapCache = {};
 function deckById(id) {
@@ -1128,7 +1220,31 @@ function levelDist(deckId) {
 function countN() {
   var cv = S.settings.countValue;
   if (cv === "all") return 99999;
-  return clamp(Math.round(num(cv, 20)), 1, 99999);
+  return clamp(Math.round(num(cv, 20)), 5, 99999);   // 下限 5：少于 5 题的一轮没有意义
+}
+
+/* 本轮怎么算：首页预告与 buildSession 共用这一份（唯一真相源），避免"说 N 做 M" */
+function planRound(deckId) {
+  var st = S.settings, t = today();
+  var d = daily(deckId);
+  var N = Math.min(countN(), Math.max(1, wordsOf(deckId).length) || 1);
+  var reviewLeft = Math.max(0, num(st.reviewPerDay, 100) - d.reviewDone);
+  var newLeft = Math.max(0, num(st.newPerDay, 20) - d.newDone);
+  var dl = dueList(deckId), fl = freshList(deckId);
+  var reviewTake = Math.min(dl.length, reviewLeft, N);
+  var backlogN = Math.max(0, dl.length - reviewTake);
+  var newCap = num(st.newPerDay, 20);
+  if (backlogN >= num(st.reviewPerDay, 100)) newCap = 0;
+  else if (backlogN > num(st.reviewPerDay, 100) * 0.7) newCap = Math.floor(newCap / 2);
+  var newTake = Math.min(N - reviewTake, newLeft, fl.length, newCap);
+  if (newTake < 0) newTake = 0;
+  var bl = (S.backlog && Array.isArray(S.backlog[deckId])) ? S.backlog[deckId].length : 0;
+  return {
+    N: N, reviewTake: reviewTake, newTake: newTake, backlog: bl,
+    total: reviewTake + newTake + bl,
+    due: dl.length, fresh: fl.length,
+    reviewLeft: reviewLeft, newLeft: newLeft
+  };
 }
 
 function buildSession(deckId, mode, customKeys) {
@@ -1158,20 +1274,11 @@ function buildSession(deckId, mode, customKeys) {
     if (rnd) shuffle(weak);
     entries = due.concat(weak).slice(0, N).map(function (x) { return { k: x.k, mode: "review" }; });
   } else {
-    var d = daily(deckId);
-    var reviewLeft = Math.max(0, num(st.reviewPerDay, 100) - d.reviewDone);
-    var newLeft = Math.max(0, num(st.newPerDay, 20) - d.newDone);
+    var plan = planRound(deckId);          // 与首页预告用同一份计算
     var dl = shuffleDue(dueList(deckId), rnd);
     var fl = freshList(deckId);
     if (rnd) shuffle(fl);
-    var reviewTake = Math.min(dl.length, reviewLeft, N);
-    // B3：到期积压太多时自动少放新词（积压 >= 额度就全部只做复习）
-    var backlogN = Math.max(0, dl.length - reviewTake);
-    var newCap = num(st.newPerDay, 20);
-    if (backlogN >= num(st.reviewPerDay, 100)) newCap = 0;
-    else if (backlogN > num(st.reviewPerDay, 100) * 0.7) newCap = Math.floor(newCap / 2);
-    var newTake = Math.min(N - reviewTake, newLeft, fl.length, newCap);
-    if (newTake < 0) newTake = 0;
+    var reviewTake = plan.reviewTake, newTake = plan.newTake;
     for (var a = 0; a < reviewTake; a++) entries.push({ k: dl[a].k, mode: "review" });
     for (var b = 0; b < newTake; b++) entries.push({ k: fl[b].k, mode: "first" });
   }
@@ -1614,14 +1721,14 @@ function renderHome() {
     return;
   }
   var s = deckStats(deck);
-  var planned = Math.min(num(S.settings.countValue, 20) === 99999 ? s.total : num(S.settings.countValue, 20), s.due + s.newLeft);
+  var plan = planRound(deck.id);     // 与真正出题共用同一份计算
   $("#home-kicker").textContent = "今天还没开始";
   $("#home-today").textContent = "0 词";
-  var revTake = Math.min(s.due, s.reviewLeft);
-  var newTake = Math.min(Math.max(0, num(S.settings.countValue, 20) - revTake), s.newLeft);
-  var total = revTake + newTake;
-  var blN = (S.backlog && Array.isArray(S.backlog[deck.id])) ? S.backlog[deck.id].length : 0;
-  $("#home-today").textContent = (total + blN) + " 词";
+  var revTake = plan.reviewTake;
+  var newTake = plan.newTake;
+  var total = plan.total;
+  var blN = plan.backlog;
+  $("#home-today").textContent = total + " 词";
   var modeName = (S.settings.mode === "learn") ? "背记" : "闪过";
   var live = (S.session && !S.session.finished && S.session.queue) ? S.session : null;
   if (live) {
@@ -1640,11 +1747,42 @@ function renderHome() {
     $("#btn-start").disabled = (total + blN) === 0;
     $("#btn-start").textContent = (total + blN) === 0 ? "今天已经完成了 🎉" : (blN && !total ? "继续巩固（" + blN + " 个）" : "开始今天的学习");
     var sub = [];
-    sub.push("复习 " + revTake + " · 新词 " + newTake);
+    sub.push("复习 " + revTake + " · 新词 " + newTake + " · 本轮 " + (revTake + newTake) + " 题");
+    if (plan.N <= 3 && (revTake + newTake) > 0) sub.push("每组题数只有 " + plan.N + " 题（设置里可改）");
     if (s.due > s.reviewLeft) sub.push("到期积压 " + s.due + " 个");
     if (blN) sub.push("待巩固 " + blN + " 个（先补这个）");
     $("#home-sub").textContent = sub.join(" · ");
   }
+
+  /* 首页提示条：到期积压不放新词 / 该备份了 / 存档快满 / 额度只是上限 */
+  (function () {
+    var box = $("#home-tip");
+    if (!box) return;
+    var tips = [];
+    var doneToday = s.newDone + s.reviewDone;
+    if (!live && plan.due > plan.reviewTake && plan.newTake === 0) {
+      tips.push('到期积压 ' + plan.due + ' 个，今天先清复习，新词自动不放 ' +
+        '<button class="linkbtn" data-home-act="addnew">加 20 个新词额度</button>');
+    }
+    var lastEx = num(S.lastExportAt, 0);
+    var daysNoExp = lastEx ? Math.floor((Date.now() - lastEx) / 86400000) : 999;
+    if (daysNoExp >= 7) {
+      tips.push(lastEx
+        ? ('已 ' + daysNoExp + ' 天没导出备份 <button class="linkbtn" data-home-act="export">现在导出</button>')
+        : ('还没导出过备份，换手机/清缓存就没了 <button class="linkbtn" data-home-act="export">现在导出</button>'));
+    }
+    var bytes = usedBytes(), quotaPct = Math.round(bytes / (5 * 1024 * 1024) * 100);
+    if (quotaPct >= 70) {
+      tips.push('存档已占 ' + quotaPct + '%（' + fmtSize(bytes) + '）<button class="linkbtn" data-home-act="slim">导出精简版</button>');
+    }
+    if (!tips.length && doneToday > 0) {
+      tips.push('今天已完成 ' + doneToday + ' 个；额度是每天的上限，不要求做满');
+    }
+    if (tips.length) {
+      box.innerHTML = tips.map(function (x) { return '<div class="tipline-row">' + x + '</div>'; }).join("");
+      box.style.display = "";
+    } else { box.style.display = "none"; box.innerHTML = ""; }
+  })();
 
   $("#home-stats").innerHTML = [
     cell(s.newDone + "/" + num(S.settings.newPerDay, 20), "今日新学", "todayNew"),
@@ -1677,11 +1815,12 @@ function renderHome() {
 /* 首页两栏：+ / − 调整每日额度 */
 function quickAdjust(kind, delta) {
   var st = S.settings;
-  if (kind === "rev") st.reviewPerDay = clamp(num(st.reviewPerDay, 100) + delta, 0, 999);
+  var isRev = (kind === "rev" || kind === "review");   // 兼容两种写法：早期接的是 "review"
+  if (isRev) st.reviewPerDay = clamp(num(st.reviewPerDay, 100) + delta, 0, 999);
   else st.newPerDay = clamp(num(st.newPerDay, 20) + delta, 0, 300);
   saveNow();
   renderHome();
-  toast(kind === "rev" ? ("每天复习 " + st.reviewPerDay + " 个") : ("每天新学 " + st.newPerDay + " 个"));
+  toast(isRev ? ("每天复习 " + st.reviewPerDay + " 个") : ("每天新学 " + st.newPerDay + " 个"));
 }
 
 /* ---------------- 界面：词库 ---------------- */
@@ -1769,6 +1908,28 @@ function renderStats() {
   var rt = retention();
   var html = "";
 
+  // 今天该干什么（行动卡）：把数字翻译成一句可执行的话
+  (function () {
+    var plan = planRound(deck ? deck.id : null);
+    var line, sub;
+    var doneToday = num(todayD.new, 0) + num(todayD.review, 0);
+    if (plan.total + plan.backlog > 0) {
+      line = "今天还有 " + (plan.total + plan.backlog) + " 题要做";
+      sub = "复习 " + plan.reviewTake + " · 新词 " + plan.newTake + (plan.backlog ? " · 待巩固 " + plan.backlog : "");
+    } else if (doneToday > 0) {
+      line = "今天的额度已经做完了 🎉";
+      sub = "想多练可以去「加练」，不影响记录和排期";
+    } else {
+      line = "今天还没开始";
+      sub = "点下面的按钮回去开始";
+    }
+    html += '<div class="card" style="margin-bottom:12px">' +
+      '<div class="strong" style="font-size:17px">' + esc(line) + '</div>' +
+      '<div class="tiny muted" style="margin-top:6px">' + esc(sub) + '</div>' +
+      '<div style="margin-top:10px"><button class="btn primary" id="btn-stats-go">' +
+      (plan.total + plan.backlog > 0 ? "去学习" : "回首页") + '</button></div></div>';
+  })();
+
   html += '<div class="statbig">' +
     '<div class="cell"><div class="n">' + num(todayD.new, 0) + '／' + num(todayD.review, 0) + '</div><div class="l">今日 新学／复习</div></div>' +
     '<div class="cell"><div class="n">' + Math.round(num(todayD.ms, 0) / 1000) + ' 秒</div><div class="l">今日答题用时（不含看释义）</div></div>' +
@@ -1809,10 +1970,11 @@ function renderStats() {
     '<div class="hlab"><span>' + days[0].d.slice(5) + '</span><span>今天</span></div></div>';
 
   // 记忆保留率
-  html += '<div class="card" style="margin-top:12px"><h2 style="margin:0 0 6px">记忆保留率</h2>' +
-    '<div class="tiny muted">最近 30 天里，复习时答对（认识）的比例</div>' +
+  html += '<div class="card" style="margin-top:12px"><h2 style="margin:0 0 6px">复习正确率</h2>' +
+    '<div class="tiny muted">最近 30 天，到期的词再考一次时答对（认识/快认）的比例</div>' +
     '<div style="font-size:26px;font-weight:800;margin-top:8px">' + rt.rate + '%' +
-    '<span class="tiny muted" style="font-weight:500"> · ' + rt.ok + '／' + rt.tot + ' 次</span></div></div>';
+    '<span class="tiny muted" style="font-weight:500"> · ' + rt.ok + '／' + rt.tot + ' 次</span></div>' +
+    (rt.tot < 10 ? '<div class="tiny muted" style="margin-top:6px">样本还太少，先练几天再看这个数</div>' : '') + '</div>';
 
   // 等级分布
   if (deck) {
@@ -2086,6 +2248,11 @@ function startSession(deckId, mode) {
 function resumeSession() {
   var sess = S.session;
   if (!sess || sess.finished) { show("home"); renderHome(); return; }
+  var t = today();
+  if (sess.day && sess.day !== t) {
+    toast("这轮是 " + sess.day + " 开始的，继续会按今天算");
+    sess.day = t;              // 用户定：继续算新一天，只提醒一句
+  }
   show("game");
   G = { answered: true, raf: 0, revealTimer: 0, startAt: 0, invalid: 0, lastClick: 0, revealing: false, undoDeadline: 0, canUndo: false, snap: null, stack: [] };
   nextQuestion();
@@ -2098,6 +2265,30 @@ function sessionTag(cur, sess) {
   if (cur.mode === "replay") return ["回放", "replay"];
   if (cur.mode === "review") return [sess.mode === "weak" ? "生词" : (sess.mode === "drill" ? "加练" : "复习"), "review"];
   return null;
+}
+
+/* 顶部进度文案：把本轮到底还剩哪些东西说清楚（新学/回放/回看/巩固分项） */
+function statLine(sess, remaining) {
+  var i, replayN = 0, revisitN = 0;
+  var scan = function (arr) {
+    for (var j = 0; j < arr.length; j++) {
+      if (arr[j] && arr[j].mode === "replay") replayN++;
+      else if (arr[j] && arr[j].mode === "revisit") revisitN++;
+    }
+  };
+  scan(sess.queue || []);
+  scan(sess.pending || []);
+  if (sess.cur) { if (sess.cur.mode === "replay") replayN++; else if (sess.cur.mode === "revisit") revisitN++; }
+  var relearnN = Object.keys(sess.relearn || {}).length;
+  var parts = [];
+  var firstDone = num(sess.firstDone, 0), firstTotal = num(sess.firstTotal, 0);
+  if (firstTotal && firstDone >= firstTotal) parts.push("新学完成 ✅");
+  else if (firstTotal) parts.push("新学 " + firstDone + "/" + firstTotal);
+  if (replayN) parts.push("回放 " + replayN);
+  if (revisitN) parts.push("回看 " + revisitN);
+  if (relearnN) parts.push("巩固 " + relearnN);
+  parts.push("还剩 " + remaining + " 题");
+  return parts.join(" · ");
 }
 
 function setWordSize(word) {
@@ -2165,9 +2356,7 @@ function nextQuestion() {
   $("#gword").style.opacity = "1";
 
   var remaining = sess.queue.length + sess.pending.length + (sess.cur ? 1 : 0);
-  var relearnCount = Object.keys(sess.relearn || {}).length;
-  $("#gstat").textContent = "首次 " + sess.firstDone + "/" + sess.firstTotal +
-    (relearnCount ? " · 巩固 " + relearnCount : "") + " · 预计还剩 " + remaining + " 题";
+  $("#gstat").textContent = statLine(sess, remaining);
 
   G.answered = false;
   G.revealing = false;
@@ -2321,7 +2510,15 @@ function renderReveal(out) {
   if (out.graduated) html += '<span class="badge fast">已掌握 🎉</span>';
   html += "</div>";
   html += '<div class="mean">' + esc(w.m || "（无释义）") + "</div>";
-  if (w.e) html += '<div class="ex">' + esc(w.e) + "</div>";
+  if (w.e) {
+    if (w.e.length > 90) {
+      html += '<div class="ex exfold" id="ex-short">' + esc(w.e.slice(0, 90)) + '… ' +
+        '<button class="linkbtn" data-exmore="1">展开例句</button></div>';
+      html += '<div class="ex" id="ex-full" style="display:none">' + esc(w.e) + "</div>";
+    } else {
+      html += '<div class="ex">' + esc(w.e) + "</div>";
+    }
+  }
   if (out.due) {
     var dd = out.due === today() ? "今天" : out.due;
     html += '<div class="tiny muted" style="margin-top:10px">下次复习：' + esc(dd) + "</div>";
@@ -2608,6 +2805,16 @@ function renderResult() {
       '本轮认识的词先按「明天再确认」处理，确认没问题才算真的会了。</div></div>';
   }
 
+  var missN = sess.results.filter(function (r) {
+    return r && (r.mode === "first" || r.mode === "review") && (r.kind === "no" || r.kind === "fuzzy" || r.kind === "timeout");
+  }).length;
+  html += '<div class="card" style="margin-top:12px"><h2>接着做点什么</h2>' +
+    '<div class="tiny muted" style="margin-bottom:10px">本轮判错/模糊的有 ' + missN + ' 个。加练不影响记录和排期，只当场再练一遍。</div>' +
+    '<div class="grid2">' +
+    (missN ? '<button class="btn primary" data-act="drillmiss">刷这一轮的 ' + missN + ' 个</button>' : '') +
+    '<button class="btn' + (missN ? '' : ' primary') + '" data-act="drill20">随机加练 20 个</button>' +
+    '</div></div>';
+
   html += '<div class="grid2" style="margin-top:14px">' +
     '<button class="btn primary" data-act="again">再来一轮</button>' +
     '<button class="btn" data-act="weak">只刷生词</button></div>' +
@@ -2630,7 +2837,8 @@ function histogram(list, T) {
 }
 
 /* ---------------- 界面：生词本 ---------------- */
-var bookFoldOpen = {};   // 生词本按等级折叠
+var bookFoldOpen = {};   // 生词本折叠状态
+var bookletGroupMode = "level";  // 生词本分组：level | unit
 function renderBook() {
   var deck = S.decks[0];
   if (!deck) { show("home"); return; }
@@ -2643,15 +2851,28 @@ function renderBook() {
     list.push({ w: ws[i], r: r, k: k });
   }
   list.sort(function (a, b) { return masteryOf(a.r) - masteryOf(b.r); });
-  var groups = { L0: [], L1: [], L2: [] }, order = ["L0", "L1", "L2"];
-  for (var j = 0; j < list.length; j++) {
-    var L2 = clamp(num(list[j].r.L, 0), 0, 2);
-    if (!groups["L" + L2]) groups["L" + L2] = [];
-    groups["L" + L2].push(list[j]);
+  var groups = {}, order = [];
+  if (bookletGroupMode === "unit") {
+    for (var u = 0; u < list.length; u++) {
+      var gk0 = list[u].w.g || "未分组";
+      if (!groups[gk0]) { groups[gk0] = []; order.push(gk0); }
+      groups[gk0].push(list[u]);
+    }
+  } else {
+    order = ["L0", "L1", "L2"];
+    for (var j = 0; j < list.length; j++) {
+      var L2 = clamp(num(list[j].r.L, 0), 0, 2);
+      if (!groups["L" + L2]) groups["L" + L2] = [];
+      groups["L" + L2].push(list[j]);
+    }
   }
   var html = '<div class="card"><div class="spread"><div class="strong">生词库 · ' + list.length + ' 个</div>' +
     '<button class="btn small primary" id="btn-book-drill">只刷这些</button></div>' +
-    '<div class="tiny muted" style="margin-top:4px">L0–L2 自动收录；手动加入的词会一直留着，直到你移出</div></div>';
+    '<div class="tiny muted" style="margin-top:4px">L0–L2 自动收录；手动加入的词会一直留着，直到你移出</div>' +
+    '<div class="filters" style="margin-top:10px">' +
+    '<button class="chip' + (bookletGroupMode !== "unit" ? " on" : "") + '" data-bookgm="level">按等级</button>' +
+    '<button class="chip' + (bookletGroupMode === "unit" ? " on" : "") + '" data-bookgm="unit">按 Unit</button>' +
+    '</div></div>';
   if (!list.length) {
     html += '<div class="empty">还没有生词。判过「不认识」的词会出现在这里。</div>';
   } else {
@@ -2659,8 +2880,10 @@ function renderBook() {
       var arr = groups[gk];
       if (!arr || !arr.length) return "";
       var open = bookFoldOpen[gk] !== false;
-      var head = '<div class="bgrouphead" data-gk="' + esc(gk) + '"><span>' + gk + " " + (LV_NAME[gk.slice(1)] || "") + '</span>' +
-        '<span class="cov">' + arr.length + ' 个 ' + (open ? "▾" : "▸") + '</span></div>';
+      var label = bookletGroupMode === "unit" ? gk : (gk + " " + (LV_NAME[gk.slice(1)] || ""));
+      var head = '<div class="bgrouphead" data-gk="' + esc(gk) + '"><span>' + esc(label) + '</span>' +
+        '<span class="cov">' + arr.length + ' 个 ' + (open ? "▾" : "▸") +
+        ' <button class="linkbtn" data-brush="' + esc(gk) + '">刷这组</button></span></div>';
       if (!open) return '<div class="card bgroup" style="margin-top:10px">' + head + '</div>';
       return '<div class="card bgroup" style="margin-top:10px">' + head + arr.map(function (x) {
         var r = x.r, w = x.w;
@@ -2759,6 +2982,16 @@ function bind() {
     goTab(b.getAttribute("data-tab"));
   });
   on("#btn-go-stats", "click", function () { goTab("stats"); });
+  on("#stats-body", "click", function (ev) {
+    var b = ev.target.closest && ev.target.closest("#btn-stats-go");
+    if (!b) return;
+    var deck = S.decks[0];
+    var plan = planRound(deck ? deck.id : null);
+    if (plan.total + plan.backlog > 0) {
+      if (S.session && !S.session.finished) { resumeSession(); return; }
+      startSession(deck.id, "normal");
+    } else { goTab("home"); }
+  });
   on("#btn-lib-book", "click", function () { renderBook(); show("book"); });
   on("#btn-me-settings", "click", function () { renderSetup(S.decks[0].id); show("setup"); });
   on("#me-body", "click", function (ev) {
@@ -2792,6 +3025,17 @@ function bind() {
 
   on("#reveal-box", "click", function (ev) {
     var t = ev.target;
+    var fm = (t && t.closest) ? t.closest("[data-exmore]") : null;
+    if (fm) {
+      ev.stopPropagation();
+      var s1 = $("#ex-short"), f1 = $("#ex-full");
+      if (s1 && f1) {
+        var opened = f1.style.display !== "none";
+        f1.style.display = opened ? "none" : "";
+        s1.style.display = opened ? "" : "none";
+      }
+      return;
+    }
     var f = (t && t.closest) ? t.closest(".fix") : null;
     if (f) {
       ev.stopPropagation();
@@ -2944,18 +3188,30 @@ function bind() {
       try {
         var o = JSON.parse(fr.result);
         if (!o || !Array.isArray(o.decks)) throw new Error("格式不对");
-        if (!window.confirm("导入会用备份完全替换当前全部数据，确定吗？")) return;
-        var st = freshState();
-        st.settings = o.settings || defaultSettings();
-        var d = defaultSettings(); for (var k in d) if (!(k in st.settings)) st.settings[k] = d[k];
-        st.decks = o.decks;
-        st.records = o.records || {};
-        st.daily = o.daily || {};
-        if (!st.decks.some(function (x) { return x.builtin; }) && window.WORD_DATA) {
-          st.decks.unshift({ id: window.WORD_DATA.id, name: window.WORD_DATA.name, builtin: true, words: [], createdAt: Date.now() });
+        // 三选一：合并（推荐）/ 覆盖 / 取消
+        var pre = previewMerge(o);
+        var doMerge = window.confirm(
+          "检测到备份：" + pre.total + " 条单词记录（新增 " + pre.added + " · 更新 " + pre.updated + "）\n\n" +
+          "点「确定」＝ 合并到本机（推荐，两边进度都保留，同词取更熟的一条）\n" +
+          "点「取消」＝ 再选是否用备份整个覆盖");
+        if (!doMerge) {
+          if (!window.confirm("要用备份「完全覆盖」本机数据吗？\n\n覆盖后本机的学习进度会消失，只剩备份里的。")) return;
+          var st = freshState();
+          st.settings = o.settings || defaultSettings();
+          var d = defaultSettings(); for (var k in d) if (!(k in st.settings)) st.settings[k] = d[k];
+          st.decks = o.decks;
+          st.records = o.records || {};
+          st.daily = o.daily || {};
+          if (!st.decks.some(function (x) { return x.builtin; }) && window.WORD_DATA) {
+            st.decks.unshift({ id: window.WORD_DATA.id, name: window.WORD_DATA.name, builtin: true, words: [], createdAt: Date.now() });
+          }
+          S = st; mapCache = {}; saveNow(); renderHome(); show("home");
+          toast("已用备份覆盖（" + pre.total + " 条记录）");
+          return;
         }
-        S = st; mapCache = {}; saveNow(); renderHome(); show("home");
-        toast("导入完成");
+        applyMerge(o);
+        saveNow(); renderHome(); show("home");
+        toast("合并完成：新增 " + pre.added + " · 更新 " + pre.updated);
       } catch (e) { toast("导入失败：" + e.message); }
     };
     fr.readAsText(f);
@@ -3061,9 +3317,27 @@ function bind() {
       saveNow(); return;
     }
     if (t.id === "set-count-num") {
-      S.settings.countValue = clamp(Math.round(Number(t.value) || 20), 1, 99999);
+      var cvTmp = Math.round(Number(t.value));
+      if (!isFinite(cvTmp) || cvTmp < 5) {          // 少于 5 题没意义，也防误触成 1
+        t.value = S.settings.countValue === "all" ? "" : S.settings.countValue;
+        toast("每组题数至少 5 题");
+        return;
+      }
+      S.settings.countValue = clamp(cvTmp, 5, 99999);
       saveNow(); return;
     }
+  });
+  // 首页提示条里的内联动作
+  on("#home-tip", "click", function (ev) {
+    var b = ev.target.closest && ev.target.closest("[data-home-act]");
+    if (!b) return;
+    var act = b.getAttribute("data-home-act");
+    if (act === "addnew") {
+      S.settings.newPerDay = clamp(num(S.settings.newPerDay, 20) + 20, 5, 300);
+      saveNow(); renderHome();
+      toast("每天新学额度 +20（现在 " + S.settings.newPerDay + " 个）");
+    } else if (act === "export") { doExport(false); }
+    else if (act === "slim") { doExport(true); }
   });
   $("#result-body").addEventListener("click", function (ev) {
     var a = ev.target.closest("[data-act]");
@@ -3072,6 +3346,18 @@ function bind() {
     var deckId = S.session ? S.session.deckId : (S.decks[0] && S.decks[0].id);
     if (act === "again") { S.session = null; startSession(deckId, "normal"); }
     else if (act === "weak") { S.session = null; startSession(deckId, "weak"); }
+    else if (act === "drillmiss") {
+      var ks = {};
+      (S.session && S.session.results || []).forEach(function (r) {
+        if (r && (r.mode === "first" || r.mode === "review") && (r.kind === "no" || r.kind === "fuzzy" || r.kind === "timeout")) ks[r.k] = 1;
+      });
+      var keyList = Object.keys(ks).slice(0, 100);
+      if (!keyList.length) { toast("这一轮没有判错的词"); return; }
+      S.session = null; startSession(deckId, "drill", keyList);
+    }
+    else if (act === "drill20") {
+      S.session = null; startSession(deckId, "drill");
+    }
     else if (act === "home") { S.session = null; saveNow(); renderHome(); show("home"); }
   });
   on("#q-rev-m", "click", function () { quickAdjust("review", -20); });
@@ -3152,6 +3438,28 @@ function bind() {
   });
   $("#book-body").addEventListener("click", function (ev) {
     if (ev.target.id === "btn-book-drill") { startSession(S.decks[0].id, "weak"); return; }
+    var gm = ev.target.closest && ev.target.closest("[data-bookgm]");
+    if (gm) {
+      bookletGroupMode = gm.getAttribute("data-bookgm") === "unit" ? "unit" : "level";
+      bookFoldOpen = {};
+      renderBook(); return;
+    }
+    var br = ev.target.closest && ev.target.closest("[data-brush]");
+    if (br) {
+      // 只刷这一组（不影响记录和排期）
+      var gkv = br.getAttribute("data-brush");
+      var deck0 = S.decks[0], ws0 = wordsOf(deck0.id), recs0 = S.records[deck0.id] || {}, keys0 = [];
+      for (var i0 = 0; i0 < ws0.length && keys0.length < 200; i0++) {
+        var k0 = normKey(ws0[i0].w), r0 = recs0[k0];
+        if (!r0 || r0.graduated) continue;
+        if (!(r0.weak || num(r0.L, 0) <= 2)) continue;
+        var inGroup = (bookletGroupMode === "unit") ? ((ws0[i0].g || "未分组") === gkv) : ("L" + clamp(num(r0.L, 0), 0, 2) === gkv);
+        if (inGroup) keys0.push(k0);
+      }
+      if (!keys0.length) { toast("这一组没有词"); return; }
+      startSession(deck0.id, "drill", keys0);
+      return;
+    }
     var bh = ev.target.closest && ev.target.closest(".bgrouphead[data-gk]");
     if (bh) {
       var bgk = bh.getAttribute("data-gk");
