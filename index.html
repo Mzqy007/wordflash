@@ -434,14 +434,7 @@ body.wide.in-game .hint{display:none}
 .modrow .ql{flex:1;min-width:160px}
 .modrow .filters{margin:0}
 
-/* ---------- 横屏：侧边标签栏 ---------- */
-@media (orientation: landscape) and (max-height: 560px){
-  body.has-tabs #app{padding-bottom:0;padding-left:78px}
-  .tabs{left:0;right:auto;top:0;bottom:0;width:78px;border-top:none;border-right:1px solid #eceef1;
-        flex-direction:column;justify-content:center;gap:6px}
-  .tabs.on{display:flex}
-  .tab{flex-direction:column;gap:2px;font-size:11.5px;padding:8px 0}
-}
+/* ---------- 横屏：标签栏保持在底部（手机单手更顺） ---------- */
 
 /* ---------- 宽屏：双列 ---------- */
 @media (min-width: 900px){
@@ -451,6 +444,44 @@ body.wide.in-game .hint{display:none}
   body.wide #me-body{column-count:2;column-gap:14px}
   body.wide #me-body > .card{break-inside:avoid;margin-top:0;margin-bottom:14px}
   body.wide #scr-home{max-width:900px;margin:0 auto}
+}
+
+/* ---------- 沙盒测试：计时条 / 主观题 / 判分反馈 ---------- */
+#test-bar-slot{width:100%;display:flex;justify-content:center}
+.tbar{width:100%;margin:14px auto 6px;height:6px;border-radius:6px;background:#eceef1;overflow:hidden;max-width:520px}
+.tbar > i.run{display:block;height:100%;background:#2f6bff;animation-name:tcount;animation-timing-function:linear;animation-fill-mode:forwards}
+@keyframes tcount{from{width:100%}to{width:0%}}
+.tsub{display:flex;flex-direction:column;align-items:center;gap:6px;padding-top:18px}
+.tsub .tword{font-size:44px}
+.tsubbtns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;max-width:520px;margin-top:16px}
+.tsubbtns .btn{min-height:54px;font-size:16.5px;font-weight:800}
+.testfb{margin:16px auto 0;max-width:520px;border-radius:12px;padding:12px 14px;text-align:center}
+.testfb.ok{background:#eefaf1;color:#1d7a3e}
+.testfb.bad{background:#fdf0f0;color:#b3261e}
+.testfb .tf1{font-weight:800;font-size:16px;margin-bottom:4px}
+@media (max-width:420px){ .tsub .tword{font-size:34px} .tsubbtns .btn{min-height:50px;font-size:15.5px} }
+
+/* ---------- 测试屏：手机竖屏单列，宽版/横屏左右两栏 ---------- */
+.tqwrap{display:flex;flex-direction:column}
+.tqcol,.tocol{min-width:0}
+.tqcol{display:flex;flex-direction:column;align-items:center}
+body.wide #scr-test .tqwrap{flex-direction:row;align-items:center;gap:26px;padding-top:6px}
+body.wide #scr-test .tqcol{flex:1 1 50%}
+body.wide #scr-test .tocol{flex:1 1 50%}
+body.wide #scr-test .topt{grid-template-columns:1fr;gap:10px}
+body.wide #scr-test .opt{min-height:56px;font-size:17px}
+body.wide #scr-test .tsubbtns{grid-template-columns:1fr;gap:10px}
+body.wide #scr-test .tsubbtns .btn{min-height:64px;font-size:18px}
+body.wide #scr-test .tword{font-size:min(11vh,7vw)}
+
+/* ---------- 横屏测试屏：压紧高度，保证 4 个选项一屏放下 ---------- */
+@media (orientation: landscape) and (max-height: 560px){
+  body.wide #scr-test .thint{display:none}
+  body.wide #scr-test .tqwrap{padding-top:0}
+  body.wide #scr-test .tbar{margin:10px auto 0}
+  body.wide #scr-test .opt{min-height:46px;font-size:15.5px;padding:10px 14px}
+  body.wide #scr-test .topt{gap:8px}
+  body.wide #scr-test .tsub .tword{font-size:min(13vh,7vw)}
 }
 
 </style>
@@ -701,13 +732,15 @@ body.wide.in-game .hint{display:none}
     <div class="filters" id="test-qt">
       <button class="chip on" data-qt="meaning">选义（英→中）</button>
       <button class="chip" data-qt="word">选词（中→英）</button>
+      <button class="chip" data-qt="learn">背记（自评）</button>
+      <button class="chip" data-qt="flash">闪过（限时）</button>
     </div>
     <div class="sect2">题数</div>
     <div class="filters" id="test-n">
       <button class="chip" data-n="10">10</button>
       <button class="chip on" data-n="20">20</button>
       <button class="chip" data-n="50">50</button>
-      <button class="chip" data-n="all">全部（最多 200）</button>
+      <button class="chip" data-n="all">全部（随机 200）</button>
     </div>
     <button class="btn primary block" id="btn-test-start" style="margin-top:16px">开始</button>
   </div>
@@ -862,6 +895,7 @@ function defaultSettings() {
     // 顽固词：累计错误到这个次数就打标（只在统计/生词本里提示，不影响调度）
     leechAt: 8,
   dayCutoff: 4,
+  testLimitMs: 3000,
     // 最大间隔上限（天）：防止 ebb×倍率 把复习推到几年以后
     maxInterval: 365
   };
@@ -2340,6 +2374,7 @@ function renderSetup(deckId) {
     '<label class="advcell"><span class="tiny muted">毕业条件（阶段 ≥）</span><input type="number" id="adv-gradStage" value="' + num(st.gradStage, 3) + '"></label>' +
     '<label class="advcell"><span class="tiny muted">一天从几点开始（0–6 点）</span><input type="number" id="adv-dayCutoff" value="' + num(st.dayCutoff, 4) + '"></label>' +
       '<label class="advcell"><span class="tiny muted">最大间隔（天）</span><input type="number" id="adv-maxInterval" value="' + num(st.maxInterval, 365) + '"></label>' +
+      '<label class="advcell"><span class="tiny muted">测试每题时限（秒）</span><input type="number" id="adv-testLimit" step="0.5" value="' + (num(st.testLimitMs, 3000) / 1000) + '"></label>' +
     '</div><div class="grid2" style="margin-top:8px">' +
     '<label class="advcell"><span class="tiny muted">顽固词阈值（累计错误次数）</span><input type="number" id="adv-leechAt" value="' + num(st.leechAt, 8) + '"></label>' +
     '</div></div>';
@@ -3226,8 +3261,22 @@ function bind() {
   on("#test-body", "click", function (ev) {
     var t = ev.target;
     if (!t || !t.closest) return;
+    if (t.closest("#btn-test-show")) {
+      var it = T && T.items[T.idx];
+      if (!it || T.reveal) return;
+      T.reveal = true;
+      var mn = $("#test-mean"); if (mn) mn.style.display = "";
+      var sb = $("#test-subbtns"); if (sb) sb.style.display = "";
+      var slot = $("#test-bar-slot");
+      if (slot) slot.innerHTML = '<div class="tbar"><i class="run" style="animation-duration:' + testLimit() + 'ms"></i></div>';
+      var shb = $("#btn-test-show"); if (shb) shb.style.display = "none";
+      startTestTimer(it);
+      return;
+    }
+    var sk = t.closest(".tsubbtns .btn[data-tk]");
+    if (sk) { answerTestSub(sk.getAttribute("data-tk")); return; }
     var o = t.closest(".opt[data-oi]");
-    if (o) { answerTest(num(o.getAttribute("data-oi"), 0)); return; }
+    if (o) { answerTestObj(num(o.getAttribute("data-oi"), 0)); return; }
     if (t.closest("#btn-test-again")) { T = null; openTestSheet(); return; }
     if (t.closest("#btn-test-home")) { T = null; navStack.length = 0; renderHome(); show("home", { noPush: true }); return; }
     var row = t.closest(".listrow[data-key], .bookrow[data-key]");
@@ -3547,6 +3596,7 @@ function bind() {
       else if (t.id === "adv-slowRevisitGap") { S.settings.slowRevisitGap = clamp(Math.round(sv), 1, 60); }
       else if (t.id === "adv-dayCutoff") { S.settings.dayCutoff = clamp(Math.round(sv), 0, 6); }
     else if (t.id === "adv-maxInterval") { S.settings.maxInterval = clamp(Math.round(sv), 1, 36500); }
+    else if (t.id === "adv-testLimit") { S.settings.testLimitMs = clamp(Math.round(sv * 1000), 1000, 15000); }
       else if (t.id === "adv-leechAt") { S.settings.leechAt = clamp(Math.round(sv), 1, 99); }
       saveNow(); return;
     }
@@ -4007,6 +4057,42 @@ function renderTestSheet() {
   });
 }
 
+
+/* 词性 / 选干扰项：同词性 → 长度接近 → 逐级放宽 */
+function posOfWord(m) {
+  var t = String(m || "").trim();
+  var mm = t.match(/^((?:n|v|vt|vi|adj|adv|prep|conj|pron|num|art|aux|int|abbr|phr)\.)/i);
+  return mm ? mm[1].toLowerCase() : "";
+}
+function pickDistractors(word, qt, universe, need) {
+  var pos = posOfWord(word.m) || "", len = String(word.w).length;
+  var tiers = [
+    function (c) { return posOfWord(c.m) === pos && Math.abs(String(c.w).length - len) <= 3; },
+    function (c) { return posOfWord(c.m) === pos; },
+    function (c) { return true; }
+  ];
+  var out = [], used = {};
+  used[(qt === "meaning") ? word.m : word.w] = 1;
+  for (var ti = 0; ti < tiers.length && out.length < need; ti++) {
+    var pool = [];
+    for (var i = 0; i < universe.length; i++) {
+      var c = universe[i];
+      if (!c || c === word) continue;
+      var text = (qt === "meaning") ? c.m : c.w;
+      if (!text || used[text]) continue;
+      if (!tiers[ti](c)) continue;
+      pool.push(text);
+    }
+    pool = shuffle(pool);
+    for (var j = 0; j < pool.length && out.length < need; j++) {
+      if (used[pool[j]]) continue;
+      used[pool[j]] = 1;
+      out.push({ t: pool[j], ok: false });
+    }
+  }
+  return out;
+}
+
 function startTest() {
   var deck = S.decks[0];
   if (!deck) return;
@@ -4020,21 +4106,18 @@ function startTest() {
   for (var i = 0; i < cnt; i++) {
     var it = pool[i];
     var qt = testCfg.qts.length ? testCfg.qts[Math.floor(Math.random() * testCfg.qts.length)] : "meaning";
-    var correct = (qt === "meaning") ? it.w.m : it.w.w;
-    var opts = [{ t: correct, ok: true }], used = {};
-    used[correct] = 1;
-    var guard = 0;
-    while (opts.length < 4 && guard++ < 400) {
-      var cand = universe[Math.floor(Math.random() * universe.length)];
-      if (!cand) break;
-      var text = (qt === "meaning") ? cand.m : cand.w;
-      if (!text || used[text]) continue;
-      used[text] = 1;
-      opts.push({ t: text, ok: false });
+    var item = { k: it.k, w: it.w, qt: qt, opts: null, chosen: null, sub: null, timedOut: false, ms: 0, qStart: 0 };
+    if (qt === "meaning" || qt === "word") {
+      var correct = (qt === "meaning") ? it.w.m : it.w.w;
+      item.opts = shuffle([{ t: correct, ok: true }].concat(pickDistractors(it.w, qt, universe, 3)));
     }
-    items.push({ k: it.k, w: it.w, qt: qt, opts: shuffle(opts), chosen: null });
+    items.push(item);
   }
-  T = { items: items, idx: 0, answers: 0, right: 0, startedAt: Date.now(), finished: false, cfg: { src: testCfg.src, qts: testCfg.qts.slice(), count: testCfg.count } };
+  T = {
+    items: items, idx: 0, answers: 0, right: 0, startedAt: Date.now(), finished: false,
+    cfg: { src: testCfg.src, qts: testCfg.qts.slice(), count: testCfg.count },
+    timerId: 0, reveal: false
+  };
   var qb = $("#btn-test-quit");
   if (qb) qb.style.display = "";
   closeTestSheet();
@@ -4042,43 +4125,130 @@ function startTest() {
   show("test", { noPush: false });
 }
 
-function renderTestQ() {
-  var body = $("#test-body");
-  if (!T || !body) return;
-  if (T.idx >= T.items.length) { finishTest(); return; }
-  var it = T.items[T.idx];
-  var qtName = (it.qt === "meaning") ? "选义" : "选词";
-  $("#test-title").textContent = "测试 · " + qtName + " " + (T.idx + 1) + "/" + T.items.length;
-  var pct = Math.round(T.idx / T.items.length * 100);
-  var html = '<div class="tprog"><i style="width:' + pct + '%"></i></div>';
-  if (it.qt === "meaning") {
-    html += '<div class="tword">' + esc(it.w.w) + '</div><div class="tphon">' + esc(it.w.p || "") + '</div>';
-  } else {
-    html += '<div class="tmean">' + esc(it.w.m) + '</div>';
-  }
-  html += '<div class="topt" id="test-opts">' + it.opts.map(function (o, i) {
-    return '<button class="opt" data-oi="' + i + '">' + esc(o.t) + '</button>';
-  }).join("") + '</div>';
-  html += '<div class="tiny muted" style="margin-top:14px;text-align:center">选一个，自动下一题</div>';
-  body.innerHTML = html;
+function testLimit() { return clamp(num(S.settings.testLimitMs, 3000), 1000, 15000); }
+function qtName(qt) { return qt === "meaning" ? "选义" : qt === "word" ? "选词" : qt === "learn" ? "背记" : "闪过"; }
+function clearTestTimer() { if (T && T.timerId) { clearTimeout(T.timerId); T.timerId = 0; } }
+function startTestTimer(it) {
+  clearTestTimer();
+  var ms = testLimit();
+  it.qStart = Date.now();
+  T.timerId = setTimeout(function () {
+    if (!T || T.finished) return;
+    var cur = T.items[T.idx];
+    if (!cur || cur !== it) return;
+    if (cur.chosen !== null || cur.sub !== null) return;
+    testTimeUp(cur);
+  }, ms);
 }
-
-function answerTest(oi) {
+function testFeedbackHtml(it) {
+  var ok = (it.opts ? (it.chosen >= 0 && it.opts[it.chosen] && it.opts[it.chosen].ok) : it.sub === "known");
+  var right = it.opts ? (function () {
+    for (var i = 0; i < it.opts.length; i++) if (it.opts[i].ok) return it.opts[i].t;
+    return "";
+  })() : it.w.m;
+  var mine = it.timedOut ? "超时没答" : (it.opts ? (it.chosen >= 0 && it.opts[it.chosen] ? it.opts[it.chosen].t : "") : (it.sub === "fuzzy" ? "模糊" : "不认识"));
+  return '<div class="testfb ' + (ok ? "ok" : "bad") + '">' +
+    '<div class="tf1">' + (it.timedOut ? "⏱ 超时" : (ok ? "✓ 答对" : "✗ 答错")) + '</div>' +
+    '<div class="tiny muted">正确答案：' + esc(right) + '</div>' +
+    (ok ? "" : '<div class="tiny muted" style="margin-top:2px">你的判断：' + esc(mine) + '</div>') +
+    '</div>';
+}
+function testNext(it) {
+  var body = $("#test-body");
+  if (body) body.innerHTML = body.innerHTML + testFeedbackHtml(it);
+  setTimeout(function () {
+    if (!T) return;
+    T.idx++;
+    renderTestQ();
+  }, 800);
+}
+function testTimeUp(it) {
+  clearTestTimer();
+  it.timedOut = true;
+  it.ms = Date.now() - (it.qStart || Date.now());
+  if (it.opts) it.chosen = -2; else it.sub = "timeout";
+  T.answers++;
+  if (it.opts) {
+    $$("#test-opts .opt").forEach(function (b, i) { if (it.opts[i].ok) b.classList.add("ok"); b.disabled = true; });
+  }
+  $$("#test-subbtns .btn").forEach(function (b) { b.disabled = true; });
+  var sh = $("#btn-test-show"); if (sh) sh.style.display = "none";
+  testNext(it);
+}
+function answerTestObj(oi) {
   if (!T || T.finished) return;
   var it = T.items[T.idx];
-  if (!it || it.chosen !== null) return;
+  if (!it || !it.opts || it.chosen !== null) return;
+  clearTestTimer();
   it.chosen = oi;
+  it.ms = Date.now() - (it.qStart || Date.now());
   T.answers++;
   if (it.opts[oi] && it.opts[oi].ok) T.right++;
   $$("#test-opts .opt").forEach(function (b, i) {
     if (it.opts[i].ok) b.classList.add("ok");
     else if (i === oi) b.classList.add("bad");
+    b.disabled = true;
   });
-  setTimeout(function () {
-    if (!T) return;
-    T.idx++;
-    renderTestQ();
-  }, 700);
+  testNext(it);
+}
+function answerTestSub(kind) {
+  if (!T || T.finished) return;
+  var it = T.items[T.idx];
+  if (!it || it.opts || it.sub !== null) return;
+  clearTestTimer();
+  it.sub = kind;
+  it.ms = Date.now() - (it.qStart || Date.now());
+  T.answers++;
+  if (kind === "known") T.right++;
+  $$("#test-subbtns .btn").forEach(function (b) {
+    var k = b.getAttribute("data-tk");
+    if (k === kind) b.classList.add(kind === "known" ? "ok" : "bad");
+    b.disabled = true;
+  });
+  testNext(it);
+}
+function renderTestQ() {
+  var body = $("#test-body");
+  if (!T || !body) return;
+  if (T.idx >= T.items.length) { finishTest(); return; }
+  var it = T.items[T.idx];
+  T.reveal = false;
+  $("#test-title").textContent = "测试 · " + qtName(it.qt) + " " + (T.idx + 1) + "/" + T.items.length;
+  var pct = Math.round(T.idx / T.items.length * 100);
+  var left = "", right = "";
+  var bar = '<div class="tbar" id="test-bar"><i class="run" style="animation-duration:' + testLimit() + 'ms"></i></div>';
+  if (it.opts) {
+    left = (it.qt === "meaning")
+      ? '<div class="tword">' + esc(it.w.w) + '</div><div class="tphon">' + esc(it.w.p || "") + '</div>'
+      : '<div class="tmean">' + esc(it.w.m) + '</div>';
+    left += bar;
+    right = '<div class="topt" id="test-opts">' + it.opts.map(function (o, i) {
+      return '<button class="opt" data-oi="' + i + '">' + esc(o.t) + '</button>';
+    }).join("") + '</div>';
+  } else {
+    left = '<div class="tword">' + esc(it.w.w) + '</div><div class="tphon">' + esc(it.w.p || "") + '</div>';
+    if (it.qt === "learn") {
+      left += '<button class="btn primary" id="btn-test-show">显示释义</button>';
+      left += '<div class="tmean" id="test-mean" style="display:none">' + esc(it.w.m) + '</div>';
+      left += '<div id="test-bar-slot"></div>';
+      right = '<div class="tsubbtns" id="test-subbtns" style="display:none">' +
+        '<button class="btn primary" data-tk="known">认识</button>' +
+        '<button class="btn" data-tk="fuzzy">模糊</button>' +
+        '<button class="btn" data-tk="no">不认识</button></div>';
+    } else {
+      left += bar;
+      right = '<div class="tsubbtns" id="test-subbtns">' +
+        '<button class="btn primary" data-tk="known">认识</button>' +
+        '<button class="btn" data-tk="fuzzy">模糊</button>' +
+        '<button class="btn" data-tk="no">不认识</button></div>';
+    }
+  }
+  var hint = it.opts ? "选一个，自动下一题 · 超时算错"
+    : (it.qt === "learn" ? "先自己回想，点开释义再自评（点开后才计时）" : "限时抢答，超时算错");
+  body.innerHTML = '<div class="tprog"><i style="width:' + pct + '%"></i></div>' +
+    '<div class="tqwrap"><div class="tqcol">' + left + '</div><div class="tocol">' + right + '</div></div>' +
+    '<div class="tiny muted thint" style="margin-top:14px;text-align:center">' + hint + '</div>';
+  if (it.opts || it.qt === "flash") startTestTimer(it);
 }
 
 function finishTest() {
@@ -4099,18 +4269,27 @@ function finishTest() {
     '<div class="tiny muted">不影响学习记录和复习安排</div>' +
     '<div style="font-size:34px;font-weight:800;margin-top:10px">' + right + ' / ' + total +
     '<span class="tiny muted" style="font-weight:500"> 正确率 ' + rate + '%</span></div>' +
-    '<div class="tiny muted" style="margin-top:6px">用时 ' + fmtDur(used) + '</div></div>';
-  var wrongs = T.items.filter(function (x) { return x.chosen !== null && !x.opts[x.chosen].ok; });
+    '<div class="tiny muted" style="margin-top:6px">用时 ' + fmtDur(used) + ' · 题型 ' + T.cfg.qts.map(function (q) { return qtName(q); }).join("/") + '</div></div>';
+  var wrongs = T.items.filter(function (x) {
+    if (x.opts) return (x.chosen === -2) || (x.chosen !== null && x.chosen >= 0 && !x.opts[x.chosen].ok);
+    return !!(x.sub && x.sub !== "known");
+  });
   if (wrongs.length) {
     html += '<div class="card" style="margin-top:12px"><h2 style="margin:0 0 8px">错题本（' + wrongs.length + '）</h2>' +
       wrongs.map(function (x) {
-        var mine = x.opts[x.chosen] ? x.opts[x.chosen].t : "";
-        var rightText = "";
-        for (var i = 0; i < x.opts.length; i++) if (x.opts[i].ok) rightText = x.opts[i].t;
+        var mine, rightText;
+        if (x.opts) {
+          mine = x.timedOut ? "超时没答" : (x.chosen >= 0 && x.opts[x.chosen] ? x.opts[x.chosen].t : "");
+          rightText = "";
+          for (var i = 0; i < x.opts.length; i++) if (x.opts[i].ok) rightText = x.opts[i].t;
+        } else {
+          mine = x.timedOut ? "超时没答" : (x.sub === "fuzzy" ? "模糊" : "不认识");
+          rightText = x.w.m;
+        }
         return '<div class="bookrow" data-key="' + esc(x.k) + '"><div class="top"><div class="w">' + esc(x.w.w) + '</div>' +
-          '<span class="badge no">错</span></div>' +
+          '<span class="badge no">' + (x.timedOut ? "超时" : "错") + '</span></div>' +
           '<div class="ex">正确：' + esc(rightText) + '</div>' +
-          '<div class="tiny muted" style="margin-top:2px">你选了：' + esc(mine) + '</div></div>';
+          '<div class="tiny muted" style="margin-top:2px">你的判断：' + esc(mine) + '</div></div>';
       }).join("") + '</div>';
   } else if (total) {
     html += '<div class="card" style="margin-top:12px"><div class="small">全对 🎉 这个范围基本稳了。</div></div>';
