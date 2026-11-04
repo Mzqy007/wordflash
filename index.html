@@ -88,12 +88,10 @@ textarea{width:100%;min-height:170px;border:1px solid #e3e6ea;border-radius:12px
 /* ---------- 游戏 ---------- */
 .game{min-height:calc(100vh - 90px);min-height:calc(100dvh - 90px);display:flex;flex-direction:column;
   -webkit-user-select:none;user-select:none;touch-action:manipulation}
-.gbar{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:#6b7280;padding:2px 2px 10px}
 .timer{height:5px;background:#e9ebef;border-radius:6px;overflow:hidden;margin-bottom:6px}
 .timer>i{display:block;height:100%;width:0;background:#34c06a;border-radius:6px;transition:background .2s}
 .timer>i.warn{background:#f2b200}
 .timer>i.danger{background:#ee4b3f}
-.qbox{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 0 8px;min-height:210px;text-align:center}
 .word{font-size:44px;font-weight:800;letter-spacing:-1px;word-break:break-word;line-height:1.15}
 .phon{color:#8a8f98;font-size:15px;margin-top:8px}
 .tag{display:inline-block;margin-top:14px;font-size:12px;padding:3px 10px;border-radius:999px;background:#eef0f3;color:#5b6169}
@@ -110,7 +108,6 @@ textarea{width:100%;min-height:170px;border:1px solid #e3e6ea;border-radius:12px
 .big.no{background:#fff;color:#4a5058;box-shadow:inset 0 0 0 1.5px #e6e8ec}
 .big:disabled{opacity:.4}
 .showans{width:100%;margin-top:8px;background:#2f6bff;color:#fff;font-weight:700;padding:14px}
-.gbar-r{display:flex;gap:6px;align-items:center}
 .shake{animation:shake .2s}
 @keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
 
@@ -195,39 +192,6 @@ details.adv[open]>summary:after{content:" ▴"}
 /* ================= 横屏两栏（仅手机横屏）================= */
 /* 竖屏/桌面：换边与锁定按钮不出现，两栏退化成纵向 */
 #btn-swap,#btn-lock{display:none}
-.gmain{display:flex;flex-direction:column;flex:1;min-height:0}
-.gcol{min-width:0}
-.gcol-word{flex:1;display:flex;flex-direction:column}
-.gcol-side{display:flex;flex-direction:column}
-
-body.wide{
-  #app{padding:8px calc(14px + env(safe-area-inset-right,0px)) calc(8px + env(safe-area-inset-bottom,0px)) calc(14px + env(safe-area-inset-left,0px));max-width:1000px}
-  #btn-swap,#btn-lock{display:inline-flex;align-items:center;justify-content:center}
-  #scr-game .game{height:calc(100dvh - 16px - env(safe-area-inset-bottom,0px));min-height:0;padding-bottom:0}
-  #scr-game .gbar{padding-bottom:4px}
-  #scr-game .timer{margin-bottom:4px}
-  #scr-game .gmain{flex:1;min-height:0;flex-direction:row;gap:18px;overflow:hidden}
-  #scr-game .gcol{flex:1 1 0;min-height:0;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
-  #scr-game .gcol-side{justify-content:flex-start;overflow-y:auto;-webkit-overflow-scrolling:touch}
-  #scr-game #reveal-box{margin:auto 0;width:100%}
-  #scr-game .qbox{flex:0 0 auto;min-height:0;padding:0}
-  #scr-game .word{font-size:min(12.5vh,8vw);line-height:1.06}
-  #scr-game .phon{font-size:13.5px;margin-top:5px}
-  #scr-game .tag{margin-top:9px}
-  #scr-game .btns{padding:6px 0 0}
-  #scr-game .big{padding:min(3.2vh,15px) 8px;font-size:16.5px;border-radius:15px}
-  #scr-game .hint{margin-top:3px;font-size:11px}
-  #scr-game .reveal{margin-top:0;animation:none}
-  #scr-game .reveal .mean{font-size:15px;line-height:1.45}
-  #scr-game .reveal .ex{font-size:12.5px;line-height:1.6;margin-top:6px}
-  #scr-game .verdictline{margin-bottom:6px}
-  #scr-game .fixrow{position:sticky;bottom:0;margin-top:8px;padding:8px 0;background:#f4f5f7}
-  #scr-game .fixhint{font-size:11px;padding-bottom:2px}
-  #scr-game .showans{margin:auto 0;padding:14px}
-}
-
-/* 换边：宽版两栏左右对调（必须写在 body.wide 之外，否则会被编译成 body.wide body.wide-swap 永不命中） */
-body.wide.wide-swap #scr-game .gmain{flex-direction:row-reverse}
 
 /* ============ 底部标签栏 ============ */
 .tabs{display:none;position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(255,255,255,.97);
@@ -337,21 +301,9 @@ body.wide .tabs{position:fixed}
 .selbox.on::after{content:"";position:absolute;left:6px;top:2px;width:5px;height:10px;border:2px solid #fff;border-top:0;border-left:0;transform:rotate(40deg)}
 
 /* ---- 横屏宽版收尾：栏目最大宽度、大屏字号、平板一栏 ---- */
-@media (orientation: landscape) and (max-height: 560px) {
-  .gmain{gap:22px;justify-content:center}
-  .gcol{max-width:560px}
-  #gword{word-break:keep-all;overflow-wrap:normal;max-width:100%}
-}
-body.wide.onecol #scr-game .gmain{flex-direction:column;gap:10px}
-body.wide.onecol .gcol{max-width:100%;margin:0;flex:0 0 auto}
-body.wide.onecol .gcol-side{overflow:visible}
-body.wide.onecol .qbox{padding:6px 0}
+
 body.wide.onecol #gword{font-size:min(11vh,9vw)}
-@media (min-width:1200px){
-  body.wide .gbar{font-size:14px}
-  body.wide #app{max-width:1200px}
-  body.wide .word{font-size:min(13vh,7vw)}
-}
+
 
 
 /* ---- 首页入口卡（加练 / 生词本） ---- */
@@ -384,9 +336,7 @@ body.wide.in-game{height:100dvh;overflow:hidden}
 
 /* 横屏答题：隐藏底部提示，右栏空时给一句引导 */
 body.wide.in-game .hint{display:none}
-@media (orientation:landscape) and (max-height:560px){
-  body.wide.in-game .gcol-side:empty::after{content:"点下面的按钮判定";color:#9aa0a8;font-size:13px;margin:auto}
-}
+
 
 /* 改判条：和判定按钮同一个底部位置 */
 #fixbar{display:flex;gap:8px;margin-top:10px}
@@ -483,21 +433,9 @@ body.wide #scr-test .tword{font-size:min(11vh,7vw)}
   body.wide #scr-test .topt{gap:8px}
   body.wide #scr-test .tsub .tword{font-size:min(13vh,7vw)}
 }
-
-/* ---------- 单手 / 双手 操作方式 ---------- */
-/* 单手·宽屏：判定键与改判条都进拇指那一列，竖排 */
-body.wide.ops-single .gcol-side{align-items:stretch;justify-content:center;overflow-y:auto}
 body.wide.ops-single #reveal-box{width:100%}
-body.wide.ops-single #gbtns{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px;width:100%}
-body.wide.ops-single #gbtns .big{width:100%;min-height:50px;font-size:16.5px;padding:10px 8px}
 body.wide.ops-single #fixbar{margin-top:8px;width:100%}
 body.wide.ops-single #fixbar .fix{min-height:44px}
-body.wide.ops-single #ghint{display:none}
-/* 左手：单词到右边，操作区在左 */
-body.wide.hand-left .gmain{flex-direction:row-reverse}
-/* 单手·竖屏：按钮收窄靠手侧 */
-body.ops-single:not(.wide) #gbtns{max-width:74%;margin-left:auto}
-body.ops-single:not(.wide).hand-left #gbtns{margin-left:0;margin-right:auto}
 /* 测试屏也跟随左右手 */
 body.hand-left .tqwrap{flex-direction:row-reverse}
 body.ops-single:not(.wide) .tocol{max-width:80%;margin-left:auto}
@@ -529,26 +467,14 @@ body.wide .hero .btn{justify-self:end}
 
 /* ================= A. 答题屏结构：操作区固定槽（翻面不跳） ================= */
 #game-wrap.game{display:flex;flex-direction:column;min-height:calc(100dvh - 24px)}
-#scr-game .gmain{flex:1 1 auto;min-height:0;overflow:hidden}
-#scr-game .gcol-side{min-height:0;overflow-y:auto}
 #scr-game #reveal-box{width:100%}
 .opslot{flex:0 0 auto;display:flex;align-items:stretch;width:100%;
   height:calc(var(--app-btn-height,64px) + var(--app-btn-margin,0px));
   padding-bottom:var(--app-btn-margin,0px);box-sizing:border-box}
 .opslot .btns{flex:1 1 auto}
-.opslot .fixbar{flex:1 1 auto;align-self:center}
 body.pos-bottom .opslot{align-self:center;width:100%}
 body.pos-bl .opslot{align-self:flex-start;width:min(78%,430px)}
 body.pos-br .opslot{align-self:flex-end;width:min(78%,430px)}
-
-/* 侧边位置：单词镜像到另一侧，操作区竖排 */
-body.pos-left #game-wrap.game .gmain{flex-direction:row-reverse}
-body.pos-right #game-wrap.game .gmain{flex-direction:row}
-body.pos-left .gcol-side,body.pos-right .gcol-side{justify-content:center}
-body.pos-left .opslot,body.pos-right .opslot{height:auto;align-items:stretch;padding-bottom:0}
-body.pos-left .btns,body.pos-right .btns{flex-direction:column;gap:10px}
-body.pos-left .btns .big,body.pos-right .btns .big{min-height:var(--app-btn-height,64px);font-size:17px}
-body.pos-left .fixbar,body.pos-right .fixbar{flex-direction:column}
 
 /* toast 移到顶部，绝不挡按钮 */
 .toast{top:14px;bottom:auto}
@@ -606,195 +532,43 @@ body.pos-left .fixbar,body.pos-right .fixbar{flex-direction:column}
 .brow.clickable:active,.card.clickable:active{opacity:.7}
 
 /* 横屏但未开「横屏模式」时：保持单列，但允许滚动，避免内容被裁掉 */
-@media (orientation: landscape) and (max-height: 560px){
-  body:not(.wide) #scr-game .gmain{overflow-y:auto;-webkit-overflow-scrolling:touch}
-  body:not(.wide) #scr-game .game{height:auto;min-height:calc(100dvh - 16px)}
-}
+
 
 /* ================= 四组手型：单手（左/右）+ 双手（底部） ================= */
 .layrow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f0f1f4;flex-wrap:wrap}
 .layrow .layname{flex:0 0 96px;font-size:14px;color:#3d434b;font-weight:600}
 .layrow .chips{gap:6px}
-/* —— 竖屏：单手时按钮/选项整块靠左或靠右，双手铺满 —— */
-body.pos-left #scr-game .opslot{width:100%;padding-right:22%}
-body.pos-right #scr-game .opslot{width:100%;padding-left:22%}
-body.pos-left #scr-game .btns,body.pos-right #scr-game .btns{flex-direction:row}
 body.pos-bottom #scr-game .opslot{width:100%;padding:0}
 /* —— 横屏单手：三栏（按钮条 | 答案 | 单词） —— */
-@media (orientation: landscape){
-  body.pos-left #game-wrap.game .gmain,body.pos-right #game-wrap.game .gmain{flex-direction:row}
-  body.pos-right #game-wrap.game .gmain{flex-direction:row-reverse}
-  body.pos-left .opslot,body.pos-right .opslot{flex:0 0 104px;width:104px;height:100%;
-    display:flex;flex-direction:column;padding:8px 6px;gap:6px;background:#f4f5f7}
-  body.pos-left .opslot .btns,body.pos-right .opslot .btns{flex:1;flex-direction:column;gap:8px}
-  body.pos-left .opslot .big,body.pos-right .opslot .big{flex:1;min-height:0;font-size:15px;border-radius:10px}
-  body.pos-left .opslot .fixbar,body.pos-right .opslot .fixbar{flex-direction:column}
-  /* 单手时答案区居中、单词区居中 */
-  body.pos-left .gcol-side,body.pos-right .gcol-side{justify-content:center}
-  /* —— 测试屏：单手时选项列收在拇指侧；双手时选项在底部一行四个 —— */
-  body.pos-left #scr-test .tqwrap,body.pos-right #scr-test .tqwrap{flex-direction:row}
-  body.pos-right #scr-test .tqwrap{flex-direction:row-reverse}
-  body.pos-left #scr-test .tocol,body.pos-right #scr-test .tocol{flex:0 0 38%}
-  body.pos-left #scr-test .tqcol,body.pos-right #scr-test .tqcol{flex:1}
-  body.pos-bottom #scr-test .tqwrap{flex-direction:column}
-  body.pos-bottom #scr-test .tocol{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
-    flex:0 0 auto;width:100%;padding-bottom:6px}
-  body.pos-bottom #scr-test .tocol .opt{min-height:52px}
-  /* 竖屏单手：测试选项仍竖排，但靠左/靠右收窄 */
-  @media (orientation: portrait){
-    body.pos-left #scr-test .tocol{padding-right:18%}
-    body.pos-right #scr-test .tocol{padding-left:18%}
-  }
-}
 
-/* ===== 单手三栏（opslot 在 .gmain 内，用 order 排位置） ===== */
-#scr-game .gmain{display:flex;flex-direction:column}
 #scr-game .opslot{order:9}
-@media (orientation: landscape){
-  body.pos-left #scr-game .gmain,body.pos-right #scr-game .gmain{flex-direction:row}
-  body.pos-left #scr-game .opslot{order:0;flex:0 0 104px;width:104px;height:100%;
-    display:flex;flex-direction:column;padding:8px 6px;gap:6px;background:#f4f5f7}
-  body.pos-right #scr-game .opslot{order:3;flex:0 0 104px;width:104px;height:100%;
-    display:flex;flex-direction:column;padding:8px 6px;gap:6px;background:#f4f5f7}
-  body.pos-left #scr-game .opslot .btns,body.pos-right #scr-game .opslot .btns{flex:1;flex-direction:column;gap:8px}
-  body.pos-left #scr-game .opslot .big,body.pos-right #scr-game .opslot .big{flex:1;min-height:0;font-size:15px;border-radius:10px}
-  body.pos-left #scr-game .opslot .fixbar,body.pos-right #scr-game .opslot .fixbar{flex-direction:column;margin:0}
-  body.pos-left #scr-game .gcol-side{order:1}
-  body.pos-left #scr-game .gcol-word{order:2}
-  body.pos-left #scr-game .gcol-side,body.pos-right #scr-game .gcol-side{justify-content:center;overflow-y:auto}
-}
-@media (orientation: portrait){
-  body.pos-left #scr-game .opslot{width:100%;padding-right:22%}
-  body.pos-right #scr-game .opslot{width:100%;padding-left:22%}
-  body.pos-left #scr-game .btns,body.pos-right #scr-game .btns{flex-direction:row}
-}
+
+
 
 /* 竖屏单手：底部条固定高，靠左/靠右留白 */
-@media (orientation: portrait){
-  body.pos-left #scr-game .opslot,body.pos-right #scr-game .opslot{
-    flex:0 0 auto;height:calc(var(--app-btn-height,64px) + 20px);
-    padding:6px 8px calc(8px + var(--app-btn-margin,0px));order:9;width:100%;background:transparent}
-  body.pos-left #scr-game .opslot{padding-right:24%}
-  body.pos-right #scr-game .opslot{padding-left:24%}
-  body.pos-left #scr-game .opslot .btns,body.pos-right #scr-game .opslot .btns{
-    flex-direction:row;flex:1 1 auto;height:100%}
-  body.pos-left #scr-game .opslot .big,body.pos-right #scr-game .opslot .big{
-    min-height:0;height:100%;font-size:15px;padding:0 4px}
-  body.pos-left #scr-game .opslot .fixbar,body.pos-right #scr-game .opslot .fixbar{
-    flex-direction:row;margin:0}
-}
+
 
 /* ===== 竖屏最终修正：列布局 + 按钮条整块对齐（不影响单词宽度） ===== */
-@media (orientation: portrait){
-  body.pos-left #scr-game .gmain,body.pos-right #scr-game .gmain{
-    display:flex;flex-direction:column;width:100%;min-width:0}
-  body.pos-left #scr-game .gcol-word,body.pos-right #scr-game .gcol-word,
-  body.pos-left #scr-game .gcol-side,body.pos-right #scr-game .gcol-side{
-    width:100%;min-width:0;order:0}
-  body.pos-left #scr-game .qbox,body.pos-right #scr-game .qbox{width:100%;min-width:0}
-  body.pos-left #scr-game .opslot,body.pos-right #scr-game .opslot{
-    order:2;flex:0 0 auto;width:100%;height:auto;padding:8px 8px calc(8px + var(--app-btn-margin,0px));
-    background:transparent}
-  body.pos-left #scr-game .opslot .btns,body.pos-right #scr-game .opslot .btns{
-    flex-direction:row;height:auto;gap:8px}
-  body.pos-left #scr-game .opslot .btns{width:76%;margin-right:auto;margin-left:0}
-  body.pos-right #scr-game .opslot .btns{width:76%;margin-left:auto;margin-right:0}
-  body.pos-bottom #scr-game .opslot .btns{width:100%}
-  body.pos-left #scr-game .opslot .big,body.pos-right #scr-game .opslot .big{
-    height:var(--app-btn-height,64px);min-height:0;font-size:15px}
-}
+
 
 /* ===== 竖屏强制定稿（用更高优先级覆盖前面所有遗留规则） ===== */
-@media (orientation: portrait){
-  html body.pos-left #scr-game .gmain,
-  html body.pos-right #scr-game .gmain{flex-direction:column !important}
-  html body.pos-left #scr-game .gcol-word,
-  html body.pos-right #scr-game .gcol-word,
-  html body.pos-left #scr-game .gcol-side,
-  html body.pos-right #scr-game .gcol-side{order:0 !important;width:100% !important;min-width:0 !important}
-  html body.pos-left #scr-game .opslot,
-  html body.pos-right #scr-game .opslot{
-    order:2 !important;flex:0 0 auto !important;width:100% !important;
-    height:calc(var(--app-btn-height,64px) + 16px + var(--app-btn-margin,0px)) !important}
-  html body.pos-left #scr-game .opslot .btns,
-  html body.pos-right #scr-game .opslot .btns{flex-direction:row !important;height:var(--app-btn-height,64px) !important}
-  html body.pos-left #scr-game .opslot .big,
-  html body.pos-right #scr-game .opslot .big{height:100% !important;min-height:0 !important;font-size:15px !important}
-}
+
 
 /* ===== 横屏单手三栏（只在 wide 下生效，最终覆盖） ===== */
-@media (orientation: landscape){
-  html body.wide.pos-left #scr-game .gmain,
-  html body.wide.pos-right #scr-game .gmain{flex-direction:row !important}
-  html body.wide.pos-left #scr-game .opslot{
-    order:0 !important;flex:0 0 104px !important;width:104px !important;height:100% !important;
-    display:flex !important;flex-direction:column !important;padding:8px 6px !important;gap:6px !important;background:#f4f5f7}
-  html body.wide.pos-right #scr-game .opslot{
-    order:3 !important;flex:0 0 104px !important;width:104px !important;height:100% !important;
-    display:flex !important;flex-direction:column !important;padding:8px 6px !important;gap:6px !important;background:#f4f5f7}
-  html body.wide.pos-left #scr-game .opslot .btns,
-  html body.wide.pos-right #scr-game .opslot .btns{
-    flex:1 1 auto !important;flex-direction:column !important;gap:8px !important;width:100% !important;height:auto !important}
-  html body.wide.pos-left #scr-game .opslot .big,
-  html body.wide.pos-right #scr-game .opslot .big{flex:1 1 0 !important;height:auto !important;min-height:0 !important;font-size:15px !important}
-  html body.wide.pos-left #scr-game .gcol-side{order:1 !important}
-  html body.wide.pos-left #scr-game .gcol-word{order:2 !important}
-  html body.wide.pos-left #scr-game .gcol-side,
-  html body.wide.pos-right #scr-game .gcol-side{justify-content:center !important;overflow-y:auto !important}
-  /* 双手（wide）保持原来的两栏 + 底部条 */
-  html body.wide.pos-bottom #scr-game .opslot{flex:0 0 auto !important;width:100% !important;height:auto !important;display:block !important}
-  html body.wide.pos-bottom #scr-game .opslot .btns{flex-direction:row !important;width:100% !important;height:auto !important}
-}
+
 
 /* 横屏答题不显示底部提示（避免挤压按钮条） */
-@media (orientation: landscape){
-  html body.wide.in-game #ghint{display:none !important}
-  html body.wide.in-game #game-wrap.game{min-height:calc(100dvh - 8px) !important}
-  html body.wide.in-game .opslot{flex:0 0 auto !important}
-}
+
 
 /* 横屏双手：按钮条固定贴底，主区让出空间（彻底避免高度挤压） */
-@media (orientation: landscape){
-  html body.wide.in-game.pos-bottom #scr-game .opslot{
-    position:fixed !important;left:0;right:0;bottom:0;z-index:6;
-    height:auto !important;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px)) !important;background:#f4f5f7}
-  html body.wide.in-game.pos-bottom #scr-game .opslot .btns{width:100% !important;flex-direction:row !important}
-  html body.wide.in-game.pos-bottom #scr-game .gmain{
-    padding-bottom:calc(var(--app-btn-height,64px) + 16px) !important}
-}
+
 
 /* ===== 最终结构：opslot 固定在 #game-wrap 末尾；单手绝对定位贴边 ===== */
 #game-wrap.game{position:relative !important}
-@media (orientation: landscape){
-  html body.wide.in-game #scr-game .gmain{flex-direction:row !important;padding-bottom:0 !important}
-  html body.wide.pos-left #scr-game .gmain{padding-left:104px !important}
-  html body.wide.pos-right #scr-game .gmain{padding-right:104px !important}
-  html body.wide.pos-left #scr-game .opslot,
-  html body.wide.pos-right #scr-game .opslot{
-    position:absolute !important;top:0;bottom:0;width:104px !important;height:auto !important;
-    display:flex !important;flex-direction:column !important;padding:8px 6px !important;gap:6px !important;
-    background:#f4f5f7;z-index:5}
-  html body.wide.pos-left #scr-game .opslot{left:0}
-  html body.wide.pos-right #scr-game .opslot{right:0}
-  html body.wide.pos-left #scr-game .opslot .btns,
-  html body.wide.pos-right #scr-game .opslot .btns{
-    flex:1 1 auto !important;flex-direction:column !important;gap:8px !important}
-  html body.wide.pos-left #scr-game .opslot .big,
-  html body.wide.pos-right #scr-game .opslot .big{flex:1 1 0 !important;min-height:0 !important;font-size:15px !important}
-  html body.wide.pos-bottom #scr-game .opslot{
-    position:static !important;width:100% !important;height:auto !important;
-    display:block !important;padding:8px 8px calc(8px + var(--app-btn-margin,0px)) !important}
-  html body.wide.pos-bottom #scr-game .opslot .btns{flex-direction:row !important;width:100% !important}
-}
+
 
 /* 横屏答题：整页锁定，无任何多余留白 */
-@media (orientation: landscape){
-  html body.in-game{overflow:hidden !important}
-  html body.in-game #app{padding-bottom:0 !important;padding-top:8px !important}
-  html body.in-game #scr-game{margin:0 !important;padding:0 !important}
-  html body.in-game #scr-game .game{margin:0 !important}
-  html body.in-game #ghint,html body.in-game .hint{display:none !important}
-}
+
 
 /* ============ 统计页：Tab 条 + 大图 + 明细卡 ============ */
 .sttabs{display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
@@ -869,23 +643,7 @@ body.pos-bottom #scr-game .opslot{width:100%;padding:0}
 .barnum{font-size:15px;margin-bottom:14px;color:#2b2f36}
 .barcard .btn{width:100%;margin-top:8px}
 .btn.ghost{background:#f2f3f6;color:#5b6169;box-shadow:none}
-/* ============ 布局统一：所有左右手都走底部按钮行 ============ */
-#scr-game #opslot{position:static !important;inset:auto !important;width:auto !important;height:auto !important;
-  background:transparent !important;padding:6px 8px calc(8px + var(--app-btn-margin,0px)) !important;z-index:auto !important}
-body.pos-left #scr-game #opslot{max-width:74%;margin-left:0;margin-right:auto}
-body.pos-right #scr-game #opslot{max-width:74%;margin-left:auto;margin-right:0}
-body.pos-bottom #scr-game #opslot{max-width:100%;margin:0 auto}
-#scr-game #opslot .btns{flex-direction:row !important;width:100% !important;gap:8px !important}
-#scr-game #opslot .btns .big{min-height:var(--app-btn-height,56px) !important;height:auto !important;
-  font-size:15px !important;padding:8px 4px !important;border-radius:12px !important}
-#scr-game #opslot .btns .big small{display:none}
-body.wide.pos-left #scr-game .gmain,body.wide.pos-right #scr-game .gmain,body.pos-left #scr-game .gmain,body.pos-right #scr-game .gmain{
-  padding-left:0 !important;padding-right:0 !important}
-/* 顶栏：不换行 */
-#scr-game .gbar{display:grid !important;grid-template-columns:1fr auto;align-items:center;gap:8px}
 #scr-game #gstat{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px}
-#scr-game .gbar-r{display:flex;gap:6px;align-items:center;white-space:nowrap;font-size:13px}
-#scr-game .gbar-r button{white-space:nowrap;font-size:13px;padding:2px 3px}
 @media (orientation: portrait){ body.in-game #btn-swap,body.in-game #btn-lock{display:none !important} }
 
 /* 明细遮罩默认隐藏 */
@@ -906,6 +664,240 @@ body.wide.pos-left #scr-game .gmain,body.wide.pos-right #scr-game .gmain,body.po
 .cin{height:100%;display:flex;align-items:flex-end;gap:5px;padding-top:22px}
 .cbar{height:100%;display:flex;flex-direction:column;justify-content:flex-end}
 .cbl{transform:rotate(-45deg);transform-origin:top right;font-size:9px;white-space:nowrap;margin-top:6px;height:26px;color:#8a9099}
+/* 学习情况大图：充满画面、柱间距、竖排日期 */
+.cw{height:calc(100vh - 300px) !important;min-height:300px;display:flex;gap:4px;align-items:flex-start}
+.caxis{flex:0 0 30px;height:100%;display:flex;flex-direction:column;justify-content:space-between;padding:4px 0;font-size:11px;color:#9aa1aa;text-align:right}
+.cscroll{flex:1 1 auto;height:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;padding-bottom:0}
+.cin{height:100%;display:flex;align-items:flex-end;gap:10px;padding:0 8px}
+.cbar{flex:0 0 26px;width:26px;height:calc(100% - 62px);position:relative;display:flex;flex-direction:column;justify-content:flex-end;padding:0;border:0;background:none;border-radius:6px}
+.cbar .cbi{width:100%;display:flex;flex-direction:column;justify-content:flex-end;border-radius:6px 6px 0 0;overflow:hidden}
+.cbar.today{box-shadow:0 0 0 2px rgba(56,148,255,.28)}
+.cbl{position:absolute;top:calc(100% + 6px);left:50%;transform:translateX(-50%);writing-mode:vertical-rl;text-orientation:mixed;font-size:10px;line-height:1;color:#8a9099;white-space:nowrap;height:auto;margin:0;rotate:180deg}
+/* 学习情况：柱列 = 柱体区(flex) + 竖排日期带 */
+.cw{height:calc(100vh - 300px) !important;min-height:300px;display:flex;gap:4px;align-items:stretch}
+.caxis{flex:0 0 32px;display:flex;flex-direction:column;justify-content:space-between;padding:2px 2px 58px 0;font-size:11px;color:#9aa1aa;text-align:right}
+.cscroll{flex:1 1 auto;height:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
+.cin{height:100%;display:flex;align-items:stretch;gap:10px;padding:0 8px}
+.cbar{flex:0 0 24px;width:24px;height:100%;display:flex;flex-direction:column;align-items:center;padding:0;border:0;background:none}
+.cwrap{flex:1 1 auto;width:100%;display:flex;flex-direction:column;justify-content:flex-end}
+.cbar .cbi{width:100%;display:flex;flex-direction:column;justify-content:flex-end;border-radius:6px 6px 0 0;overflow:hidden}
+.cbar.today .cbi{box-shadow:0 0 0 2px rgba(56,148,255,.25)}
+.cbl{flex:0 0 52px;width:100%;writing-mode:vertical-rl;text-orientation:mixed;font-size:10px;line-height:1;color:#8a9099;white-space:nowrap;overflow:hidden;text-align:left;padding-top:6px;transform:none;position:static;margin:0;height:auto}
+/* 图表尺寸收敛：整块 340px，日期带 56px，柱子更宽 */
+.cw{height:340px !important;min-height:340px}
+.caxis{padding:2px 2px 56px 0}
+.cin{gap:12px}
+.cbar{flex:0 0 28px;width:28px}
+.cbl{flex:0 0 56px;font-size:10px}
+.cbar.today .cbi{box-shadow:none}
+#stats-body .card{padding-bottom:10px !important}
+/* 学习情况：绝对定位画法（柱高按像素算，标签独立带） */
+.cw{height:300px !important;min-height:300px;display:flex;gap:6px;align-items:flex-start}
+.caxis{flex:0 0 32px;height:300px;display:flex;flex-direction:column;justify-content:space-between;padding:0 2px 0 0;font-size:11px;color:#9aa1aa;text-align:right}
+.cscroll{flex:1 1 auto;height:352px !important;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;padding:0}
+.cin{height:352px !important;display:flex;align-items:flex-start;gap:12px;padding:0 8px}
+.cbar{flex:0 0 28px;width:28px;height:300px !important;position:relative;display:block;padding:0;border:0;background:none;border-radius:0}
+.cbar .cwrap{position:absolute;left:0;right:0;top:0;bottom:0;display:flex;flex-direction:column;justify-content:flex-end}
+.cbar .cbi{width:100%;display:flex;flex-direction:column;justify-content:flex-end;border-radius:6px 6px 0 0;overflow:hidden;box-shadow:none !important}
+.cbar .cbl{position:absolute;top:306px;left:50%;transform:translateX(-50%);writing-mode:vertical-rl;font-size:10px;line-height:1;height:44px;color:#8a9099;white-space:nowrap;overflow:hidden;text-align:left;padding:0;margin:0;flex:none;width:auto}
+.cbar.today{box-shadow:none !important}
+/* 给竖排日期带留出空间，避免和说明文字重叠 */
+.cw{margin-bottom:46px !important}
+/* 柱体不压日期：柱高 288，日期带从 292 起 */
+.cbar{height:288px !important}
+.cbar .cwrap{top:0;bottom:auto;height:288px}
+.cbar .cbl{top:292px !important;height:56px}
+.cw{height:288px !important;min-height:288px;margin-bottom:62px !important}
+.caxis{height:288px !important}
+/* 最终：日期带下移，彻底避开柱体 */
+.cbar .cbl{top:312px !important;height:60px}
+.cin{height:380px !important}
+.cscroll{height:380px !important}
+.cw{margin-bottom:78px !important}
+/* 收尾：柱高与纵轴同为 280，日期带从 286 起，彻底不重叠 */
+.cw{height:280px !important;min-height:280px;margin-bottom:74px !important}
+.caxis{height:280px !important}
+.cbar{height:280px !important}
+.cbar .cwrap{height:280px}
+.cbar .cbl{top:286px !important;height:58px}
+.cin,.cscroll{height:352px !important}
+/* ================= 答题屏布局（唯一权威定义） ================= */
+#scr-game .game{display:flex;flex-direction:column;height:100dvh;max-height:100dvh;padding:8px 12px 4px;gap:6px;box-sizing:border-box;overflow:hidden}
+.gbar{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;flex:0 0 auto;font-size:13px;color:#6f767e}
+.gbar #gstat{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gbar-r{display:flex;align-items:center;gap:14px;white-space:nowrap}
+.gbar-r button{white-space:nowrap;font-size:13px;padding:2px 0}
+#scr-game .timer{flex:0 0 auto;height:4px;border-radius:2px;background:#e9ecf0;overflow:hidden;margin:0 0 2px}
+#scr-game .timer i{display:block;height:100%;width:100%;background:#2f7ff0;transition:width .12s linear}
+.gmain{flex:1 1 auto;display:flex;gap:14px;min-height:0;align-items:stretch;justify-content:center}
+.gcol-word{flex:1 1 50%;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center}
+.gcol-side{flex:1 1 50%;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:10px;overflow:auto}
+#scr-game .qbox{min-height:0;padding:0;flex:0 0 auto}
+#scr-game .word{font-size:min(13vh, 8.5vw);line-height:1.06;font-weight:800;letter-spacing:-.5px;word-break:break-word}
+#scr-game .phon{font-size:14px;color:#9aa1aa;margin-top:2px}
+#scr-game .badge{font-size:12px}
+#scr-game .btns{display:flex;gap:10px;width:100%;max-width:none;margin:0}
+#scr-game .big{flex:1 1 0;min-width:0;min-height:56px;height:var(--app-btn-height,56px);border-radius:14px;font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px}
+#scr-game .big small{font-size:11px;opacity:.6}
+#ghint{flex:0 0 auto;text-align:center;font-size:11px;color:#9aa1aa;padding-bottom:2px;min-height:14px}
+#fixbar{display:flex;gap:8px;width:100%;max-width:none;margin:0;font-size:12px;color:#7b838c;align-items:center;justify-content:stretch}
+#fixbar .big{height:40px;min-height:40px;font-size:14px;border-radius:11px}
+
+/* 操作区（按钮行）：始终在文档流底部 */
+#opslot{flex:0 0 auto;display:flex;align-items:stretch;justify-content:center;padding:4px 14px 8px;box-sizing:border-box;background:transparent;position:static}
+body.pos-left #opslot{justify-content:flex-start}
+body.pos-right #opslot{justify-content:flex-end}
+body.pos-left #opslot .btns{max-width:74%;margin:0}
+body.pos-right #opslot .btns{max-width:74%;margin:0 0 0 auto}
+body.pos-bottom #opslot .btns{max-width:none;margin:0 auto}
+
+/* 横屏：单词｜释义左右分栏（单手/双手一致），按钮在底部 */
+@media (orientation:landscape){
+  #scr-game .game{padding:6px 14px 2px}
+  .gmain{gap:18px}
+  #scr-game .word{font-size:min(17vh, 7.2vw)}
+  #scr-game .big{height:var(--app-btn-height,56px);min-height:var(--app-btn-height,56px)}
+}
+@media (orientation:portrait){
+  #btn-swap,#btn-lock{display:none}
+  .gmain{flex-direction:column;gap:6px}
+  .gcol-word{flex:0 0 auto}
+  .gcol-side{flex:1 1 auto;justify-content:flex-start}
+  #scr-game .word{font-size:min(11vh, 15vw)}
+}
+@media (max-height:520px){
+  #scr-game .word{font-size:min(15vh, 7vw)}
+  #scr-game .big{height:48px;min-height:48px;font-size:15px}
+  #ghint{display:none}
+}
+/* 去掉 16px 溢出（页面 padding） */
+#scr-game .game{height:calc(100dvh - 16px) !important;max-height:calc(100dvh - 16px) !important}
+/* 图表最终版：柱与标签同列、标签进正文流 */
+.cw{display:flex;gap:6px;height:300px !important;margin-bottom:8px !important}
+.caxis{flex:0 0 30px;height:300px;display:flex;flex-direction:column;justify-content:space-between;font-size:11px;color:#9aa1aa;text-align:right;padding-bottom:58px;box-sizing:border-box}
+.cscroll{flex:1 1 auto;height:auto !important;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
+.cin{display:flex;align-items:stretch;gap:12px;height:300px !important;padding:0 6px}
+.cbar{flex:0 0 30px;width:30px;height:100% !important;display:flex;flex-direction:column;align-items:center;padding:0;border:0;background:none;position:relative}
+.cbar .cwrap{flex:1 1 auto;width:100%;display:flex;flex-direction:column;justify-content:flex-end;position:static;height:auto}
+.cbar .cbi{width:100%;display:flex;flex-direction:column;justify-content:flex-end;border-radius:6px 6px 0 0;overflow:hidden;box-shadow:none !important}
+.cbar .cbl{flex:0 0 58px;width:100%;writing-mode:vertical-rl;text-orientation:mixed;font-size:10px;line-height:1;color:#8a9099;white-space:nowrap;overflow:hidden;text-align:left;padding:6px 0 0;margin:0;position:static;transform:none;height:auto;top:auto;left:auto}
+/* 修正：竖排文字正立 */
+.cbar .cbl{rotate:0deg !important;transform:none !important;text-orientation:upright;direction:ltr}
+.cw{height:340px !important}
+.caxis{height:340px !important;padding-bottom:58px}
+.cin{height:340px !important}
+/* 热力图：月份与列严格对齐 */
+.hmwrap{display:flex;gap:6px;align-items:flex-start}
+.hmwk{display:grid;grid-template-rows:repeat(7,1fr);gap:2px;font-size:9px;color:#9aa1aa;width:10px;text-align:right;height:auto}
+.hmwk span{display:flex;align-items:center;justify-content:flex-end;line-height:1}
+.hmright{flex:1 1 auto;min-width:0}
+.hmcols{display:flex;gap:2px}
+.hmmark{display:flex;gap:2px;margin-top:4px}
+.hmmark span{flex:1 1 0;font-size:10px;color:#9aa1aa;white-space:nowrap;overflow:visible}
+/* 月份标签回归文档流（旧规则用了 absolute） */
+.hmmark{position:relative}
+.hmmark span{position:static !important;left:auto !important;top:auto !important;transform:none !important;font-size:10px;color:#9aa1aa}
+/* 单手模式：按钮行真正贴到屏幕左/右，而不是只缩到 74% */
+#opslot{width:100%;box-sizing:border-box}
+body.pos-left #opslot{justify-content:flex-start;padding-left:16px;padding-right:16px}
+body.pos-right #opslot{justify-content:flex-end;padding-left:16px;padding-right:16px}
+body.pos-left #opslot .btns{margin:0;max-width:min(74%,720px)}
+body.pos-right #opslot .btns{margin:0;max-width:min(74%,720px)}
+body.pos-bottom #opslot .btns{margin:0 auto;max-width:min(100%,720px)}
+/* 测试对=绿，测试错=红 */
+.cbi i.tok{background:#2fa84f}
+.cbi i.tbad{background:#e2574c}
+.legend .lg.tok{background:#2fa84f}
+.legend .lg.tbad{background:#e2574c}
+/* 回显态改判条与作答态按钮行完全同宽同位置（修 50% 偏移） */
+#opslot #fixbar{width:100%;max-width:none;margin:0;justify-content:flex-start;gap:10px;font-size:12px}
+#opslot #fixbar .big{flex:1 1 0;min-width:0;height:var(--app-btn-height,56px);min-height:56px;font-size:16px;border-radius:14px}
+#opslot #fixbar .fixlab{flex:0 0 auto}
+body.pos-left #opslot #fixbar{margin:0;max-width:min(74%,720px)}
+body.pos-right #opslot #fixbar{margin:0 0 0 auto;max-width:min(74%,720px)}
+body.pos-bottom #opslot #fixbar{margin:0 auto;max-width:min(100%,720px)}.cbi i.tok{background:#2fa84f}
+.cbi i.tbad{background:#e2574c}
+.legend .lg.tok{background:#2fa84f}
+.legend .lg.tbad{background:#e2574c}
+/* 单手横屏：按钮行＝答案那一半的宽度，正对着答案下方（修 50% 错位） */
+@media (orientation:landscape){
+  body.pos-right #opslot{width:50%;margin-left:auto;padding-right:14px;justify-content:stretch}
+  body.pos-left #opslot{width:50%;margin-right:auto;padding-left:14px;justify-content:stretch}
+  body.pos-right #opslot .btns,body.pos-left #opslot .btns{max-width:none;width:100%;margin:0}
+  body.pos-right #opslot #fixbar,body.pos-left #opslot #fixbar{max-width:none;width:100%;margin:0}
+}
+/* 遗忘曲线柱子改成按钮后的重置 */
+.ebar{border:0;background:none;padding:0;font:inherit;cursor:pointer}
+
+/* ==== 收口：按钮行/改判条同尺寸、单手贴答案列、图表高度与 JS 一致 ==== */
+#opslot .big,#opslot .fix{height:var(--app-btn-height,56px);min-height:0;padding:0 8px;font-size:16px;border-radius:14px;flex:1 1 0}
+#opslot .btns,#opslot #fixbar{width:100%;max-width:none;margin:0;gap:10px}
+/* 单手（竖屏）：宽度 74%，贴左/贴右 */
+body.pos-left #opslot{justify-content:flex-start}
+body.pos-left #opslot>.btns,body.pos-left #opslot>#fixbar{width:74%}
+body.pos-right #opslot{justify-content:flex-end}
+body.pos-right #opslot>.btns,body.pos-right #opslot>#fixbar{width:74%}
+body.pos-bottom #opslot>.btns,body.pos-bottom #opslot>#fixbar{width:100%}
+/* 单手（横屏）：贴到答案那一半 */
+@media (orientation:landscape){
+  body.pos-left #opslot{justify-content:flex-start;padding-left:6px}
+  body.pos-right #opslot{justify-content:flex-end;padding-right:6px}
+  body.pos-left #opslot>.btns,body.pos-left #opslot>#fixbar,
+  body.pos-right #opslot>.btns,body.pos-right #opslot>#fixbar{width:50%}
+}
+/* 图表高度与 app.js 的 280 对齐 */
+.cw,.caxis,.cbar{height:280px !important;min-height:280px}
+.cin,.cscroll{height:342px !important}
+.cbar .cbl{top:286px !important;height:56px}
+/* 顶栏：允许两行，不再省略成 “还剩 20...” */
+#gstat{white-space:normal;overflow:visible;text-overflow:clip;line-height:1.3;font-size:12px}
+
+/* 答题屏占满屏幕（外层 #app 原本限宽 720px，导致单手按钮永远居中） */
+body.in-game #app{max-width:none;width:100%;margin:0;padding:0}
+body.in-game #scr-game .game{height:100dvh !important;max-height:100dvh !important}
+/* 测试屏（选义/选词）：单词不再撑破左栏、不与选项重叠 */
+#scr-test .tqwrap{overflow:hidden}
+body.wide #scr-test .tqcol,body.wide #scr-test .tocol{min-width:0;max-width:50%;overflow:hidden}
+body.wide #scr-test .tword{font-size:clamp(26px,min(9vh,5.6vw),92px) !important;line-height:1.06;overflow-wrap:anywhere;word-break:break-word;max-width:100%}
+#scr-test .tword{font-size:clamp(24px,7.2vw,44px) !important;line-height:1.08;overflow-wrap:anywhere;word-break:break-word;max-width:100%;max-height:36vh;overflow:hidden}
+/* 测试屏兜底：无论 wide 与否，单词不得超出自己的列 */
+#scr-test .tqcol{min-width:0;max-width:100%;overflow:hidden}
+#scr-test .tocol{min-width:0}
+#scr-test .tqwrap{gap:12px}
+/* 测试屏主观判定三键：配色与学习页一致（认识=浅绿 / 模糊=浅黄 / 不认识=白底） */
+#scr-test .tsubbtns .btn[data-tk="known"]{background:#e8f7ed;color:#1f8a43;box-shadow:inset 0 0 0 1.5px #d3ecdc;font-weight:750}
+#scr-test .tsubbtns .btn[data-tk="fuzzy"]{background:#fff8e6;color:#a97a12;box-shadow:inset 0 0 0 1.5px #f3e3bc;font-weight:750}
+#scr-test .tsubbtns .btn[data-tk="no"]{background:#fff;color:#4a5058;box-shadow:inset 0 0 0 1.5px #e6e8ec;font-weight:750}
+/* 测试屏：按屏幕方向决定布局，竖版一律「题目在上、选项在下全宽」 */
+@media (orientation: portrait){
+  #scr-test .tqwrap{display:flex !important;flex-direction:column !important;align-items:stretch !important;gap:14px !important}
+  #scr-test .tqcol,#scr-test .tocol{flex:0 0 auto !important;width:100% !important;max-width:100% !important;min-width:0 !important}
+  #scr-test .topt{grid-template-columns:1fr !important;gap:10px !important}
+  #scr-test .opt{min-height:52px;font-size:16px;text-align:left}
+  #scr-test .tsubbtns{grid-template-columns:1fr !important;gap:10px !important}
+  #scr-test .tsubbtns .btn{min-height:56px;font-size:17px}
+}
+@media (orientation: landscape){
+  #scr-test .tqwrap{display:flex !important;flex-direction:row !important;align-items:center !important;gap:18px !important}
+  #scr-test .tqcol{flex:1 1 50%;min-width:0}
+  #scr-test .tocol{flex:1 1 50%;min-width:0}
+  #scr-test .topt{grid-template-columns:1fr !important;gap:10px !important}
+}
+/* 横屏测试：收紧留白，去掉底部提示，避免溢出 */
+@media (orientation: landscape){
+  #scr-test{padding:6px 14px 4px !important}
+  #scr-test .thint{display:none !important}
+  #scr-test .tqwrap{gap:14px !important}
+  #scr-test .opt{min-height:46px;font-size:15.5px;padding:10px 14px}
+}
+/* 测试屏单词：以 JS 自适应为主，CSS 只做兜底 */
+#scr-test .tword{font-size:clamp(20px,6vh,44px) !important;white-space:nowrap !important}
+/* 测试屏一律上下（不受左右手/横屏影响） */
+#scr-test .tqwrap{display:flex !important;flex-direction:column !important;align-items:stretch !important;gap:14px !important}
+#scr-test .tqcol,#scr-test .tocol{flex:0 0 auto !important;width:100% !important;max-width:100% !important;min-width:0 !important}
+#scr-test .topt{grid-template-columns:1fr !important;gap:10px !important}
+#scr-test .tsubbtns{grid-template-columns:1fr !important;gap:10px !important}
+#scr-test .thint{display:block !important}
 </style>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
@@ -1944,12 +1936,6 @@ function enterRelearn(key) {
   schedule("relearn", key, gap);
 }
 
-function bumpRelearn(key) {
-  var sess = S.session;
-  var rl = sess.relearn[key];
-  if (!rl) return;
-  if (rl.progress >= num(S.settings.rollSteps, 4)) { delete sess.relearn[key]; }
-}
 
 /* 作答历史：紧凑编码 "YYMMDD|k|ms"（约 17 字节，原来是约 43 字节的对象），
    每个词留 20 条，已毕业的词只留 3 条。整库能省下 60% 的空间。 */
@@ -2554,69 +2540,11 @@ function sumDays(pick) {
   }
   return pick ? num(tot[pick], 0) : tot;
 }
-function monthStats() {
-  var s = ensureStats(), t = today(), nDays = 0, ms = 0;
-  for (var d in s.days) {
-    var diff = dayDiff(d, t);
-    if (diff >= 0 && diff < 30) { nDays++; ms += num(s.days[d].ms, 0); }
-  }
-  return { days: nDays, ms: ms };
-}
-function retention() {
-  var s = ensureStats(), ok = 0, tot = 0;
-  var t = today();
-  /* 首选：按天累计的 reviewOk / reviewTot（不受日志条数上限影响） */
-  for (var ds in s.days) {
-    if (!Object.prototype.hasOwnProperty.call(s.days, ds)) continue;
-    var dd = s.days[ds];
-    if (!dd) continue;
-    if (dayDiff(ds, t) > 30) continue;
-    tot += num(dd.reviewTot, 0);
-    ok += num(dd.reviewOk, 0);
-  }
-  if (tot > 0) return { ok: ok, tot: tot, rate: Math.round(ok / tot * 100) };
-  /* 兜底：老数据没有按天拆分，退回扫日志 */
-  for (var i = s.logs.length - 1; i >= 0; i--) {
-    var l = s.logs[i];
-    if (dayDiff(l.d, t) > 30) break;
-    if (l.m === "review") {
-      tot++;
-      if (l.k === "fast" || l.k === "slow" || l.k === "know") ok++;
-    }
-  }
-  return { ok: ok, tot: tot, rate: tot ? Math.round(ok / tot * 100) : 0 };
-}
 function barRow(label, v, max, unit, listKey) {
   var pct = max > 0 ? Math.round(v / max * 100) : 0;
   var attrs = listKey ? ' class="brow clickable" data-list="' + esc(listKey) + '"' : ' class="brow"';
   return '<div' + attrs + '><span class="bl">' + esc(label) + '</span><span class="bt"><i style="width:' + pct + '%"></i></span>' +
     '<span class="bv">' + esc(v) + (unit || "") + '</span></div>';
-}
-function heatmapHtml() {
-  var s = ensureStats(), N = 26 * 7, cells = [], max = 1;
-  var base = new Date(today() + "T00:00:00");
-  for (var i = N - 1; i >= 0; i--) {
-    var dd = new Date(base.getTime() - i * 86400000);
-    var ds = fmtDate(dd), day = s.days[ds] || {};
-    var n = num(day.new, 0) + num(day.review, 0) + num(day.testN, 0);
-    if (n > max) max = n;
-    cells.push({ d: ds, n: n });
-  }
-  var html = '<div class="card"><h2>学习热力图 <span class="tiny muted">近 26 周</span></h2><div class="hm">';
-  for (var w = 0; w < 26; w++) {
-    html += '<div class="hmcol">';
-    for (var r = 0; r < 7; r++) {
-      var c = cells[w * 7 + r]; if (!c) continue;
-      var lv = c.n === 0 ? 0 : c.n <= max * 0.25 ? 1 : c.n <= max * 0.5 ? 2 : c.n <= max * 0.75 ? 3 : 4;
-      html += '<div class="hmcell lv' + lv + '" title="' + c.d + ' · ' + c.n + ' 题"></div>';
-    }
-    html += '</div>';
-  }
-  html += '</div><div class="hmlegend"><span class="tiny muted">少</span>' +
-    '<i class="hmcell lv0"></i><i class="hmcell lv1"></i><i class="hmcell lv2"></i><i class="hmcell lv3"></i><i class="hmcell lv4"></i>' +
-    '<span class="tiny muted">多</span></div>' +
-    '<div class="tiny muted" style="margin-top:8px">每格一天：新学 + 复习 + 测试题数；颜色越深越多</div></div>';
-  return html;
 }
 
 function timelineHtml(r) {
@@ -2651,10 +2579,6 @@ function statsTabsHtml() {
     return '<button class="sttab' + (statsTab === x[0] ? " on" : "") + '" data-st="' + x[0] + '">' + x[1] + '</button>';
   }).join("");
 }
-function dayKeysAll() {
-  var s = ensureStats();
-  return Object.keys(s.days || {}).sort();
-}
 function dueRangeMap() {
   var m = {};
   if (!S.decks[0]) return m;
@@ -2673,16 +2597,47 @@ function dueRangeMap() {
 }
 function chartDates() {
   var t = today();
-  var start = addDays(t, -13);
+  var g = (typeof chartGran === "string") ? chartGran : "day";
+  var back = g === "day" ? 13 : (g === "week" ? 91 : 365);
+  var fwd = g === "day" ? 30 : (g === "week" ? 91 : 365);
+  var start = addDays(t, -back);
   var keys = Object.keys(ensureStats().days || {}).sort();
   if (keys.length && keys[0] < start) start = keys[0];
-  var end = addDays(t, 30);
+  var end = addDays(t, fwd);
   var out = [], cur = start, guard = 0;
-  while (cur <= end && guard < 500) { out.push(cur); cur = addDays(cur, 1); guard++; }
+  while (cur <= end && guard < 800) { out.push(cur); cur = addDays(cur, 1); guard++; }
   return out;
 }
+function dayOffset(d) {
+  return Math.round((new Date(d + "T00:00:00") - new Date(today() + "T00:00:00")) / 86400000);
+}
+function relLabel(d) {
+  var n = dayOffset(d);
+  if (n === 0) return "今天";
+  if (n === -1) return "昨天";
+  if (n === -2) return "前天";
+  if (n === 1) return "明天";
+  if (n === 2) return "后天";
+  return n < 0 ? (-n) + "天前" : n + "天后";
+}
+function relWeek(key) {
+  var n = Math.round(dayOffset(key) / 7);
+  if (n === 0) return "本周";
+  if (n === -1) return "上周";
+  if (n === 1) return "下周";
+  return n < 0 ? (-n) + "周前" : n + "周后";
+}
+function relMonth(key) {
+  var t = today(), y = parseInt(key.slice(0, 4), 10), m = parseInt(key.slice(5, 7), 10);
+  var ty = parseInt(t.slice(0, 4), 10), tm = parseInt(t.slice(5, 7), 10);
+  var n = (y * 12 + m) - (ty * 12 + tm);
+  if (n === 0) return "本月";
+  if (n === -1) return "上月";
+  if (n === 1) return "下月";
+  return n < 0 ? (-n) + "月前" : n + "月后";
+}
 function bucketByGran(list, gran) {
-  if (gran === "day") return list.map(function (d) { return { key: d, label: d.slice(5), dates: [d] }; });
+  if (gran === "day") return list.map(function (d) { return { key: d, label: relLabel(d), dates: [d] }; });
   var map = {}, order = [];
   list.forEach(function (d) {
     var dt = new Date(d + "T00:00:00");
@@ -2696,7 +2651,7 @@ function bucketByGran(list, gran) {
   });
   return order.map(function (k) {
     var o = map[k];
-    o.label = (gran === "week") ? (k.slice(5) + "周") : (k.slice(2).replace("-", "/"));
+    o.label = (gran === "week") ? relWeek(k) : relMonth(k);
     return o;
   });
 }
@@ -2706,37 +2661,46 @@ function chartSeries() {
   var due = dueRangeMap();
   var buckets = bucketByGran(dates, chartGran);
   return buckets.map(function (b) {
-    var v = { label: b.label, key: b.key, dates: b.dates, nw: 0, rv: 0, ts: 0, ok: 0, fz: 0, no: 0, isFuture: false, due: 0 };
+    var v = { label: b.label, key: b.key, dates: b.dates, nw: 0, rv: 0, ts: 0, tok: 0, tbad: 0, ok: 0, fz: 0, no: 0, isFuture: false, due: 0 };
     b.dates.forEach(function (d) {
       var x = (s.days || {})[d];
       if (x) {
         v.nw += num(x.new, 0);
         v.rv += num(x.review, 0);
         v.ts += num(x.testN, 0);
+        v.tok += num(x.testOk, 0);
+        v.tbad += Math.max(0, num(x.testN, 0) - num(x.testOk, 0));
         v.ok += num(x.fast, 0) + num(x.slow, 0) + num(x.know, 0);
         v.fz += num(x.fuzzy, 0);
         v.no += num(x.no, 0) + num(x.timeout, 0);
       }
       v.due += due[d] || 0;
     });
-    v.total = v.nw + v.rv + v.ts;
+    v.total = v.nw + v.rv;
     v.isFuture = b.dates[0] > today();
     return v;
   });
 }
 function bigChartHtml() {
   var rows = chartSeries();
-  var isLoad = chartMode === "load";
-  var maxV = 1;
+  var mode = chartMode;
+  var showDue = mode === "load";
+  if (!showDue) rows = rows.filter(function (r) { return !r.isFuture; });
+  var maxV = 5;
   rows.forEach(function (r) {
-    var t = isLoad ? (r.total || 0) : Math.max(r.ok + r.fz + r.no, 0);
+    var t = mode === "load" ? (r.total || 0) : (mode === "test" ? (r.tok + r.tbad) : (r.ok + r.fz + r.no));
     if (t > maxV) maxV = t;
   });
-  if (maxV < 20) maxV = 20;
   var tickStep = Math.max(1, Math.ceil(maxV / 4));
   maxV = tickStep * 4;
-  var bw = chartGran === "day" ? 18 : 30;
-  var gap = chartGran === "day" ? 5 : 8;
+  maxV = tickStep * 4;
+  var hasData = false;
+  rows.forEach(function (r) {
+    var t = mode === "load" ? (r.total || 0) : (mode === "test" ? (r.tok + r.tbad) : (r.ok + r.fz + r.no));
+    if (t > 0) hasData = true;
+  });
+  var bw = chartGran === "day" ? 28 : 36;
+  var gap = 10;
   var width = rows.length * (bw + gap) + 56;
   var ticks = "";
   for (var i = 4; i >= 0; i--) {
@@ -2751,20 +2715,26 @@ function bigChartHtml() {
       var hp = r.due ? Math.max(3, Math.round(r.due / maxV * 100)) : 0;
       if (hp) seg = '<i class="fz" style="height:' + hp + '%"></i>';
       tip = r.key + " · 预计到期 " + r.due + " 个";
-    } else if (isLoad) {
+    } else if (mode === "load") {
       var tot = r.total || 0;
-      [["rv", r.rv, "复习"], ["nw", r.nw, "新学"], ["ts", r.ts, "测试"]].forEach(function (p) {
-        if (p[1] > 0) seg += '<i class="' + p[0] + '" style="height:' + (p[1] / maxV * 100) + '%"></i>';
+      [["rv", r.rv, "复习"], ["nw", r.nw, "新学"]].forEach(function (p) {
+        if (p[1] > 0) seg += '<i class="' + p[0] + '" style="height:' + Math.max(2, Math.round(p[1] / maxV * 280)) + 'px"></i>';
       });
       tip = r.key + " · 复习 " + r.rv + " · 新学 " + r.nw + " · 测试 " + r.ts;
+    } else if (mode === "test") {
+      [["ok", r.tok, "测试对"], ["no", r.tbad, "测试错"]].forEach(function (p) {
+        if (p[1] > 0) seg += '<i class="' + p[0] + '" style="height:' + Math.max(2, Math.round(p[1] / maxV * 280)) + 'px"></i>';
+      });
+      tip = r.key + " · 对 " + r.tok + " · 错 " + r.tbad;
     } else {
       [["ok", r.ok, "认识"], ["fzz", r.fz, "模糊"], ["no", r.no, "忘记"]].forEach(function (p) {
-        if (p[1] > 0) seg += '<i class="' + p[0] + '" style="height:' + (p[1] / maxV * 100) + '%"></i>';
+        if (p[1] > 0) seg += '<i class="' + p[0] + '" style="height:' + Math.max(2, Math.round(p[1] / maxV * 280)) + 'px"></i>';
       });
       tip = r.key + " · 认识 " + r.ok + " · 模糊 " + r.fz + " · 忘记 " + r.no;
     }
     bars += '<button class="cbar' + (r.key === today() ? " today" : "") + (r.isFuture ? " future" : "") +
-      '" data-bar="' + r.key + '" title="' + tip + '"><span class="cbi">' + seg + '</span>' +
+      '" data-bar="' + r.key + '" title="' + tip + '">' +
+      '<span class="cwrap"><span class="cbi">' + seg + '</span></span>' +
       '<span class="cbl">' + (r.label || "") + '</span></button>';
   });
   return '<div class="card"><div class="charthead"><b>学习情况</b>' +
@@ -2774,14 +2744,16 @@ function bigChartHtml() {
     }).join("") +
     '</span></div>' +
     '<div class="chartmode">' +
-    [["load", "复习 / 新学"], ["cog", "认识 / 模糊 / 忘记"]].map(function (m) {
+    [["load", "复习 / 新学"], ["cog", "认识 / 模糊 / 忘记"], ["test", "测试对错"]].map(function (m) {
       return '<button class="mini' + (chartMode === m[0] ? " on" : "") + '" data-cmode="' + m[0] + '">' + m[1] + '</button>';
     }).join("") + '</div>' +
-    '<div class="legend">' + (isLoad
-      ? '<i class="lg rv"></i>复习<i class="lg nw"></i>新学<i class="lg ts"></i>测试<i class="lg fz"></i>预计到期'
-      : '<i class="lg ok"></i>认识<i class="lg fzz"></i>模糊<i class="lg no"></i>忘记') + '</div>' +
+    '<div class="legend">' + (mode === "load"
+      ? '<i class="lg rv"></i>复习<i class="lg nw"></i>新学<i class="lg fz"></i>预计到期'
+      : (mode === "test"
+        ? '<i class="lg ok"></i>测试对<i class="lg no"></i>测试错'
+        : '<i class="lg ok"></i>认识<i class="lg fzz"></i>模糊<i class="lg no"></i>忘记')) + '</div>' +
     '<div class="cw"><div class="caxis">' + ticks + '</div><div class="cscroll" id="chart-scroll"><div class="cin" style="width:' + width + 'px">' + bars + '</div></div></div>' +
-    '<div class="tiny muted" style="margin-top:8px">左右滑动看全部历史；点柱子看明细</div></div>';
+    '<div class="tiny muted" style="margin-top:8px">' + (hasData ? "左右滑动看全部历史；点柱子看明细" : "这一档还没有数据，先去做一轮再来看") + '</div></div>';
 }
 function ebbingBuckets() {
   var order = ["1", "2", "3-4", "5-7", "8-14", "15-30", ">30"];
@@ -2814,10 +2786,10 @@ function ebbingHtml() {
   var bars = keys.map(function (k) {
     var v = m[k], pct = v.n ? Math.round(v.ok / v.n * 100) : 0;
     var h = v.n ? Math.max(6, Math.round(v.n / maxN * 100)) : 3;
-    return '<div class="ebar' + (v.n < 10 ? " few" : "") + '">' +
+    return '<button class="ebar' + (v.n < 10 ? " few" : "") + '" data-ebb="' + k + '" title="间隔 ' + k + ' 天 · 共 ' + v.n + ' 次 · 认识率 ' + pct + '%">' +
       '<span class="ebp">' + (v.n ? pct + "%" : "-") + '</span>' +
       '<span class="ebi" style="height:' + h + '%"><i style="height:' + pct + '%"></i></span>' +
-      '<span class="ebl">' + k + '天</span><span class="ebn">n=' + v.n + '</span></div>';
+      '<span class="ebl">' + k + '天</span><span class="ebn">n=' + v.n + '</span></button>';
   }).join("");
   return '<div class="card"><b>遗忘曲线</b>' +
     '<div class="tiny muted" style="margin:6px 0 12px">横轴：上次到这次的间隔；纵轴：这次「认识」的比例。柱子越高越牢；n&lt;10 半透明（样本少）</div>' +
@@ -2874,10 +2846,16 @@ function heatHtml2() {
     if (mm !== lastMonth && day0.getDate() <= 7) { monthMarks.push({ w: w, t: mm }); lastMonth = mm; }
     cols += '<div class="hmcol">' + cells + '</div>';
   }
+  var markRow = '';
+  for (var w2 = 0; w2 < 26; w2++) {
+    var hit = null;
+    for (var mi = 0; mi < monthMarks.length; mi++) { if (monthMarks[mi].w === w2) hit = monthMarks[mi].t; }
+    markRow += '<span>' + (hit || '') + '</span>';
+  }
+  var wkCol = '<div class="hmwk"><span></span><span>一</span><span></span><span>三</span><span></span><span>五</span><span></span></div>';
   return '<div class="card"><b>学习热力图</b><span class="tiny muted"> 近 26 周</span>' +
     '<div class="tiny muted" style="margin:6px 0 10px">每一列=一周，每列从上到下=周一到周日；颜色越深，当天题越多。点格子看当天明细</div>' +
-    '<div class="hmwrap"><div class="hmwk"><span>一</span><span>三</span><span>五</span><span>日</span></div><div class="hmcols">' + cols + '</div></div>' +
-    '<div class="hmmark">' + monthMarks.map(function (m) { return '<span style="left:' + (m.w / 26 * 100) + '%">' + m.t + '</span>'; }).join("") + '</div>' +
+    '<div class="hmwrap">' + wkCol + '<div class="hmright"><div class="hmcols">' + cols + '</div><div class="hmmark">' + markRow + '</div></div></div>' +
     '<div class="legend" style="margin-top:8px">少<i class="lg lv0"></i><i class="lg lv1"></i><i class="lg lv2"></i><i class="lg lv3"></i><i class="lg lv4"></i>多</div></div>';
 }
 function forecastHtml() {
@@ -2927,6 +2905,19 @@ function todayCardHtml() {
     '</div>' +
     '<div class="tiny muted" style="margin-top:10px">额度：新学 ' + num(dl.newDone, 0) + '/' + num(S.settings.newPerDay, 20) + ' · 复习 ' + num(dl.reviewDone, 0) + '/' + num(S.settings.reviewPerDay, 100) + '</div></div>';
 }
+function showEbbingCard(k) {
+  var m = ebbingBuckets()[k];
+  var mask = $("#bar-mask");
+  if (!m || !mask) return;
+  var pct = m.n ? Math.round(m.ok / m.n * 100) : 0;
+  mask.innerHTML = '<div class="barcard"><div class="barhd"><b>间隔 ' + k + ' 天</b><span class="tiny muted">样本 ' + m.n + ' 次</span></div>' +
+    '<div class="bargrid"><div><span>认识</span><b>' + m.ok + '</b></div>' +
+    '<div><span>忘记</span><b>' + (m.n - m.ok) + '</b></div>' +
+    '<div><span>认识率</span><b>' + pct + '%</b></div></div>' +
+    '<div class="tiny muted" style="margin:8px 0">间隔 ' + k + ' 天时，下次仍记得住的比例</div>' +
+    '<button class="btn ghost" id="btn-bar-close">关闭</button></div>';
+  mask.classList.add("on");
+}
 function showBarCard(dateKey) {
   var s = ensureStats();
   var d = (s.days || {})[dateKey] || {};
@@ -2934,21 +2925,32 @@ function showBarCard(dateKey) {
   var isFuture = dateKey > today();
   var mask = $("#bar-mask");
   if (!mask) return;
-  var inner = isFuture
-    ? '<div class="barhd"><b>' + dateKey + '</b><span class="tiny muted">未来</span></div>' +
+  if (isFuture) {
+    mask.innerHTML = '<div class="barcard"><div class="barhd"><b>' + dateKey + '</b><span class="tiny muted">未来</span></div>' +
       '<div class="barnum">' + due + ' 个词预计到期</div>' +
-      '<button class="btn" id="btn-bar-list" data-list="predict:future">查看待学单词</button>'
-    : '<div class="barhd"><b>' + dateKey + '</b></div>' +
-      '<div class="bargrid">' +
-      '<div><span>新学</span><b>' + num(d.new, 0) + '</b></div>' +
-      '<div><span>复习</span><b>' + num(d.review, 0) + '</b></div>' +
-      '<div><span>测试</span><b>' + num(d.testN, 0) + '</b></div>' +
-      '<div><span>用时</span><b>' + fmtDur(num(d.ms, 0)) + '</b></div>' +
-      '<div><span>认识</span><b>' + (num(d.fast, 0) + num(d.slow, 0) + num(d.know, 0)) + '</b></div>' +
-      '<div><span>记得住的比例</span><b>' + (num(d.count, 0) ? Math.round((num(d.fast, 0) + num(d.slow, 0) + num(d.know, 0)) / num(d.count, 0) * 100) + '%' : '-') + '</b></div>' +
-      '</div>' +
-      '<button class="btn" id="btn-bar-list" data-list="date:' + dateKey + '">查看当天词表</button>';
-  mask.innerHTML = '<div class="barcard">' + inner + '<button class="btn ghost" id="btn-bar-close">关闭</button></div>';
+      '<button class="btn" id="btn-bar-list" data-list="predict:future">查看待学单词</button>' +
+      '<button class="btn ghost" id="btn-bar-close">关闭</button></div>';
+    mask.classList.add("on");
+    return;
+  }
+  var nw = num(d.new, 0), rv = num(d.review, 0), tn = num(d.testN, 0), tok = num(d.testOk, 0);
+  var ok = num(d.fast, 0) + num(d.slow, 0) + num(d.know, 0);
+  var fz = num(d.fuzzy, 0), no = num(d.no, 0) + num(d.timeout, 0);
+  var cells = "";
+  function cell(k, v) { cells += '<div><span>' + k + '</span><b>' + v + '</b></div>'; }
+  if (chartMode === "test") {
+    cell("测试对", tok); cell("测试错", Math.max(0, tn - tok)); cell("共做了", tn);
+  } else if (chartMode === "cog") {
+    cell("认识", ok); cell("模糊", fz); cell("忘记", no);
+    cell("认识率", (ok + fz + no) ? Math.round(ok / (ok + fz + no) * 100) + "%" : "-");
+  } else {
+    cell("新学", nw); cell("复习", rv); cell("合计", nw + rv);
+  }
+  cell("用时", fmtDur(num(d.ms, 0)));
+  mask.innerHTML = '<div class="barcard"><div class="barhd"><b>' + dateKey + '</b><span class="tiny muted">' + (chartMode === "test" ? "测试" : chartMode === "cog" ? "认知" : "学习量") + '</span></div>' +
+    '<div class="bargrid">' + cells + '</div>' +
+    '<button class="btn" id="btn-bar-list" data-list="date:' + dateKey + '">查看当天词表</button>' +
+    '<button class="btn ghost" id="btn-bar-close">关闭</button></div>';
   mask.classList.add("on");
 }
 function renderStats() {
@@ -3062,10 +3064,6 @@ function cell(n, l, listKey) {
 function kindNameOf(k) {
   var m = { fast: "快认", slow: "认识", know: "认识", fuzzy: "模糊", no: "不认识", timeout: "超时" };
   return m[k] || k || "";
-}
-function stars(L) {
-  var n = clamp(num(L, 0) + 1, 1, 5);
-  return "★★★★★".slice(0, n) + "☆☆☆☆☆".slice(0, 5 - n);
 }
 function lvBadge(L) {
   var n = clamp(L | 0, 0, 5);
@@ -3689,19 +3687,6 @@ function takeSnap(key) {
 }
 
 /* 滚动了 3 次还过不去：允许「跳过，明天再来」（记一次失误，明天正常复习） */
-function giveUpRelearn() {
-  var sess = S.session;
-  if (!sess || !sess.cur || sess.cur.mode !== "relearn") return;
-  var key = sess.cur.k, t = today();
-  var r = getRec(sess.deckId, key) || ensureRec(sess.deckId, key);
-  r.L = 0; r.stage = 0; r.due = addDays(t, 1);
-  r.lapses++; r.wrongCount++;
-  delete sess.relearn[key];
-  dropPending(key, "relearn");
-  saveNow();
-  toast("这个词先放到明天");
-  nextQuestion();
-}
 
 /* 改判：target = known | fuzzy | no。
    做法是把状态回滚到作答前那份快照，再用新判定重算一遍（分数/等级/复习计划/重学队列全部重算）。 */
@@ -4081,6 +4066,8 @@ function bind() {
     if (c) { chartMode = c.getAttribute("data-cmode"); renderStats(); return; }
     var b = el && el.closest ? el.closest("[data-bar]") : null;
     if (b) { showBarCard(b.getAttribute("data-bar")); return; }
+    var eb = el && el.closest ? el.closest("[data-ebb]") : null;
+    if (eb) { showEbbingCard(eb.getAttribute("data-ebb")); return; }
     var f = el && el.closest ? el.closest("[data-list]") : null;
     if (f) { listKind = f.getAttribute("data-list"); renderList(listKind); show("list"); return; }
     var go = el && el.closest ? el.closest("#btn-stats-go") : null;
@@ -4209,7 +4196,6 @@ function bind() {
   on("#btn-test-start", "click", startTest);
   on("#btn-test-quit", "click", function () {
     if (!T || T.finished) { T = null; navStack.length = 0; renderHome(); show("home", { noPush: true }); return; }
-    if (!window.confirm("结束这次测试？已答的题会算进结果。")) return;
     finishTest();
   });
   on("#test-src", "click", function (ev) {
@@ -4240,7 +4226,7 @@ function bind() {
   });
   on("#btn-test-quit2", "click", function () {
     hideTestPause();
-    if (window.confirm("结束本次测试并看成绩？")) finishTest();
+    finishTest();
   });
   on("#test-body", "click", function (ev) {
     var t = ev.target;
@@ -5445,9 +5431,23 @@ function renderTestQ() {
   body.innerHTML = '<div class="tprog"><i style="width:' + pct + '%"></i></div>' +
     '<div class="tqwrap"><div class="tqcol">' + left + '</div><div class="tocol">' + right + '</div></div>' +
     '<div class="tiny muted thint" style="margin-top:14px;text-align:center">' + hint + '</div>';
+  fitTestWord();
   if (it.opts || it.qt === "flash") startTestTimer(it);
 }
 
+function fitTestWord() {
+  var el = document.querySelector("#scr-test .tword");
+  if (!el) return;
+  var box = el.parentElement;
+  var w = (box && box.clientWidth) ? box.clientWidth : window.innerWidth;
+  var len = Math.max(1, (el.textContent || "").length);
+  var maxByH = Math.round(window.innerHeight * 0.20);
+  var byW = Math.round((w - 14) / (len * 0.62));
+  var size = Math.max(16, Math.min(maxByH, byW, 80));
+  el.style.fontSize = size + "px";
+  el.style.whiteSpace = "nowrap";
+  el.style.overflow = "hidden";
+}
 function finishTest() {
   if (!T) return;
   T.finished = true;
@@ -5458,6 +5458,7 @@ function finishTest() {
     var tday = statDay(today());
     tday.ms = num(tday.ms, 0) + used;
     tday.testN = num(tday.testN, 0) + T.answers;
+    tday.testOk = num(tday.testOk, 0) + num(T.right, 0);
     tday.testMs = num(tday.testMs, 0) + used;
     runs.push({ d: today(), n: T.answers, right: T.right, ms: used, src: T.cfg.src, qts: T.cfg.qts.join("+") });
     if (runs.length > 20) runs = runs.slice(runs.length - 20);
