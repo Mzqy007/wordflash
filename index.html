@@ -527,6 +527,90 @@ body.ops-single:not(.wide).hand-left .tocol{margin-left:0;margin-right:auto}
 body.wide .hero{grid-template-columns:minmax(0,1fr) auto;justify-items:start;align-items:center}
 body.wide .hero .btn{justify-self:end}
 
+/* ================= A. 答题屏结构：操作区固定槽（翻面不跳） ================= */
+#game-wrap.game{display:flex;flex-direction:column;min-height:calc(100dvh - 24px)}
+#scr-game .gmain{flex:1 1 auto;min-height:0;overflow:hidden}
+#scr-game .gcol-side{min-height:0;overflow-y:auto}
+#scr-game #reveal-box{width:100%}
+.opslot{flex:0 0 auto;display:flex;align-items:stretch;width:100%;
+  height:calc(var(--app-btn-height,64px) + var(--app-btn-margin,0px));
+  padding-bottom:var(--app-btn-margin,0px);box-sizing:border-box}
+.opslot .btns{flex:1 1 auto}
+.opslot .fixbar{flex:1 1 auto;align-self:center}
+body.pos-bottom .opslot{align-self:center;width:100%}
+body.pos-bl .opslot{align-self:flex-start;width:min(78%,430px)}
+body.pos-br .opslot{align-self:flex-end;width:min(78%,430px)}
+
+/* 侧边位置：单词镜像到另一侧，操作区竖排 */
+body.pos-left #game-wrap.game .gmain{flex-direction:row-reverse}
+body.pos-right #game-wrap.game .gmain{flex-direction:row}
+body.pos-left .gcol-side,body.pos-right .gcol-side{justify-content:center}
+body.pos-left .opslot,body.pos-right .opslot{height:auto;align-items:stretch;padding-bottom:0}
+body.pos-left .btns,body.pos-right .btns{flex-direction:column;gap:10px}
+body.pos-left .btns .big,body.pos-right .btns .big{min-height:var(--app-btn-height,64px);font-size:17px}
+body.pos-left .fixbar,body.pos-right .fixbar{flex-direction:column}
+
+/* toast 移到顶部，绝不挡按钮 */
+.toast{top:14px;bottom:auto}
+
+/* ================= B. 主页：数字可点 + 输入弹层 + 横屏左右分栏 ================= */
+.cntnum{display:inline-flex;align-items:center;gap:8px;background:none;border:0;color:#fff;
+  font:inherit;cursor:pointer;padding:0;transition:transform .12s ease,opacity .12s ease}
+.cntnum:active{transform:scale(.97);opacity:.85}
+.cntnum .cntpen{font-size:14px;opacity:.75}
+.cntinput{width:100%;margin-top:14px;padding:12px 14px;font-size:22px;text-align:center;
+  border-radius:12px;border:1px solid #e3e6ea;background:#f7f8fa;color:#1b1d21}
+/* 横屏蓝卡：左数据 / 右按钮组 */
+@media (min-width:620px){
+  .hero{display:flex;flex-direction:row;align-items:center;gap:22px}
+  .hero > .k,.hero > .v,.hero > .tiny{order:1}
+  .hero .herobtns{order:2;margin:0 0 0 auto;display:flex;flex-direction:column;gap:10px;width:min(300px,38vw)}
+  .hero .herobtns .btn,.hero #btn-start{width:100%;margin:0}
+  .hero{flex-wrap:wrap}
+  .hero .k{width:100%;order:0}
+}
+
+/* ================= 预览（设置页） ================= */
+.pvwrap{display:flex;justify-content:center;padding:8px 0 4px;overflow:auto}
+.pv{width:238px;height:400px;flex:0 0 auto;border-radius:20px;background:#f4f5f7;
+  border:1px solid #e3e6ea;box-shadow:0 8px 24px rgba(0,0,0,.08);
+  display:flex;flex-direction:column;padding:14px;gap:8px;position:relative;overflow:hidden}
+.pv.pwide{width:400px;height:238px;flex-direction:row;align-items:stretch}
+.pvt{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:0}
+.pvword{font-weight:800;font-size:var(--pv-word-size,44px);line-height:1.05;white-space:nowrap}
+.pvphon{font-size:11px;color:#9aa0a8}
+.pvside{display:none;font-size:12.5px;color:#3d434b;line-height:1.4}
+.pv.pflip .pvside{display:block}
+.pvops{display:flex;gap:6px;padding-bottom:var(--pv-btn-m,24px);flex:0 0 auto}
+.pvbtn{flex:1;height:var(--pv-btn-h,64px);border-radius:10px;display:flex;align-items:center;
+  justify-content:center;font-size:12.5px;font-weight:650;background:#eaf7ee;color:#1f7a3d}
+.pvbtn:nth-child(2){background:#fdf6e3;color:#a97a12}
+.pvbtn:nth-child(3){background:#fff;color:#4a5058;box-shadow:inset 0 0 0 1px #e3e6ea}
+.pv.pbottom .pvops{width:100%}
+.pv.pbl .pvops{width:78%;margin-right:auto}
+.pv.pbr .pvops{width:78%;margin-left:auto}
+/* 横屏预览 + 左右侧位置：操作区竖排、单词在另一侧 */
+.pv.pwide.pleft .pvops,.pv.pwide.pright .pvops{flex-direction:column;padding:0;height:100%;width:34%}
+.pv.pwide.pleft .pvbtn,.pv.pwide.pright .pvbtn{flex:1;width:100%;height:auto}
+.pv.pwide.pleft{flex-direction:row-reverse}
+.pv.pwide.pleft .pvops{margin-right:0;margin-left:0}
+/* ================= 热力图：绿系 5 档 ================= */
+.hmcell.lv0{background:#eceff2}
+.hmcell.lv1{background:#d6efdc}
+.hmcell.lv2{background:#a9dfb8}
+.hmcell.lv3{background:#6fc888}
+.hmcell.lv4{background:#2f9e57}
+.hmlegend{display:flex;align-items:center;gap:6px;margin-top:10px}
+.hmlegend .hmcell{width:12px;height:12px;border-radius:3px;display:inline-block}
+.brow.clickable,.card.clickable{cursor:pointer}
+.brow.clickable:active,.card.clickable:active{opacity:.7}
+
+/* 横屏但未开「横屏模式」时：保持单列，但允许滚动，避免内容被裁掉 */
+@media (orientation: landscape) and (max-height: 560px){
+  body:not(.wide) #scr-game .gmain{overflow-y:auto;-webkit-overflow-scrolling:touch}
+  body:not(.wide) #scr-game .game{height:auto;min-height:calc(100dvh - 16px)}
+}
+
 </style>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
@@ -567,7 +651,7 @@ body.wide .hero .btn{justify-self:end}
 
     <div class="hero">
       <div class="k" id="home-kicker">今天还没开始</div>
-      <div class="bignum"><button class="cntbtn" id="home-cnt-m" aria-label="减少本轮题数">−</button><div class="v" id="home-today">0 词</div><button class="cntbtn" id="home-cnt-p" aria-label="增加本轮题数">＋</button></div>
+      <button class="v cntnum" id="home-cnt" aria-label="修改本轮题数"><span id="home-today">0 词</span><span class="cntpen" aria-hidden="true">✎</span></button>
       <button class="btn" id="btn-start">开始今天的学习</button>
       <div class="herobtns">
         <button class="btn test" id="btn-test">开始测试</button>
@@ -667,12 +751,14 @@ body.wide .hero .btn{justify-self:end}
           <button class="btn showans" id="btn-show" style="display:none">显示释义</button>
         </div>
       </div>
-      <div class="btns" id="gbtns">
-        <button class="big ok" id="btn-know">认识<small>1</small></button>
-        <button class="big fuzzy" id="btn-fuzzy">模糊<small>2</small></button>
-        <button class="big no" id="btn-no">不认识<small>3</small></button>
+      <div class="opslot" id="opslot">
+        <div class="btns" id="gbtns">
+          <button class="big ok" id="btn-know">认识<small>1</small></button>
+          <button class="big fuzzy" id="btn-fuzzy">模糊<small>2</small></button>
+          <button class="big no" id="btn-no">不认识<small>3</small></button>
+        </div>
+        <div class="fixbar" id="fixbar" style="display:none"></div>
       </div>
-      <div class="fixbar" id="fixbar" style="display:none"></div>
       <div class="hint" id="ghint">1 认识 · 2 模糊 · 3 不认识 · Esc 结束</div>
       <div class="pausemask" id="pause-mask" style="display:none"><div class="pausepanel">
         <div class="pt">已暂停</div><div class="ps">计时已冻结，进度不会丢</div>
@@ -759,6 +845,14 @@ body.wide .hero .btn{justify-self:end}
 <div class="toast" id="toast"></div>
 
 <!-- 测试配置面板（底部弹出） -->
+<div class="mask" id="cnt-mask" style="display:none"><div class="sheet" style="max-width:360px;margin:0 auto">
+  <div class="spread"><div class="strong" style="font-size:17px">这一轮做多少题？</div>
+    <button class="btn ghost small" id="btn-cnt-close">取消</button></div>
+  <div class="tiny muted" style="margin-top:6px">范围：5 到词库剩余；已答过的题不能减掉</div>
+  <input id="cnt-input" class="cntinput" type="number" inputmode="numeric" pattern="[0-9]*" step="1" min="5">
+  <button class="btn primary" id="btn-cnt-ok" style="margin-top:12px">确定</button>
+</div></div>
+
 <div class="pausemask" id="test-pause" style="display:none"><div class="pausepanel">
   <div class="pt">测试已暂停</div><div class="ps" id="test-pause-tip">连续两次没有作答，已自动暂停。点「继续」接着来。</div>
   <button class="btn primary" id="btn-test-resume">继续测试</button>
@@ -944,7 +1038,7 @@ function defaultSettings() {
     // 顽固词：累计错误到这个次数就打标（只在统计/生词本里提示，不影响调度）
     leechAt: 8,
   dayCutoff: 4,
-  ops: "double",
+  pos: "bottom", btnMargin: 24,
   wordSize: 44, btnHeight: 64,
   time: { studyFlash: 3000, studyRecall: 0, testFlash: 3000, testMeaning: 3000, testWord: 3000, testRecall: 0 },
   testLimitMs: 3000,
@@ -1009,7 +1103,10 @@ function loadState() {
           o.settings.revealMsV = 3;
         }
         if (o.settings) {
-          if (o.settings.wideSwap === true && !o.settings.ops) o.settings.ops = "left";
+          if (!o.settings.pos) {
+            var legacy = o.settings.ops || "double";
+            o.settings.pos = legacy === "right" ? "br" : legacy === "left" ? "bl" : "bottom";
+          }
           /* 计时迁移必须在合并默认值之前做：否则默认 time 会覆盖旧 limitMs */
           if (!o.settings.time) {
             o.settings.time = { studyFlash: num(o.settings.limitMs, 3000), studyRecall: 0,
@@ -1391,6 +1488,20 @@ function levelDist(deckId) {
   return a;
 }
 
+function curCount() {
+  return (S.settings.countValue === "all") ? 200
+    : clamp(Math.round(num(S.settings.countValue, 20)), 5, 200);
+}
+function setCount(v) {
+  S.settings.countValue = clamp(Math.round(v), 5, 200);
+  if (S.session && !S.session.finished && S.session.plan) {
+    /* 暂停中的轮次：直接改这一轮的目标题数（不能小于已答） */
+    S.session.plan.total = Math.max(num(S.session.firstDone, 0), S.session.plan.total);
+  }
+  saveNow();
+  renderHome();
+  toast("这一轮 " + S.settings.countValue + " 题");
+}
 function countN() {
   var cv = S.settings.countValue;
   if (cv === "all") return 99999;
@@ -1838,36 +1949,32 @@ function applyWideSwap() {
       ds.setProperty("--app-word-size", clamp(num(S.settings.wordSize, 44), 32, 80) + "px");
     }
   } catch (e) {}
-  var ops = (S.settings && S.settings.ops) || "double";
-  var single = ops === "right" || ops === "left";
-  document.body.classList.toggle("ops-single", single);
-  document.body.classList.toggle("hand-left", ops === "left");
-  document.body.classList.toggle("wide-swap", ops === "left");
+  var pos = (S.settings && S.settings.pos) || "bottom";
+  ["bottom", "bl", "br", "left", "right"].forEach(function (p) {
+    document.body.classList.toggle("pos-" + p, p === pos);
+  });
+  var side = pos === "left" || pos === "right";
+  document.body.classList.toggle("ops-single", side);
+  document.body.classList.toggle("hand-left", pos === "left");
+  document.body.classList.toggle("wide-swap", pos === "left");
   layoutOps();
 }
 
 /* 单手模式：宽屏时把「判定键 + 改判条」移进拇指那侧的列，竖屏/双手时移回底部 */
 function layoutOps() {
-  var game = $("#scr-game");
-  if (!game) return;
-  var side = game.querySelector(".gcol-side");
-  var btns = $("#gbtns"), fix = $("#fixbar"), hint = $("#ghint");
-  if (!btns || !side || !hint) return;
-  var single = document.body.classList.contains("ops-single") && document.body.classList.contains("wide");
-  var canMove = typeof game.insertBefore === "function" && typeof side.appendChild === "function";
+  var wrap = $("#game-wrap");
+  if (!wrap) return;
+  var side = wrap.querySelector(".gcol-side");
+  var slot = $("#opslot"), hint = $("#ghint");
+  if (!slot || !hint) return;
+  var pos = (S.settings && S.settings.pos) || "bottom";
+  var isSide = pos === "left" || pos === "right";
+  var canMove = typeof wrap.insertBefore === "function" && side && typeof side.appendChild === "function";
   if (!canMove) return;
   try {
-    if (single) {
-      if (btns.parentNode !== side) {
-        if (fix) side.appendChild(fix);
-        side.appendChild(btns);
-      }
-    } else if (btns.parentNode !== game) {
-      if (fix && fix.parentNode !== game) game.insertBefore(fix, hint);
-      game.insertBefore(btns, hint);
-    }
+    if (isSide) { if (slot.parentNode !== side) side.appendChild(slot); }
+    else if (slot.parentNode !== wrap) { wrap.insertBefore(slot, hint); }
   } catch (e) {}
-
 }
 
 var TAB_SCREENS = ["home", "lib", "stats", "me"];
@@ -1980,7 +2087,7 @@ function renderHome() {
   var total = plan.total;
   var blN = plan.backlog;
   $("#home-today").textContent = total + " 词";
-  $("#home-sub").textContent = "已复习 " + num(d.reviewDone, 0) + "/" + revTake + " · 新学 " + num(d.newDone, 0) + "/" + newTake;
+  $("#home-sub").textContent = "复习 " + num(d.reviewDone, 0) + "/" + revTake + " · 新学 " + num(d.newDone, 0) + "/" + newTake;
   var modeName = (S.settings.mode === "learn") ? "背记" : "闪过";
   var live = (S.session && !S.session.finished && S.session.queue) ? S.session : null;
   if (live) {
@@ -2176,9 +2283,10 @@ function retention() {
   }
   return { ok: ok, tot: tot, rate: tot ? Math.round(ok / tot * 100) : 0 };
 }
-function barRow(label, v, max, unit) {
+function barRow(label, v, max, unit, listKey) {
   var pct = max > 0 ? Math.round(v / max * 100) : 0;
-  return '<div class="brow"><span class="bl">' + esc(label) + '</span><span class="bt"><i style="width:' + pct + '%"></i></span>' +
+  var attrs = listKey ? ' class="brow clickable" data-list="' + esc(listKey) + '"' : ' class="brow"';
+  return '<div' + attrs + '><span class="bl">' + esc(label) + '</span><span class="bt"><i style="width:' + pct + '%"></i></span>' +
     '<span class="bv">' + esc(v) + (unit || "") + '</span></div>';
 }
 function heatmapHtml() {
@@ -2201,7 +2309,10 @@ function heatmapHtml() {
     }
     html += '</div>';
   }
-  html += '</div><div class="tiny muted" style="margin-top:8px">每格一天：新学 + 复习 + 测试题数</div></div>';
+  html += '</div><div class="hmlegend"><span class="tiny muted">少</span>' +
+    '<i class="hmcell lv0"></i><i class="hmcell lv1"></i><i class="hmcell lv2"></i><i class="hmcell lv3"></i><i class="hmcell lv4"></i>' +
+    '<span class="tiny muted">多</span></div>' +
+    '<div class="tiny muted" style="margin-top:8px">每格一天：新学 + 复习 + 测试题数；颜色越深越多</div></div>';
   return html;
 }
 
@@ -2235,6 +2346,21 @@ function renderStats() {
   var mo = monthStats();
   var rt = retention();
   var html = "";
+
+  // 学习时长：今日 / 累计 / 学习·测试分项（累计可点开按天列表）
+  (function () {
+    var allMs = sumDays("ms"), testMs = sumDays("testMs"), studyMs = Math.max(0, allMs - testMs);
+    var todayMs = num(todayD.ms, 0);
+    html += '<div class="card" style="margin-bottom:12px">' +
+      '<div class="spread"><div class="strong" style="font-size:16px">学习时长</div>' +
+      '<div class="tiny muted">累计自 2026-11-03 起</div></div>' +
+      '<div class="spread" style="margin-top:10px;align-items:flex-end">' +
+        '<div><div class="statbig">' + fmtDur(todayMs) + '</div><div class="tiny muted">今天</div></div>' +
+        '<button class="btn ghost small" data-list="days">累计 ' + fmtDur(allMs) + ' ›</button>' +
+      '</div>' +
+      '<div class="tiny muted" style="margin-top:8px">其中学习 ' + fmtDur(studyMs) + ' · 测试 ' + fmtDur(testMs) + '</div>' +
+      '</div>';
+  })();
 
   // 今天该干什么（行动卡）：把数字翻译成一句可执行的话
   (function () {
@@ -2298,7 +2424,7 @@ function renderStats() {
     '<div class="hlab"><span>' + days[0].d.slice(5) + '</span><span>今天</span></div></div>';
 
   // 记忆保留率
-  html += '<div class="card" style="margin-top:12px"><h2 style="margin:0 0 6px">复习正确率</h2>' +
+  html += '<div class="card clickable" data-list="reviewWords" style="margin-top:12px"><h2 style="margin:0 0 6px">复习正确率 <span class="tiny muted">点开看词</span></h2>' +
     '<div class="tiny muted">最近 30 天，到期的词再考一次时答对（认识/快认）的比例</div>' +
     '<div style="font-size:26px;font-weight:800;margin-top:8px">' + rt.rate + '%' +
     '<span class="tiny muted" style="font-weight:500"> · ' + rt.ok + '／' + rt.tot + ' 次</span></div>' +
@@ -2316,19 +2442,19 @@ function renderStats() {
       if (lv[L] > lvMax) lvMax = lv[L];
     }
     html += '<div class="card" style="margin-top:12px"><h2 style="margin:0 0 10px">等级分布</h2><div class="bars">' +
-      lv.map(function (v, i) { return barRow("L" + i + " " + LV_NAME[i], v, lvMax, ""); }).join("") + '</div></div>';
+      lv.map(function (v, i) { return barRow("L" + i + " " + LV_NAME[i], v, lvMax, "", "level:" + i); }).join("") + '</div></div>';
   }
 
   // 回答分布
   var tot = sumDays(), dist = [
-    ["快认", num(tot.fast, 0)], ["认识", num(tot.slow, 0) + num(tot.know, 0)],
-    ["模糊", num(tot.fuzzy, 0)], ["不认识", num(tot.no, 0)], ["超时", num(tot.timeout, 0)]
+    ["快认", num(tot.fast, 0), "fast"], ["认识", num(tot.slow, 0) + num(tot.know, 0), "slow"],
+    ["模糊", num(tot.fuzzy, 0), "fuzzy"], ["不认识", num(tot.no, 0), "no"], ["超时", num(tot.timeout, 0), "timeout"]
   ];
   var dmax = Math.max.apply(null, dist.map(function (x) { return x[1]; }).concat([1]));
   dist.push(["回放/巩固", num(tot.practiceN, 0)]);
   dmax = Math.max.apply(null, dist.map(function (x) { return x[1]; }).concat([1]));
   html += '<div class="card" style="margin-top:12px"><h2 style="margin:0 0 10px">答过的题（累计）</h2><div class="bars">' +
-    dist.map(function (x) { return barRow(x[0], x[1], dmax, ""); }).join("") + '</div></div>';
+    dist.map(function (x) { return barRow(x[0], x[1], dmax, "", "kind:" + (x[2] || "")); }).join("") + '</div></div>';
 
   // 最清醒时段
   var hs = [], hmax = 0;
@@ -2466,6 +2592,22 @@ function rowHtml(w, extra, right, key) {
 
 /* ---------------- 界面：设置 ---------------- */
 var setupDeckId = null;
+function pvApply() {
+  var pv = $("#pv");
+  if (!pv) return;
+  var st = S.settings, pos = st.pos || "bottom";
+  ["bottom", "bl", "br", "left", "right"].forEach(function (p) { pv.classList.toggle("p" + p, p === pos); });
+  pv.classList.toggle("pwide", !!pv.dataset.wide);
+  pv.classList.toggle("pflip", !!pv.dataset.flip);
+  var root = document.documentElement;
+  if (root && root.style && root.style.setProperty) {
+    try {
+      root.style.setProperty("--pv-word-size", clamp(num(st.wordSize, 44), 32, 80) + "px");
+      root.style.setProperty("--pv-btn-h", clamp(num(st.btnHeight, 64), 60, 120) + "px");
+      root.style.setProperty("--pv-btn-m", clamp(num(st.btnMargin, 24), 0, 100) + "px");
+    } catch (e) {}
+  }
+}
 function renderSetup(deckId) {
   setupDeckId = deckId;
   var dk = deckById(deckId);
@@ -2479,14 +2621,32 @@ function renderSetup(deckId) {
     '<button class="chip' + (st.mode !== "learn" ? " on" : "") + '" id="set-mode-flash">闪过</button>' +
     '<button class="chip' + (st.mode === "learn" ? " on" : "") + '" id="set-mode-learn">背记</button>' +
     '</div></div>';
-  var opsNow = st.ops || "double";
-  html += '<div class="field"><div><div class="lab">操作方式</div>' +
-    '<div class="sub">单手＝按钮和释义都在同一边（拇指侧）；双手＝按钮横铺，左右手各一半</div></div></div>';
-  html += '<div class="row" id="set-ops">' +
-    '<button class="chip' + (opsNow === "double" ? " on" : "") + '" id="set-ops-double">双手</button>' +
-    '<button class="chip' + (opsNow === "right" ? " on" : "") + '" id="set-ops-right">单手·右手</button>' +
-    '<button class="chip' + (opsNow === "left" ? " on" : "") + '" id="set-ops-left">单手·左手</button>' +
-    '</div>';
+  var posNow = st.pos || "bottom";
+  var POSES = [["bottom", "底部居中"], ["bl", "左下"], ["br", "右下"], ["left", "左侧"], ["right", "右侧"]];
+  html += '<div class="field"><div><div class="lab">操作区位置</div>' +
+    '<div class="sub">按钮放在这一侧；选左右时单词自动镜像到另一边。答题界面锁定不可调。</div></div></div>';
+  html += '<div class="chips" id="set-pos">' + POSES.map(function (p) {
+    return '<button class="chip' + (posNow === p[0] ? " on" : "") + '" data-pos="' + p[0] + '">' + p[1] + '</button>';
+  }).join("") + '</div>';
+  html += '<div class="field"><div><div class="lab">主字号</div><div class="sub">单词显示大小</div></div>' +
+    '<div class="row"><input type="range" id="set-word-size" min="32" max="80" step="2" value="' + num(st.wordSize, 44) + '">' +
+    '<span class="mono" id="set-word-size-v">' + num(st.wordSize, 44) + 'px</span></div></div>';
+  html += '<div class="field"><div><div class="lab">按钮高度</div><div class="sub">判定键高度</div></div>' +
+    '<div class="row"><input type="range" id="set-btn-h" min="60" max="120" step="2" value="' + num(st.btnHeight, 64) + '">' +
+    '<span class="mono" id="set-btn-h-v">' + num(st.btnHeight, 64) + 'px</span></div></div>';
+  html += '<div class="field"><div><div class="lab">按钮底边距</div><div class="sub">按钮距屏幕底部的高度</div></div>' +
+    '<div class="row"><input type="range" id="set-btn-margin" min="0" max="100" step="4" value="' + num(st.btnMargin, 24) + '">' +
+    '<span class="mono" id="set-btn-margin-v">' + num(st.btnMargin, 24) + 'px</span></div></div>';
+  html += '<div class="field"><div><div class="lab">实时预览</div><div class="sub">改上面任何一项这里立刻变；点下面按钮可切竖横与翻面</div></div></div>';
+  html += '<div class="pvwrap"><div class="pv" id="pv">' +
+      '<div class="pvt"><span class="pvword">abandon</span><span class="pvphon">/əˈbændən/</span></div>' +
+      '<div class="pvside" id="pv-side">v. 放弃，抛弃；n. 放纵</div>' +
+      '<div class="pvops" id="pv-ops"><span class="pvbtn">认识</span><span class="pvbtn">模糊</span><span class="pvbtn">不认识</span></div>' +
+    '</div></div>';
+  html += '<div class="chips" id="set-pv">' +
+    '<button class="chip" id="btn-pv-orient">竖屏预览</button>' +
+    '<button class="chip" id="btn-pv-flip">显示释义</button>' +
+    '<button class="chip" id="btn-ui-reset">恢复默认</button></div>';
   html += '<hr>';
   html += '<div class="field"><div><div class="lab">每组题数</div><div class="sub">一轮首次出场的词数</div></div></div>';
   html += '<div class="chips" id="set-count">' + [10, 20, 40, 60].map(function (n) {
@@ -2592,6 +2752,7 @@ function renderSetup(deckId) {
   html += '<div class="tiny muted" style="margin-top:16px">规则：快认 +3 起步 L5，10 天后复习；认识 +1 起步 L3，4 天后复习；模糊 0 分起步 L2，3 天后复习、当天回看一次；不认识/超时 −2/−3 起步 L0，当天滚动（连续答对 4 次才过，不放走），明天再复习。复习时答对升一级，答错掉回 L0 并当天滚动。</div>';
   $("#setup-title").textContent = dk.name + " · 设置";
   $("#setup-body").innerHTML = html;
+  pvApply();
   /* 额度行需要实时数字（到期/未学） */
   (function () {
     var pl = planRound(deckId);
@@ -2770,6 +2931,8 @@ function pauseRound() {
 function resumeRound() {
   if (!G.paused) return;
   G.paused = false;
+  G.zeroStreak = 0;
+  if (G.autoPaused) { G.autoPaused = false; G.startAt = performance.now(); }
   var d = performance.now() - (G.pauseAt || performance.now());
   G.startAt += d;
   var pm = $("#pause-mask");
@@ -2808,7 +2971,10 @@ function tickTimer() {
 function doAnswer(kind) {
   if (!S.session || !S.session.cur) return;
   if (G.answered || G.paused) return;
-  if (kind === "timeout") { G.zeroStreak = (G.zeroStreak || 0) + 1; } else { G.zeroStreak = 0; }
+  if (kind === "timeout") {
+    G.zeroStreak = (G.zeroStreak || 0) + 1;
+    if (G.zeroStreak >= 3) { G.autoPaused = true; autoPauseGame(); return; }
+  } else { G.zeroStreak = 0; }
   var st = S.settings;
   var now = performance.now();
   var ms;
@@ -2858,7 +3024,7 @@ function doAnswer(kind) {
   var out = submitAnswer(kind, ms);
   if (!out) return;
   renderReveal(out);
-  if ((G.zeroStreak || 0) >= 2) { autoPauseGame(); return; }
+  
   scheduleSave();
 }
 
@@ -3411,6 +3577,12 @@ function bind() {
   });
   on("#btn-go-stats", "click", function () { goTab("stats"); });
   on("#stats-body", "click", function (ev) {
+    var dl = ev.target && ev.target.closest && ev.target.closest("[data-list]");
+    if (dl) {
+      var lk = dl.getAttribute("data-list");
+      if (lk && lk.indexOf("kind:") === 0 && lk.length <= 7) return;
+      renderList(lk); show("list"); return;
+    }
     var b = ev.target.closest && ev.target.closest("#btn-stats-go");
     if (!b) return;
     var deck = S.decks[0];
@@ -3472,15 +3644,34 @@ function bind() {
   on("#btn-quit", "click", quitSession);
 
   /* ---- 首页模式切换 ---- */
-  function bumpCount(dv) {
-    var cur = (S.settings.countValue === "all") ? 200 : clamp(Math.round(num(S.settings.countValue, 20)), 5, 200);
-    S.settings.countValue = clamp(cur + dv, 5, 200);
-    saveNow();
-    renderHome();
-    toast("本轮 " + S.settings.countValue + " 题");
+  function countBounds() {
+    var deck = S.decks[0];
+    var total = deck ? deckStats(deck).total : 20;
+    var live = (S.session && !S.session.finished && S.session.plan) ? num(S.session.plan.total, 0) : 0;
+    var doneN = (S.session && !S.session.finished) ? num(S.session.firstDone, 0) : 0;
+    var lo = live ? Math.max(5, doneN) : 5;
+    var hi = Math.max(lo, Math.min(200, total));
+    return { lo: lo, hi: hi };
   }
-  on("#home-cnt-m", "click", function () { bumpCount(-10); });
-  on("#home-cnt-p", "click", function () { bumpCount(10); });
+  on("#home-cnt", "click", function () {
+    var b = countBounds();
+    var inp = $("#cnt-input");
+    if (inp) { inp.min = b.lo; inp.max = b.hi; inp.value = String(curCount()); }
+    var m = $("#cnt-mask"); if (m) m.style.display = "flex";
+    setTimeout(function () { if (inp) { try { inp.focus(); inp.select(); } catch (e) {} } }, 60);
+  });
+  on("#btn-cnt-close", "click", function () { var m = $("#cnt-mask"); if (m) m.style.display = "none"; });
+  on("#cnt-mask", "click", function (ev) { if (ev.target && ev.target.id === "cnt-mask") ev.target.style.display = "none"; });
+  on("#btn-cnt-ok", "click", function () {
+    var b = countBounds(), inp = $("#cnt-input");
+    var v = Math.round(num(inp && inp.value, curCount()));
+    if (!isFinite(v) || v < b.lo || v > b.hi) {
+      toast("请输入 " + b.lo + " 到 " + b.hi + " 之间的数字");
+      return;
+    }
+    setCount(v);
+    var m = $("#cnt-mask"); if (m) m.style.display = "none";
+  });
   on("#home-mode", "click", function (ev) {
     var b = ev.target.closest && ev.target.closest(".chip[data-mode]");
     if (!b) return;
@@ -3683,6 +3874,30 @@ function bind() {
   on("#btn-books-back", "click", function () { goBack(); });
 
   // 横竖屏开关（主页右上角）
+  on("#set-pos", "click", function (ev) {
+    var v = ev.target && ev.target.getAttribute && ev.target.getAttribute("data-pos");
+    if (!v) return;
+    S.settings.pos = v;
+    saveNow(); applyLayout(); renderSetup(setupDeckId);
+    toast("操作区：" + ({ bottom: "底部居中", bl: "左下", br: "右下", left: "左侧", right: "右侧" }[v] || v));
+  });
+  on("#btn-pv-orient", "click", function () {
+    var pv = $("#pv"); if (!pv) return;
+    pv.dataset.wide = pv.dataset.wide ? "" : "1";
+    pvApply();
+    this.textContent = pv.dataset.wide ? "横屏预览" : "竖屏预览";
+  });
+  on("#btn-pv-flip", "click", function () {
+    var pv = $("#pv"); if (!pv) return;
+    pv.dataset.flip = pv.dataset.flip ? "" : "1";
+    pvApply();
+    this.textContent = pv.dataset.flip ? "隐藏释义" : "显示释义";
+  });
+  on("#btn-ui-reset", "click", function () {
+    S.settings.pos = "bottom"; S.settings.wordSize = 44; S.settings.btnHeight = 64; S.settings.btnMargin = 24;
+    saveNow(); applyLayout(); renderSetup(setupDeckId);
+    toast("界面已恢复默认");
+  });
   on("#btn-orient", "click", function () {
     var next = isWideNow() ? "portrait" : "landscape";
     S.settings.orientMode = next;
@@ -3789,12 +4004,27 @@ function bind() {
       return;
     }
     if (t.id === "set-undo") { S.settings.fastUndo = !S.settings.fastUndo; saveNow(); renderSetup(setupDeckId); return; }
-    if (t.id === "set-ops-double" || t.id === "set-ops-right" || t.id === "set-ops-left") {
-      S.settings.ops = t.id === "set-ops-double" ? "double" : (t.id === "set-ops-right" ? "right" : "left");
-      saveNow();
-      applyLayout();
-      renderSetup(setupDeckId);
-      toast(S.settings.ops === "double" ? "已切到双手" : (S.settings.ops === "right" ? "已切到单手·右手" : "已切到单手·左手"));
+    if (t.getAttribute && t.getAttribute("data-pos")) {
+      var po = t.getAttribute("data-pos");
+      S.settings.pos = po;
+      saveNow(); applyLayout(); renderSetup(setupDeckId);
+      toast("操作区：" + ({ bottom: "底部居中", bl: "左下", br: "右下", left: "左侧", right: "右侧" }[po] || po));
+      return;
+    }
+    if (t.id === "btn-pv-orient") {
+      var pv1 = $("#pv"); if (pv1) { pv1.dataset.wide = pv1.dataset.wide ? "" : "1"; pvApply(); }
+      t.textContent = (pv1 && pv1.dataset.wide) ? "横屏预览" : "竖屏预览";
+      return;
+    }
+    if (t.id === "btn-pv-flip") {
+      var pv2 = $("#pv"); if (pv2) { pv2.dataset.flip = pv2.dataset.flip ? "" : "1"; pvApply(); }
+      t.textContent = (pv2 && pv2.dataset.flip) ? "隐藏释义" : "显示释义";
+      return;
+    }
+    if (t.id === "btn-ui-reset") {
+      S.settings.pos = "bottom"; S.settings.wordSize = 44; S.settings.btnHeight = 64; S.settings.btnMargin = 24;
+      saveNow(); applyLayout(); renderSetup(setupDeckId);
+      toast("界面已恢复默认");
       return;
     }
     if (t.id === "set-mode-flash" || t.id === "set-mode-learn") {
@@ -3859,6 +4089,21 @@ function bind() {
       S.settings.fastRatio = Number(t.value);
       $("#set-fast-v").textContent = (S.settings.limitMs * S.settings.fastRatio / 1000).toFixed(2) + "s";
       saveNow(); return;
+    }
+    if (t.id === "set-word-size") {
+      S.settings.wordSize = clamp(Math.round(Number(t.value) || 44), 32, 80);
+      var wl = $("#set-word-size-v"); if (wl) wl.textContent = S.settings.wordSize + "px";
+      pvApply(); applyLayout(); saveNow(); return;
+    }
+    if (t.id === "set-btn-h") {
+      S.settings.btnHeight = clamp(Math.round(Number(t.value) || 64), 60, 120);
+      var bl = $("#set-btn-h-v"); if (bl) bl.textContent = S.settings.btnHeight + "px";
+      pvApply(); applyLayout(); saveNow(); return;
+    }
+    if (t.id === "set-btn-margin") {
+      S.settings.btnMargin = clamp(Math.round(Number(t.value) || 24), 0, 100);
+      var ml = $("#set-btn-margin-v"); if (ml) ml.textContent = S.settings.btnMargin + "px";
+      pvApply(); applyLayout(); saveNow(); return;
     }
     var m = { "set-new": "newPerDay", "set-review": "reviewPerDay", "sc-fast": "scoreFast", "sc-slow": "scoreSlow", "sc-fuzzy": "scoreFuzzy", "sc-no": "scoreNo", "sc-to": "scoreTimeout" };
     if (m[t.id] !== undefined) { S.settings[m[t.id]] = Number(t.value) || 0; saveNow(); return; }
@@ -4230,11 +4475,74 @@ function renderList(kind) {
   var t = today();
   var titles = {
     todayNew: "今天新学的词", todayReview: "今天复习的词", due: "到期积压",
-    mastered: "已掌握", weak: "生词（L0–L2）", level: "全部等级"
+    mastered: "已掌握", weak: "生词（L0–L2）", level: "全部等级",
+    reviewWords: "复习过的词", days: "每天的学习量"
   };
-  $("#list-title").textContent = titles[kind] || "列表";
+  var kindName = { fast: "快认", slow: "认识", know: "认识", fuzzy: "模糊", no: "不认识", timeout: "超时" };
+  var dyn = String(kind || "");
+  var mLevel = dyn.match(/^level:([0-5])$/);
+  var mKind = dyn.match(/^kind:([a-z]+)$/);
+  var ttl = titles[kind];
+  if (mLevel) ttl = "等级 L" + mLevel[1] + " 的词";
+  if (mKind) ttl = "判过「" + (kindName[mKind[1]] || mKind[1]) + "」的词";
+  $("#list-title").textContent = ttl || "列表";
   var recs = recsOf(deck.id);
   var html = "", rows = [];
+
+  /* 按天列表（点累计时长进入） */
+  if (kind === "days") {
+    var dsArr = [];
+    for (var dd in s.days) if (Object.prototype.hasOwnProperty.call(s.days, dd)) dsArr.push(dd);
+    dsArr.sort().reverse();
+    html = dsArr.length ? dsArr.map(function (dsx) {
+      var d0 = sdd[dsx];
+      return '<div class="listrow"><div class="lmain"><div class="lw">' + esc(dsx) + '</div>' +
+        '<div class="lm">' + num(d0.count, 0) + ' 题 · 新学 ' + num(d0.new, 0) + ' · 复习 ' + num(d0.review, 0) + '</div></div>' +
+        '<div class="lright mono">' + fmtDur(num(d0.ms, 0)) + '</div></div>';
+    }).join("") : '<div class="empty">还没有学习记录。</div>';
+    body.innerHTML = html; return;
+  }
+
+  /* 等级 / 判定 两种穿透 */
+  if (mLevel || mKind) {
+    var pool = [];
+    for (var k1 in recs) {
+      if (!Object.prototype.hasOwnProperty.call(recs, k1)) continue;
+      var r1 = recs[k1];
+      if (mLevel) {
+        if (r1.graduated) continue;
+        if (num(r1.L, 0) !== num(mLevel[1], 0)) continue;
+      } else {
+        var h = r1.hist || [], lastKind = h.length ? (histDecode(h[h.length - 1]) || {}).k : "";
+        if (lastKind !== mKind[1]) continue;
+      }
+      pool.push(k1);
+    }
+    for (var p2 = 0; p2 < pool.length && rows.length < 300; p2++) {
+      var w2 = wordByKey(deck.id, pool[p2]);
+      var r2 = recs[pool[p2]];
+      rows.push(rowHtml(w2, "L" + num(r2.L, 0) + " · " + (r2.due || ""), "", pool[p2]));
+    }
+    html = rows.length ? '<div class="tiny muted" style="margin:4px 0 8px">共 ' + pool.length + ' 个</div>' + rows.join("")
+      : '<div class="empty">这一类还没有词。</div>';
+    body.innerHTML = html;
+    return;
+  }
+  if (kind === "reviewWords") {
+    var pw = [];
+    for (var k3 in recs) {
+      if (!Object.prototype.hasOwnProperty.call(recs, k3)) continue;
+      if (num(recs[k3].reviewCount, 0) > 0) pw.push(k3);
+    }
+    for (var p3 = 0; p3 < pw.length && rows.length < 300; p3++) {
+      var r3 = recs[pw[p3]];
+      rows.push(rowHtml(wordByKey(deck.id, pw[p3]), num(r3.reviewCount, 0) + " 次 · 正确率待看", "", pw[p3]));
+    }
+    html = rows.length ? '<div class="tiny muted" style="margin:4px 0 8px">共 ' + pw.length + ' 个</div>' + rows.join("")
+      : '<div class="empty">还没有复习过的词。</div>';
+    body.innerHTML = html;
+    return;
+  }
   if (kind === "todayNew" || kind === "todayReview") {
     var want = (kind === "todayNew") ? "first" : "review";
     var s = ensureStats();
@@ -4472,8 +4780,9 @@ function testNext(it) {
 function testTimeUp(it) {
   clearTestTimer();
   it.timedOut = true;
-  T.zeroStreak = (T.zeroStreak || 0) + 1;
-  if (T.zeroStreak >= 2) { showTestPause(); }
+  var znext = (T.zeroStreak || 0) + 1;
+  if (znext >= 3) { T.zeroStreak = znext; T.paused = true; showTestPause(); return; }
+  T.zeroStreak = znext;
   it.ms = Date.now() - (it.qStart || Date.now());
   if (it.opts) it.chosen = -2; else it.sub = "timeout";
   T.answers++;
@@ -4496,6 +4805,7 @@ function hideTestPause() {
 }
 
 function answerTestObj(oi) {
+  if (T) T.zeroStreak = 0;
   if (!T || T.finished) return;
   var it = T.items[T.idx];
   if (!it || !it.opts || it.chosen !== null) return;
@@ -4512,6 +4822,7 @@ function answerTestObj(oi) {
   testNext(it);
 }
 function answerTestSub(kind) {
+  if (T) T.zeroStreak = 0;
   if (!T || T.finished) return;
   var it = T.items[T.idx];
   if (!it || it.opts || it.sub !== null) return;
