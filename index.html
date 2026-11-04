@@ -2397,11 +2397,18 @@ function doInstall() {
       return;
     } catch (e) {}
   }
-  var msg = "这个浏览器不支持一键安装。\n\n" +
-    "① 用 Chrome 打开本页\n" +
-    "② 点右上角「⋮」→ 选「安装应用」（不是「添加到主屏幕」）\n" +
-    "③ 回到桌面，用新图标打开，应没有地址栏\n\n" +
-    "若菜单里只有「添加到主屏幕」、装出来还带地址栏：说明那是旧的网页快捷方式 —— 先删掉旧图标再装。";
+  var ua = navigator.userAgent || "";
+  var isSam = /SamsungBrowser/i.test(ua);
+  var isPad = /iPad|iPhone|iPod/.test(ua);
+  var msg = isSam
+    ? "三星浏览器安装步骤：\n\n" +
+      "① 右上角「≡」→「添加页面到」\n" +
+      "② 选「主屏幕」（有「安装应用」就选它）\n" +
+      "③ 桌面出现图标后，长按 →「作为应用打开」\n\n" +
+      "如果只有「快捷方式」没有「主屏幕/安装」：先清一次浏览器缓存，再刷新本页试。"
+    : (isPad
+      ? "Safari 安装步骤：点底部「分享」→「添加到主屏幕」。"
+      : "安装步骤：\n\n① Chrome/Edge：右上「⋮」→「安装应用」（不是「添加到主屏幕」）\n② 或用浏览器菜单「应用 → 安装此网站」\n\n装出来还带地址栏，说明是旧快捷方式：删掉旧图标重装。");
   if (window.alert) window.alert(msg);
 }
 
