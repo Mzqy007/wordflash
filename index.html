@@ -2744,18 +2744,20 @@ function bigChartHtml() {
   var maxV = 5;
   rows.forEach(function (r) {
     var t = mode === "load" ? (r.total || 0) : (mode === "test" ? (r.tok + r.tbad) : (r.ok + r.fz + r.no));
+    if (showDue && num(r.due, 0) > t) t = num(r.due, 0);   // 未来灰柱也要算进纵轴
     if (t > maxV) maxV = t;
   });
   // 刻度自适应：取 1/2/3/5/10 × 10^n 的“好看步长”，并给数据留 20% 余量
-  var target = Math.max(1, maxV) * 1.2 / 4;
+  // 顶格 = 「最高柱 ×1.15」向上取整到好看刻度，分 5 格
+  var target = Math.max(1, maxV) * 1.15 / 5;
   var pow = Math.pow(10, Math.floor(Math.log(target) / Math.LN10));
-  var steps = [1, 2, 3, 5, 10];
+  var steps = [1, 2, 2.5, 5, 10];
   var tickStep = pow;
   for (var si = 0; si < steps.length; si++) {
     if (steps[si] * pow >= target) { tickStep = steps[si] * pow; break; }
   }
   if (tickStep < 1) tickStep = 1;
-  maxV = tickStep * 4;
+  maxV = tickStep * 5;
   var hasData = false;
   rows.forEach(function (r) {
     var t = mode === "load" ? (r.total || 0) : (mode === "test" ? (r.tok + r.tbad) : (r.ok + r.fz + r.no));
@@ -2765,7 +2767,7 @@ function bigChartHtml() {
   var gap = 10;
   var width = rows.length * (bw + gap) + 56;
   var ticks = "";
-  for (var i = 4; i >= 0; i--) {
+  for (var i = 5; i >= 0; i--) {
     var vv = tickStep * i;
     ticks += '<div class="cy"><span>' + vv + '</span></div>';
   }
@@ -3033,12 +3035,13 @@ function renderStats() {
   var sc = $("#chart-scroll");
   if (sc) setTimeout(function () {
     try {
-      var bars = sc.querySelectorAll(".cbar");
-      var idx = -1;
-      for (var i = 0; i < bars.length; i++) { if (bars[i].classList.contains("today")) { idx = i; break; } }
-      if (idx < 0) idx = Math.max(0, bars.length - 1);
-      var unit = bars.length ? (bars[0].offsetWidth + 5) : 23;
-      sc.scrollLeft = Math.max(0, idx * unit - sc.clientWidth * 0.30);
+      var el = sc.querySelector(".cbar.today");
+      if (!el) { var all = sc.querySelectorAll(".cbar"); if (all.length) el = all[all.length - 1]; }
+      if (el) {
+        var r = el.getBoundingClientRect(), sr = sc.getBoundingClientRect();
+        var target = sc.scrollLeft + (r.left - sr.left) - sc.clientWidth * 0.30;
+        sc.scrollLeft = Math.max(0, target);
+      }
     } catch (e) {}
   }, 30);
 }/* ---------------- 界面：我的 ---------------- */
