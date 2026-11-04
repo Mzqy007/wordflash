@@ -796,6 +796,116 @@ body.pos-bottom #scr-game .opslot{width:100%;padding:0}
   html body.in-game #ghint,html body.in-game .hint{display:none !important}
 }
 
+/* ============ 统计页：Tab 条 + 大图 + 明细卡 ============ */
+.sttabs{display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.sttabs::-webkit-scrollbar{display:none}
+.sttab{flex:0 0 auto;border:0;background:#fff;color:#5b6169;border-radius:999px;padding:8px 14px;font-size:13.5px;font-weight:600;box-shadow:0 0 0 1px #ecedf1}
+.sttab.on{background:#2f6bff;color:#fff;box-shadow:none}
+.charthead{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.grp{display:flex;gap:6px}
+.mini{border:0;background:#f2f3f6;color:#5b6169;border-radius:8px;padding:5px 10px;font-size:12.5px}
+.mini.on{background:#1b1d21;color:#fff}
+.chartmode{display:flex;gap:6px;margin-top:10px}
+.legend{display:flex;align-items:center;gap:6px;font-size:11.5px;color:#7a818b;margin-top:10px}
+.lg{display:inline-block;width:10px;height:10px;border-radius:3px;margin-left:8px}
+.lg.rv{background:#f0a13c}.lg.nw{background:#5aa06a}.lg.ts{background:#7c5cff}
+.lg.ok{background:#57a874}.lg.fzz{background:#e8b23a}.lg.no{background:#e0644a}
+.lg.fz{background:#d6d9df}.lg.lv0{background:#eef0f3}.lg.lv1{background:#cfe8d6}.lg.lv2{background:#93cfa6}
+.lg.lv3{background:#4fa26c}.lg.lv4{background:#1f7a44}
+.cw{display:flex;margin-top:12px;height:240px}
+.caxis{flex:0 0 40px;display:flex;flex-direction:column;justify-content:space-between;font-size:11px;color:#98a0aa;text-align:right;padding-right:6px}
+.cscroll{flex:1 1 auto;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
+.cin{display:flex;align-items:flex-end;gap:5px;height:100%;padding-bottom:20px}
+.cbar{position:relative;flex:0 0 auto;width:18px;height:100%;border:0;background:transparent;padding:0;display:flex;flex-direction:column;justify-content:flex-end}
+.cbar .cbi{display:flex;flex-direction:column;justify-content:flex-end;height:calc(100% - 18px);width:100%;gap:1px}
+.cbar .cbi i{display:block;width:100%;border-radius:2px 2px 0 0}
+.cbi i.rv{background:#f0a13c}.cbi i.nw{background:#5aa06a}.cbi i.ts{background:#7c5cff}
+.cbi i.ok{background:#57a874}.cbi i.fzz{background:#e8b23a}.cbi i.no{background:#e0644a}
+.cbi i.fz{background:#dfe2e8}
+.cbar .cbl{position:absolute;bottom:0;left:50%;transform:translateX(-50%) rotate(-45deg);transform-origin:top center;
+  font-size:9.5px;color:#98a0aa;white-space:nowrap}
+.cbar.today .cbl{color:#1f7a44;font-weight:700}
+.cbar.future{opacity:.75}
+/* 遗忘曲线 */
+.echart{display:flex;align-items:flex-end;gap:10px;height:220px;padding:10px 4px 0}
+.ebar{flex:1 1 0;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;position:relative}
+.ebar .ebp{font-size:11px;color:#4a5058;margin-bottom:4px}
+.ebar .ebi{width:100%;max-width:38px;background:#eef0f3;border-radius:6px 6px 0 0;position:relative;display:flex;align-items:flex-end}
+.ebar .ebi i{display:block;width:100%;background:#5aa06a;border-radius:6px 6px 0 0}
+.ebar.few .ebp{color:#b0b5bd}.ebar.few .ebi i{background:#b9d8c4}
+.ebar .ebl{font-size:11px;color:#7a818b;margin-top:6px}
+.ebar .ebn{font-size:10px;color:#b0b5bd}
+/* 时段 */
+.hchart{display:flex;align-items:flex-end;gap:3px;height:180px;padding-top:8px}
+.hbar{flex:1 1 0;height:100%;display:flex;align-items:flex-end}
+.hbar .hbi{display:block;width:100%;background:#8fb3ff;border-radius:4px 4px 0 0;min-height:2px}
+.haxis{display:flex;justify-content:space-between;font-size:11px;color:#98a0aa;margin-top:6px}
+/* 热力图 */
+.hmwrap{display:flex;gap:6px;align-items:flex-start;overflow-x:auto;padding-bottom:4px}
+.hmwk{display:flex;flex-direction:column;justify-content:space-between;height:112px;font-size:10px;color:#a8aeb6;padding-top:2px}
+.hmcols{display:flex;gap:3px}
+.hmcol{display:flex;flex-direction:column;gap:3px}
+.hmcell{width:11px;height:11px;border-radius:2px;display:block;border:0;padding:0}
+.hmcell.lv0{background:#eef0f3}.hmcell.lv1{background:#cfe8d6}.hmcell.lv2{background:#93cfa6}
+.hmcell.lv3{background:#4fa26c}.hmcell.lv4{background:#1f7a44}
+.hmmark{position:relative;height:16px;margin-left:22px;font-size:10px;color:#a8aeb6}
+.hmmark span{position:absolute;top:0}
+/* 到期预测行 */
+.frow{width:100%;display:flex;align-items:center;gap:10px;border:0;background:transparent;padding:9px 0;font-size:13.5px;color:#2b2f36;border-bottom:1px solid #f1f2f5}
+.frow .fl{flex:0 0 74px;text-align:left;color:#5b6169}
+.frow .fb{flex:1 1 auto;height:8px;background:#eef0f3;border-radius:4px;overflow:hidden}
+.frow .fb i{display:block;height:100%;background:#2f6bff;border-radius:4px}
+.frow .fv{flex:0 0 34px;text-align:right;font-weight:700}
+.frow .fa{flex:0 0 12px;color:#c2c7cf}
+/* 柱子明细卡 */
+#bar-mask{z-index:60}
+.barcard{background:#fff;border-radius:16px;padding:18px 16px calc(16px + env(safe-area-inset-bottom,0px));width:min(420px,92vw)}
+.barhd{display:flex;align-items:baseline;gap:8px;margin-bottom:12px}
+.barhd b{font-size:17px}
+.bargrid{display:grid;grid-template-columns:1fr 1fr;gap:10px 12px;margin-bottom:14px}
+.bargrid div{display:flex;flex-direction:column;gap:2px}
+.bargrid span{font-size:11.5px;color:#98a0aa}
+.bargrid b{font-size:16px}
+.barnum{font-size:15px;margin-bottom:14px;color:#2b2f36}
+.barcard .btn{width:100%;margin-top:8px}
+.btn.ghost{background:#f2f3f6;color:#5b6169;box-shadow:none}
+/* ============ 布局统一：所有左右手都走底部按钮行 ============ */
+#scr-game #opslot{position:static !important;inset:auto !important;width:auto !important;height:auto !important;
+  background:transparent !important;padding:6px 8px calc(8px + var(--app-btn-margin,0px)) !important;z-index:auto !important}
+body.pos-left #scr-game #opslot{max-width:74%;margin-left:0;margin-right:auto}
+body.pos-right #scr-game #opslot{max-width:74%;margin-left:auto;margin-right:0}
+body.pos-bottom #scr-game #opslot{max-width:100%;margin:0 auto}
+#scr-game #opslot .btns{flex-direction:row !important;width:100% !important;gap:8px !important}
+#scr-game #opslot .btns .big{min-height:var(--app-btn-height,56px) !important;height:auto !important;
+  font-size:15px !important;padding:8px 4px !important;border-radius:12px !important}
+#scr-game #opslot .btns .big small{display:none}
+body.wide.pos-left #scr-game .gmain,body.wide.pos-right #scr-game .gmain,body.pos-left #scr-game .gmain,body.pos-right #scr-game .gmain{
+  padding-left:0 !important;padding-right:0 !important}
+/* 顶栏：不换行 */
+#scr-game .gbar{display:grid !important;grid-template-columns:1fr auto;align-items:center;gap:8px}
+#scr-game #gstat{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:13px}
+#scr-game .gbar-r{display:flex;gap:6px;align-items:center;white-space:nowrap;font-size:13px}
+#scr-game .gbar-r button{white-space:nowrap;font-size:13px;padding:2px 3px}
+@media (orientation: portrait){ body.in-game #btn-swap,body.in-game #btn-lock{display:none !important} }
+
+/* 明细遮罩默认隐藏 */
+#bar-mask{display:none}
+#bar-mask.on{display:flex}
+
+/* 今日卡：格子收窄、去掉过高行距 */
+#stats-body .statbig{margin-top:8px !important}
+#stats-body .statbig .cell{padding:10px 8px !important}
+#stats-body .statbig .cell .n{font-size:26px !important;line-height:1.15 !important}
+#stats-body .statbig .cell .l{font-size:11px !important;margin-top:2px !important}
+#stats-body .card{padding:14px 14px 12px !important}
+.sttabs{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.sttabs::-webkit-scrollbar{display:none}
+/* 学习情况大图：定高、坐标轴不压标签 */
+.cw{height:280px !important}
+.cscroll{height:100% !important;padding-bottom:6px}
+.cin{height:100%;display:flex;align-items:flex-end;gap:5px;padding-top:22px}
+.cbar{height:100%;display:flex;flex-direction:column;justify-content:flex-end}
+.cbl{transform:rotate(-45deg);transform-origin:top right;font-size:9px;white-space:nowrap;margin-top:6px;height:26px;color:#8a9099}
 </style>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
@@ -879,7 +989,9 @@ body.pos-bottom #scr-game .opslot{width:100%;padding:0}
     <div class="spread" style="margin:6px 2px 14px">
       <div class="h1">统计</div>
     </div>
-    <div id="stats-body"></div>
+    <div id="bar-mask" class="mask"><div class="barcard"></div></div>
+  <div class="sttabs" id="stats-tabs"></div>
+  <div id="stats-body"></div>
   </section>
 
   <!-- ============ 我的 ============ -->
@@ -1224,7 +1336,7 @@ function defaultSettings() {
     leechAt: 8,
   dayCutoff: 4,
   layFlash: "both", layRecall: "both", layWord: "both", layMeaning: "both", btnMargin: 24,
-  wordSize: 44, btnHeight: 64,
+  wordSize: 44, btnHeight: 56,
   time: { studyFlash: 3000, studyRecall: 0, testFlash: 3000, testMeaning: 3000, testWord: 3000, testRecall: 0 },
   testLimitMs: 3000,
     // 最大间隔上限（天）：防止 ebb×倍率 把复习推到几年以后
@@ -2146,7 +2258,7 @@ function applyWideSwap() {
   var root = document.documentElement;
   if (root && root.style && root.style.setProperty) {
     try {
-      root.style.setProperty("--app-btn-height", clamp(num(st.btnHeight, 64), 60, 120) + "px");
+      root.style.setProperty("--app-btn-height", clamp(num(st.btnHeight, 56), 44, 120) + "px");
       root.style.setProperty("--app-word-size", clamp(num(st.wordSize, 44), 32, 80) + "px");
       root.style.setProperty("--app-btn-margin", clamp(num(st.btnMargin, 24), 0, 100) + "px");
     } catch (e) {}
@@ -2160,14 +2272,11 @@ function applyWideSwap() {
 }
 
 function layoutOps() {
-  var main = $("#game-main");
-  var slot = $("#opslot");
   var wrap = $("#game-wrap");
-  if (!main || !slot || !wrap) return;
+  var slot = $("#opslot");
+  if (!wrap || !slot) return;
   try {
-    /* 始终放在 #game-wrap 末尾；单手时由 CSS 绝对定位贴左边/右边 */
-    if (slot.parentNode !== wrap) wrap.appendChild(slot);
-    else if (slot !== wrap.lastChild) wrap.appendChild(slot);
+    if (slot.parentNode !== wrap || slot !== wrap.lastChild) wrap.appendChild(slot);
   } catch (e) {}
 }
 
@@ -2530,158 +2639,344 @@ function timelineHtml(r) {
   return '<div class="card" style="margin-top:12px"><h2>记忆时间轴</h2><div class="tl">' + nodes + '</div></div>';
 }
 
-function renderStats() {
-  var el = $("#stats-body");
-  if (!el) return;
-  var deck = S.decks[0];
-  var t = today(), s = ensureStats();
-  var todayD = s.days[t] || { new: 0, review: 0, count: 0, ms: 0 };
-  var dl = deck ? daily(deck.id) : { streak: 0 };
-  var mo = monthStats();
-  var rt = retention();
-  var html = "";
 
-  // 学习时长：今日 / 累计 / 学习·测试分项（累计可点开按天列表）
-  (function () {
-    var allMs = sumDays("ms"), testMs = sumDays("testMs"), studyMs = Math.max(0, allMs - testMs);
-    var todayMs = num(todayD.ms, 0);
-    html += '<div class="card" style="margin-bottom:12px">' +
-      '<div class="spread"><div class="strong" style="font-size:16px">学习时长</div>' +
-      '<div class="tiny muted">累计自 2026-11-03 起</div></div>' +
-      '<div class="spread" style="margin-top:10px;align-items:flex-end">' +
-        '<div><div class="statbig">' + fmtDur(todayMs) + '</div><div class="tiny muted">今天</div></div>' +
-        '<button class="btn ghost small" data-list="days">累计 ' + fmtDur(allMs) + ' ›</button>' +
-      '</div>' +
-      '<div class="tiny muted" style="margin-top:8px">其中学习 ' + fmtDur(studyMs) + ' · 测试 ' + fmtDur(testMs) + '</div>' +
-      '</div>';
-  })();
+/* ================= 统计页：图表底座 ================= */
+var statsTab = "today";
+var chartGran = "day";
+var chartMode = "load";   /* load=学习量  cog=认知 */
+var STATS_TABS = [["today","今日"],["chart","学习情况"],["ebbing","遗忘曲线"],["time","时段"],["heat","热力图"],["forecast","到期预测"]];
 
-  // 今天该干什么（行动卡）：把数字翻译成一句可执行的话
-  (function () {
-    var plan = planRound(deck ? deck.id : null);
-    var line, sub;
-    var doneToday = num(todayD.new, 0) + num(todayD.review, 0);
-    if (plan.total + plan.backlog > 0) {
-      line = "今天还有 " + (plan.total + plan.backlog) + " 题要做";
-      sub = "复习 " + plan.reviewTake + " · 新词 " + plan.newTake + (plan.backlog ? " · 待巩固 " + plan.backlog : "");
-    } else if (doneToday > 0) {
-      line = "今天的额度已经做完了 🎉";
-      sub = "想多练可以去「加练」，不影响记录和排期";
+function statsTabsHtml() {
+  return STATS_TABS.map(function (x) {
+    return '<button class="sttab' + (statsTab === x[0] ? " on" : "") + '" data-st="' + x[0] + '">' + x[1] + '</button>';
+  }).join("");
+}
+function dayKeysAll() {
+  var s = ensureStats();
+  return Object.keys(s.days || {}).sort();
+}
+function dueRangeMap() {
+  var m = {};
+  if (!S.decks[0]) return m;
+  var recs = S.records[S.decks[0].id] || {};
+  var t = today();
+  for (var k in recs) {
+    var r = recs[k];
+    if (!r || r.graduated || !r.due) continue;
+    var dd = dayDiff(t, r.due);
+    if (dd < 0) dd = 0;
+    if (dd > 30) continue;
+    var dk = addDays(t, dd);
+    m[dk] = (m[dk] || 0) + 1;
+  }
+  return m;
+}
+function chartDates() {
+  var t = today();
+  var start = addDays(t, -13);
+  var keys = Object.keys(ensureStats().days || {}).sort();
+  if (keys.length && keys[0] < start) start = keys[0];
+  var end = addDays(t, 30);
+  var out = [], cur = start, guard = 0;
+  while (cur <= end && guard < 500) { out.push(cur); cur = addDays(cur, 1); guard++; }
+  return out;
+}
+function bucketByGran(list, gran) {
+  if (gran === "day") return list.map(function (d) { return { key: d, label: d.slice(5), dates: [d] }; });
+  var map = {}, order = [];
+  list.forEach(function (d) {
+    var dt = new Date(d + "T00:00:00");
+    var key;
+    if (gran === "week") {
+      var mon = new Date(dt.getTime() - ((dt.getDay() + 6) % 7) * 86400000);
+      key = fmtDate(mon);
+    } else key = d.slice(0, 7);
+    if (!map[key]) { map[key] = { key: key, dates: [] }; order.push(key); }
+    map[key].dates.push(d);
+  });
+  return order.map(function (k) {
+    var o = map[k];
+    o.label = (gran === "week") ? (k.slice(5) + "周") : (k.slice(2).replace("-", "/"));
+    return o;
+  });
+}
+function chartSeries() {
+  var s = ensureStats();
+  var dates = chartDates();
+  var due = dueRangeMap();
+  var buckets = bucketByGran(dates, chartGran);
+  return buckets.map(function (b) {
+    var v = { label: b.label, key: b.key, dates: b.dates, nw: 0, rv: 0, ts: 0, ok: 0, fz: 0, no: 0, isFuture: false, due: 0 };
+    b.dates.forEach(function (d) {
+      var x = (s.days || {})[d];
+      if (x) {
+        v.nw += num(x.new, 0);
+        v.rv += num(x.review, 0);
+        v.ts += num(x.testN, 0);
+        v.ok += num(x.fast, 0) + num(x.slow, 0) + num(x.know, 0);
+        v.fz += num(x.fuzzy, 0);
+        v.no += num(x.no, 0) + num(x.timeout, 0);
+      }
+      v.due += due[d] || 0;
+    });
+    v.total = v.nw + v.rv + v.ts;
+    v.isFuture = b.dates[0] > today();
+    return v;
+  });
+}
+function bigChartHtml() {
+  var rows = chartSeries();
+  var isLoad = chartMode === "load";
+  var maxV = 1;
+  rows.forEach(function (r) {
+    var t = isLoad ? (r.total || 0) : Math.max(r.ok + r.fz + r.no, 0);
+    if (t > maxV) maxV = t;
+  });
+  if (maxV < 20) maxV = 20;
+  var tickStep = Math.max(1, Math.ceil(maxV / 4));
+  maxV = tickStep * 4;
+  var bw = chartGran === "day" ? 18 : 30;
+  var gap = chartGran === "day" ? 5 : 8;
+  var width = rows.length * (bw + gap) + 56;
+  var ticks = "";
+  for (var i = 4; i >= 0; i--) {
+    var vv = tickStep * i;
+    ticks += '<div class="cy"><span>' + vv + '</span></div>';
+  }
+  var bars = "";
+  rows.forEach(function (r) {
+    var seg = "";
+    var tip = "";
+    if (r.isFuture) {
+      var hp = r.due ? Math.max(3, Math.round(r.due / maxV * 100)) : 0;
+      if (hp) seg = '<i class="fz" style="height:' + hp + '%"></i>';
+      tip = r.key + " · 预计到期 " + r.due + " 个";
+    } else if (isLoad) {
+      var tot = r.total || 0;
+      [["rv", r.rv, "复习"], ["nw", r.nw, "新学"], ["ts", r.ts, "测试"]].forEach(function (p) {
+        if (p[1] > 0) seg += '<i class="' + p[0] + '" style="height:' + (p[1] / maxV * 100) + '%"></i>';
+      });
+      tip = r.key + " · 复习 " + r.rv + " · 新学 " + r.nw + " · 测试 " + r.ts;
     } else {
-      line = "今天还没开始";
-      sub = "点下面的按钮回去开始";
+      [["ok", r.ok, "认识"], ["fzz", r.fz, "模糊"], ["no", r.no, "忘记"]].forEach(function (p) {
+        if (p[1] > 0) seg += '<i class="' + p[0] + '" style="height:' + (p[1] / maxV * 100) + '%"></i>';
+      });
+      tip = r.key + " · 认识 " + r.ok + " · 模糊 " + r.fz + " · 忘记 " + r.no;
     }
-    html += '<div class="card" style="margin-bottom:12px">' +
-      '<div class="strong" style="font-size:17px">' + esc(line) + '</div>' +
-      '<div class="tiny muted" style="margin-top:6px">' + esc(sub) + '</div>' +
-      '<div style="margin-top:10px"><button class="btn primary" id="btn-stats-go">' +
-      (plan.total + plan.backlog > 0 ? "去学习" : "回首页") + '</button></div></div>';
-  })();
-
-  html += '<div class="statbig">' +
-    '<div class="cell"><div class="n">' + num(todayD.new, 0) + '／' + num(todayD.review, 0) + '</div><div class="l">今日 新学／复习</div></div>' +
-    '<div class="cell"><div class="n">' + fmtDur(todayD.ms) + '</div><div class="l">今日答题用时（不含看释义）</div></div>' +
-    '<div class="cell"><div class="n">' + Math.max(num(dl.streak, 0), num(todayD.count, 0) > 0 ? 1 : 0) + ' 天</div><div class="l">连续学习</div></div>' +
-    '<div class="cell"><div class="n">' + mo.days + ' 天</div><div class="l">近 30 天有学习的天数（累计 ' + fmtDur(mo.ms) + '）</div></div>' +
-    '</div>';
-
-  // 到期预测
-  if (deck) {
-    var recs = S.records[deck.id] || {};
-    var buckets = [0, 0, 0, 0, 0, 0, 0];
-    var names = ["已逾期", "今天", "1–3 天", "4–7 天", "8–14 天", "15–30 天", "30 天以上"];
-    for (var k in recs) {
-      var r = recs[k];
-      if (!r || r.graduated) continue;
-      var dd = r.due ? dayDiff(t, r.due) : 0;
-      var bi = dd < 0 ? 0 : (dd === 0 ? 1 : (dd <= 3 ? 2 : (dd <= 7 ? 3 : (dd <= 14 ? 4 : (dd <= 30 ? 5 : 6)))));
-      buckets[bi]++;
-    }
-    var bmax = Math.max.apply(null, buckets);
-    html += '<div class="card" style="margin-top:12px"><h2 style="margin:0 0 10px">接下来要复习多少个</h2><div class="bars">' +
-      buckets.map(function (v, i) { return barRow(names[i], v, bmax, ""); }).join("") + '</div></div>';
-  }
-
-  // 最近 14 天
-  var days = [], maxc = 0;
-  for (var i = 13; i >= 0; i--) {
-    var ds = addDays(t, -i);
-    var c = s.days[ds] ? num(s.days[ds].count, 0) : 0;
-    days.push({ d: ds, c: c });
-    if (c > maxc) maxc = c;
-  }
-  html += '<div class="card" style="margin-top:12px"><h2 style="margin:0">最近 14 天</h2>' +
-    '<div class="hcols">' + days.map(function (x, idx) {
-      var h = maxc ? Math.round(x.c / maxc * 96) : 2;
-      return '<i class="' + (idx === days.length - 1 ? "on" : "") + '" style="height:' + Math.max(2, h) + 'px" title="' + x.d + "：" + x.c + ' 题"></i>';
+    bars += '<button class="cbar' + (r.key === today() ? " today" : "") + (r.isFuture ? " future" : "") +
+      '" data-bar="' + r.key + '" title="' + tip + '"><span class="cbi">' + seg + '</span>' +
+      '<span class="cbl">' + (r.label || "") + '</span></button>';
+  });
+  return '<div class="card"><div class="charthead"><b>学习情况</b>' +
+    '<span class="grp">' +
+    [["day", "日"], ["week", "周"], ["month", "月"]].map(function (g) {
+      return '<button class="mini' + (chartGran === g[0] ? " on" : "") + '" data-gran="' + g[0] + '">' + g[1] + '</button>';
+    }).join("") +
+    '</span></div>' +
+    '<div class="chartmode">' +
+    [["load", "复习 / 新学"], ["cog", "认识 / 模糊 / 忘记"]].map(function (m) {
+      return '<button class="mini' + (chartMode === m[0] ? " on" : "") + '" data-cmode="' + m[0] + '">' + m[1] + '</button>';
     }).join("") + '</div>' +
-    '<div class="hlab"><span>' + days[0].d.slice(5) + '</span><span>今天</span></div></div>';
-
-  // 记忆保留率
-  html += '<div class="card clickable" data-list="reviewWords" style="margin-top:12px"><h2 style="margin:0 0 6px">复习正确率 <span class="tiny muted">点开看词</span></h2>' +
-    '<div class="tiny muted">最近 30 天，到期的词再考一次时答对（认识/快认）的比例</div>' +
-    '<div style="font-size:26px;font-weight:800;margin-top:8px">' + rt.rate + '%' +
-    '<span class="tiny muted" style="font-weight:500"> · ' + rt.ok + '／' + rt.tot + ' 次</span></div>' +
-    (rt.tot < 10 ? '<div class="tiny muted" style="margin-top:6px">样本还太少，先练几天再看这个数</div>' : '') + '</div>';
-
-  // 等级分布
-  if (deck) {
-    var lv = [0, 0, 0, 0, 0, 0], lvMax = 0, recs2 = S.records[deck.id] || {};
-    for (var kk in recs2) {
-      var rr = recs2[kk];
-      if (!rr) continue;
-      if (rr.graduated) continue;
-      var L = clamp(num(rr.L, 0), 0, 5);
-      lv[L]++;
-      if (lv[L] > lvMax) lvMax = lv[L];
+    '<div class="legend">' + (isLoad
+      ? '<i class="lg rv"></i>复习<i class="lg nw"></i>新学<i class="lg ts"></i>测试<i class="lg fz"></i>预计到期'
+      : '<i class="lg ok"></i>认识<i class="lg fzz"></i>模糊<i class="lg no"></i>忘记') + '</div>' +
+    '<div class="cw"><div class="caxis">' + ticks + '</div><div class="cscroll" id="chart-scroll"><div class="cin" style="width:' + width + 'px">' + bars + '</div></div></div>' +
+    '<div class="tiny muted" style="margin-top:8px">左右滑动看全部历史；点柱子看明细</div></div>';
+}
+function ebbingBuckets() {
+  var order = ["1", "2", "3-4", "5-7", "8-14", "15-30", ">30"];
+  var map = {};
+  order.forEach(function (k) { map[k] = { n: 0, ok: 0 }; });
+  var deck = S.decks[0];
+  if (!deck) return map;
+  var recs = S.records[deck.id] || {};
+  Object.keys(recs).forEach(function (k) {
+    var r = recs[k];
+    if (!r || !r.hist || !r.hist.length) return;
+    var arr = [];
+    for (var i = 0; i < r.hist.length; i++) {
+      try { var h = histDecode(r.hist[i]); if (h && h.d) arr.push(h); } catch (e) {}
     }
-    html += '<div class="card" style="margin-top:12px"><h2 style="margin:0 0 10px">等级分布</h2><div class="bars">' +
-      lv.map(function (v, i) { return barRow("L" + i + " " + LV_NAME[i], v, lvMax, "", "level:" + i); }).join("") + '</div></div>';
-  }
-
-  // 回答分布
-  var tot = sumDays(), dist = [
-    ["快认", num(tot.fast, 0), "fast"], ["认识", num(tot.slow, 0) + num(tot.know, 0), "slow"],
-    ["模糊", num(tot.fuzzy, 0), "fuzzy"], ["不认识", num(tot.no, 0), "no"], ["超时", num(tot.timeout, 0), "timeout"]
-  ];
-  var dmax = Math.max.apply(null, dist.map(function (x) { return x[1]; }).concat([1]));
-  dist.push(["回放/巩固", num(tot.practiceN, 0)]);
-  dmax = Math.max.apply(null, dist.map(function (x) { return x[1]; }).concat([1]));
-  html += '<div class="card" style="margin-top:12px"><h2 style="margin:0 0 10px">答过的题（累计）</h2><div class="bars">' +
-    dist.map(function (x) { return barRow(x[0], x[1], dmax, "", "kind:" + (x[2] || "")); }).join("") + '</div></div>';
-
-  // 最清醒时段
-  var hs = [], hmax = 0;
-  for (var h = 0; h < 24; h++) {
-    var v = num(s.hours[h], 0);
-    hs.push(v);
-    if (v > hmax) hmax = v;
-  }
-  html += '<div class="card" style="margin-top:12px"><h2 style="margin:0">你什么时段最清醒</h2>' +
-    '<div class="tiny muted">按答题时段的正确率算，柱子越高越稳</div>' +
-    '<div class="hcols">' + hs.map(function (v) {
-      var min = Math.max(1, Math.round(v / Math.max(1, hmax) * 96));
-      return '<i style="height:' + min + 'px" title="' + v + ' 题"></i>';
-    }).join("") + '</div>' +
-    '<div class="hlab"><span>0 点</span><span>12 点</span><span>23 点</span></div></div>';
-
-  // 顽固词
-  if (deck) {
-    var leech = [];
-    var recs3 = S.records[deck.id] || {};
-    for (var k3 in recs3) if (recs3[k3] && recs3[k3].leech) leech.push(k3);
-    if (leech.length) {
-      html += '<div class="card" style="margin-top:12px"><h2 style="margin:0 0 4px">顽固词（错误 ' + num(S.settings.leechAt, 8) + ' 次以上）</h2>' +
-        leech.slice(0, 8).map(function (k4) {
-          var w4 = wordByKey(deck.id, k4);
-          return '<div class="leechrow"><span>' + esc(w4 ? w4.w : k4) + '</span><span class="tiny muted">错 ' + num(recs3[k4].lapses, 0) + ' 次</span></div>';
-        }).join("") + '</div>';
+    for (var j = 1; j < arr.length; j++) {
+      var gap = dayDiff(arr[j - 1].d, arr[j].d);
+      if (gap < 1) continue;
+      var b = gap <= 1 ? "1" : gap === 2 ? "2" : gap <= 4 ? "3-4" : gap <= 7 ? "5-7" : gap <= 14 ? "8-14" : gap <= 30 ? "15-30" : ">30";
+      map[b].n++;
+      if (arr[j].k === "fast" || arr[j].k === "slow" || arr[j].k === "know") map[b].ok++;
     }
+  });
+  return map;
+}
+function ebbingHtml() {
+  var m = ebbingBuckets(), keys = ["1", "2", "3-4", "5-7", "8-14", "15-30", ">30"];
+  var maxN = 1;
+  keys.forEach(function (k) { if (m[k].n > maxN) maxN = m[k].n; });
+  var bars = keys.map(function (k) {
+    var v = m[k], pct = v.n ? Math.round(v.ok / v.n * 100) : 0;
+    var h = v.n ? Math.max(6, Math.round(v.n / maxN * 100)) : 3;
+    return '<div class="ebar' + (v.n < 10 ? " few" : "") + '">' +
+      '<span class="ebp">' + (v.n ? pct + "%" : "-") + '</span>' +
+      '<span class="ebi" style="height:' + h + '%"><i style="height:' + pct + '%"></i></span>' +
+      '<span class="ebl">' + k + '天</span><span class="ebn">n=' + v.n + '</span></div>';
+  }).join("");
+  return '<div class="card"><b>遗忘曲线</b>' +
+    '<div class="tiny muted" style="margin:6px 0 12px">横轴：上次到这次的间隔；纵轴：这次「认识」的比例。柱子越高越牢；n&lt;10 半透明（样本少）</div>' +
+    '<div class="echart">' + bars + '</div>' +
+    '<div class="tiny muted" style="margin-top:8px">只统计「到期复习」的判定历史，最多每词最近 20 条</div></div>';
+}
+function timeBuckets() {
+  var s = ensureStats();
+  var hours = s.hours || {};
+  var map = {}, maxN = 0;
+  for (var h = 0; h < 24; h++) map[h] = { n: 0, ok: 0 };
+  Object.keys(hours).forEach(function (k) {
+    var hh = String(k).slice(0, 2);
+    var v = hours[k];
+    var n = num(v, 0);
+    if (map[hh] != null && n) { map[hh].n += n; if (n > maxN) maxN = n; }
+  });
+  return map;
+}
+function timeHtml() {
+  var m = timeBuckets(), maxN = 1;
+  for (var h = 0; h < 24; h++) if (m[h].n > maxN) maxN = m[h].n;
+  var bars = "";
+  for (var i = 0; i < 24; i++) {
+    var v = m[i], hh = v.n ? Math.max(3, Math.round(v.n / maxN * 100)) : 0;
+    bars += '<div class="hbar" title="' + i + '点 · ' + v.n + ' 题"><span class="hbi" style="height:' + hh + '%"></span></div>';
   }
-
-  html += heatmapHtml();
-  html += '<div class="tiny muted" style="margin-top:16px;text-align:center">只统计这台设备上的记录</div>';
-  el.innerHTML = html;
+  return '<div class="card"><b>你什么时段最清醒</b>' +
+    '<div class="tiny muted" style="margin:6px 0 12px">横轴：一天 24 小时；纵轴：做题量（柱越高，那个点做题越多）</div>' +
+    '<div class="hchart">' + bars + '</div>' +
+    '<div class="haxis"><span>0点</span><span>6点</span><span>12点</span><span>18点</span><span>23点</span></div></div>';
+}
+function heatHtml2() {
+  var s = ensureStats(), days = s.days || {};
+  var t = today();
+  var startMon = new Date(t + "T00:00:00");
+  startMon = new Date(startMon.getTime() - ((startMon.getDay() + 6) % 7) * 86400000 - 25 * 7 * 86400000);
+  var maxC = 1;
+  Object.keys(days).forEach(function (d) { var c = num(days[d].count, 0); if (c > maxC) maxC = c; });
+  var cols = '';
+  var monthMarks = [];
+  var lastMonth = "";
+  for (var w = 0; w < 26; w++) {
+    var cells = "";
+    for (var d2 = 0; d2 < 7; d2++) {
+      var dt = new Date(startMon.getTime() + (w * 7 + d2) * 86400000);
+      var key = fmtDate(dt);
+      var v = days[key] ? num(days[key].count, 0) : 0;
+      var lv = v === 0 ? 0 : v <= maxC * 0.25 ? 1 : v <= maxC * 0.5 ? 2 : v <= maxC * 0.75 ? 3 : 4;
+      cells += '<i class="hmcell lv' + lv + '" data-bar="' + key + '" title="' + key + ' · ' + v + ' 题"></i>';
+    }
+    var day0 = new Date(startMon.getTime() + w * 7 * 86400000);
+    var mm = (day0.getMonth() + 1) + "月";
+    if (mm !== lastMonth && day0.getDate() <= 7) { monthMarks.push({ w: w, t: mm }); lastMonth = mm; }
+    cols += '<div class="hmcol">' + cells + '</div>';
+  }
+  return '<div class="card"><b>学习热力图</b><span class="tiny muted"> 近 26 周</span>' +
+    '<div class="tiny muted" style="margin:6px 0 10px">每一列=一周，每列从上到下=周一到周日；颜色越深，当天题越多。点格子看当天明细</div>' +
+    '<div class="hmwrap"><div class="hmwk"><span>一</span><span>三</span><span>五</span><span>日</span></div><div class="hmcols">' + cols + '</div></div>' +
+    '<div class="hmmark">' + monthMarks.map(function (m) { return '<span style="left:' + (m.w / 26 * 100) + '%">' + m.t + '</span>'; }).join("") + '</div>' +
+    '<div class="legend" style="margin-top:8px">少<i class="lg lv0"></i><i class="lg lv1"></i><i class="lg lv2"></i><i class="lg lv3"></i><i class="lg lv4"></i>多</div></div>';
+}
+function forecastHtml() {
+  var deck = S.decks[0];
+  if (!deck) return "";
+  var recs = S.records[deck.id] || {};
+  var t = today();
+  var names = ["已逾期", "今天", "1-3 天", "4-7 天", "8-14 天", "15-30 天", "30 天以上"];
+  var buckets = [0, 0, 0, 0, 0, 0, 0];
+  Object.keys(recs).forEach(function (k) {
+    var r = recs[k];
+    if (!r || r.graduated || !r.due) return;
+    var dd = dayDiff(t, r.due);
+    if (dd < 0) buckets[0]++;
+    else if (dd === 0) buckets[1]++;
+    else if (dd <= 3) buckets[2]++;
+    else if (dd <= 7) buckets[3]++;
+    else if (dd <= 14) buckets[4]++;
+    else if (dd <= 30) buckets[5]++;
+    else buckets[6]++;
+  });
+  var max = Math.max.apply(null, buckets.concat([1]));
+  var kinds = ["overdue", "today", "1-3", "4-7", "8-14", "15-30", "30+"];
+  var rows = names.map(function (n2, i) {
+    return '<button class="frow" data-list="predict:' + kinds[i] + '"><span class="fl">' + n2 + '</span>' +
+      '<span class="fb"><i style="width:' + (buckets[i] / max * 100) + '%"></i></span>' +
+      '<span class="fv">' + buckets[i] + '</span><span class="fa">›</span></button>';
+  }).join("");
+  return '<div class="card"><b>接下来要复习多少个</b><div class="tiny muted" style="margin:6px 0 10px">点任意一行看具体词表</div>' + rows + '</div>';
+}
+function todayCardHtml() {
+  var s = ensureStats();
+  var t = today();
+  var d = s.days[t] || {};
+  var dl = daily(S.decks[0] && S.decks[0].id);
+  return '<div class="card"><div class="charthead"><b>今日</b><span class="tiny muted">' + t + '</span></div>' +
+    '<div class="statbig" style="margin-top:10px">' +
+    '<div class="cell"><div class="n">' + num(d.new, 0) + '</div><div class="l">新学</div></div>' +
+    '<div class="cell"><div class="n">' + num(d.review, 0) + '</div><div class="l">复习</div></div>' +
+    '<div class="cell"><div class="n">' + num(d.testN, 0) + '</div><div class="l">测试</div></div>' +
+    '<div class="cell"><div class="n">' + fmtDur(num(d.ms, 0)) + '</div><div class="l">用时</div></div>' +
+    '</div>' +
+    '<div class="statbig" style="margin-top:10px">' +
+    '<div class="cell"><div class="n">' + Math.max(num(dl.streak, 0), num(d.count, 0) > 0 ? 1 : 0) + ' 天</div><div class="l">连续学习</div></div>' +
+    '<div class="cell"><div class="n">' + fmtDur(sumDays("ms")) + '</div><div class="l">累计用时</div></div>' +
+    '<div class="cell"><div class="n">' + (num(d.reviewTot, 0) ? Math.round(num(d.reviewOk, 0) / num(d.reviewTot, 0) * 100) + '%' : '-') + '</div><div class="l">今日复习正确率</div></div>' +
+    '</div>' +
+    '<div class="tiny muted" style="margin-top:10px">额度：新学 ' + num(dl.newDone, 0) + '/' + num(S.settings.newPerDay, 20) + ' · 复习 ' + num(dl.reviewDone, 0) + '/' + num(S.settings.reviewPerDay, 100) + '</div></div>';
+}
+function showBarCard(dateKey) {
+  var s = ensureStats();
+  var d = (s.days || {})[dateKey] || {};
+  var due = dueRangeMap()[dateKey] || 0;
+  var isFuture = dateKey > today();
+  var mask = $("#bar-mask");
+  if (!mask) return;
+  var inner = isFuture
+    ? '<div class="barhd"><b>' + dateKey + '</b><span class="tiny muted">未来</span></div>' +
+      '<div class="barnum">' + due + ' 个词预计到期</div>' +
+      '<button class="btn" id="btn-bar-list" data-list="predict:future">查看待学单词</button>'
+    : '<div class="barhd"><b>' + dateKey + '</b></div>' +
+      '<div class="bargrid">' +
+      '<div><span>新学</span><b>' + num(d.new, 0) + '</b></div>' +
+      '<div><span>复习</span><b>' + num(d.review, 0) + '</b></div>' +
+      '<div><span>测试</span><b>' + num(d.testN, 0) + '</b></div>' +
+      '<div><span>用时</span><b>' + fmtDur(num(d.ms, 0)) + '</b></div>' +
+      '<div><span>认识</span><b>' + (num(d.fast, 0) + num(d.slow, 0) + num(d.know, 0)) + '</b></div>' +
+      '<div><span>记得住的比例</span><b>' + (num(d.count, 0) ? Math.round((num(d.fast, 0) + num(d.slow, 0) + num(d.know, 0)) / num(d.count, 0) * 100) + '%' : '-') + '</b></div>' +
+      '</div>' +
+      '<button class="btn" id="btn-bar-list" data-list="date:' + dateKey + '">查看当天词表</button>';
+  mask.innerHTML = '<div class="barcard">' + inner + '<button class="btn ghost" id="btn-bar-close">关闭</button></div>';
+  mask.classList.add("on");
+}
+function renderStats() {
+  var deck = S.decks[0];
+  if (!deck) return;
+  var tabs = $("#stats-tabs");
+  if (tabs) tabs.innerHTML = statsTabsHtml();
+  var body = $("#stats-body");
+  if (!body) return;
+  var html = "";
+  if (statsTab === "today") html = todayCardHtml();
+  else if (statsTab === "chart") html = bigChartHtml();
+  else if (statsTab === "ebbing") html = ebbingHtml();
+  else if (statsTab === "time") html = timeHtml();
+  else if (statsTab === "heat") html = heatHtml2();
+  else html = forecastHtml();
+  body.innerHTML = html;
+  var sc = $("#chart-scroll");
+  if (sc) setTimeout(function () {
+    try {
+      var bars = sc.querySelectorAll(".cbar");
+      var idx = -1;
+      for (var i = 0; i < bars.length; i++) { if (bars[i].classList.contains("today")) { idx = i; break; } }
+      if (idx < 0) idx = Math.max(0, bars.length - 1);
+      var unit = bars.length ? (bars[0].offsetWidth + 5) : 23;
+      sc.scrollLeft = Math.max(0, idx * unit - sc.clientWidth * 0.30);
+    } catch (e) {}
+  }, 30);
 }/* ---------------- 界面：我的 ---------------- */
 function renderMe() {
   var chips = $$("#me-mode .chip");
@@ -2797,7 +3092,7 @@ function pvApply() {
   if (root && root.style && root.style.setProperty) {
     try {
       root.style.setProperty("--pv-word-size", clamp(num(st.wordSize, 44), 32, 80) + "px");
-      root.style.setProperty("--pv-btn-h", clamp(num(st.btnHeight, 64), 60, 120) + "px");
+      root.style.setProperty("--pv-btn-h", clamp(num(st.btnHeight, 56), 44, 120) + "px");
       root.style.setProperty("--pv-btn-m", clamp(num(st.btnMargin, 24), 0, 100) + "px");
     } catch (e) {}
   }
@@ -2928,7 +3223,7 @@ function renderSetup(deckId) {
     '<label class="advcell"><span class="tiny muted">一天从几点开始（0–6 点）</span><input type="number" id="adv-dayCutoff" value="' + num(st.dayCutoff, 4) + '"></label>' +
       '<label class="advcell"><span class="tiny muted">最大间隔（天）</span><input type="number" id="adv-maxInterval" value="' + num(st.maxInterval, 365) + '"></label>' +
       '<label class="advcell"><span class="tiny muted">答题主字号（px）</span><input type="number" id="adv-wordSize" step="2" min="32" max="80" value="' + clamp(num(st.wordSize, 44), 32, 80) + '"></label>' +
-      '<label class="advcell"><span class="tiny muted">判定按钮高度（px）</span><input type="number" id="adv-btnHeight" step="4" min="60" max="120" value="' + clamp(num(st.btnHeight, 64), 60, 120) + '"></label>' +
+      '<label class="advcell"><span class="tiny muted">判定按钮高度（px）</span><input type="number" id="adv-btnHeight" step="4" min="60" max="120" value="' + clamp(num(st.btnHeight, 56), 44, 120) + '"></label>' +
       '<label class="advcell"><span class="tiny muted">学习·闪过 限时（秒）</span><input type="number" id="adv-t-sflash" step="0.5" value="' + (num(st.time && st.time.studyFlash, 3000) / 1000) + '"></label>' +
       '<label class="advcell"><span class="tiny muted">学习·背记 限时（0=不计时）</span><input type="number" id="adv-t-srecall" step="0.5" value="' + (num(st.time && st.time.studyRecall, 0) / 1000) + '"></label>' +
       '<label class="advcell"><span class="tiny muted">测·闪过 限时（秒）</span><input type="number" id="adv-t-tflash" step="0.5" value="' + (num(st.time && st.time.testFlash, 3000) / 1000) + '"></label>' +
@@ -3086,7 +3381,6 @@ function nextQuestion() {
 
   var remaining = sess.queue.length + sess.pending.length + (sess.cur ? 1 : 0);
   $("#gstat").textContent = statLine(sess, remaining);
-  applyWideSwap();
 
   G.answered = false;
   G.revealing = false;
@@ -3445,12 +3739,13 @@ function doUndo() {
 }
 
 function advance() {
-  clearTimeout(G.revealTimer);
-  cancelAnimationFrame(G.raf);
-  G.snap = null;
-  var sess = S.session;
-  if (!sess) { show("home"); renderHome(); return; }
-  if (!sess.queue.length && !sess.pending.length && !sess.cur) { finishSession(); return; }
+  if (G.advancing) return;
+  G.advancing = true;
+  setTimeout(function () { G.advancing = false; }, 80);
+  if (G.paused) return;
+  G.snap = null; G.lastOut = null;
+  G.answered = false; G.revealing = false; G.meaningShown = false;
+  if (S.session && S.session.finishWhenDone && !S.session.queue.length && !S.session.pending.length) return finishSession();
   nextQuestion();
 }
 
@@ -3766,6 +4061,31 @@ function bind() {
     startSession(S.decks[0].id, "normal");
   });
   on("#btn-home-settings", "click", function () { renderSetup(S.decks[0].id); show("setup"); });
+  on("#bar-mask", "click", function (ev) {
+    var t = ev.target;
+    if (t && (t.id === "bar-mask" || t.id === "btn-bar-close")) { $("#bar-mask").classList.remove("on"); return; }
+    var b = t && t.closest ? t.closest("#btn-bar-list") : null;
+    if (b) { $("#bar-mask").classList.remove("on"); listKind = b.getAttribute("data-list"); renderList(listKind); show("list"); }
+  });
+  on("#stats-tabs", "click", function (ev) {
+    var t = ev.target && ev.target.closest ? ev.target.closest("[data-st]") : null;
+    if (!t) return;
+    statsTab = t.getAttribute("data-st");
+    renderStats();
+  });
+  on("#stats-body", "click", function (ev) {
+    var el = ev.target;
+    var g = el && el.closest ? el.closest("[data-gran]") : null;
+    if (g) { chartGran = g.getAttribute("data-gran"); renderStats(); return; }
+    var c = el && el.closest ? el.closest("[data-cmode]") : null;
+    if (c) { chartMode = c.getAttribute("data-cmode"); renderStats(); return; }
+    var b = el && el.closest ? el.closest("[data-bar]") : null;
+    if (b) { showBarCard(b.getAttribute("data-bar")); return; }
+    var f = el && el.closest ? el.closest("[data-list]") : null;
+    if (f) { listKind = f.getAttribute("data-list"); renderList(listKind); show("list"); return; }
+    var go = el && el.closest ? el.closest("#btn-stats-go") : null;
+    if (go) { goTab("home"); return; }
+  });
   on("#tabs", "click", function (ev) {
     var b = ev.target.closest && ev.target.closest(".tab[data-tab]");
     if (!b) return;
@@ -4676,6 +4996,14 @@ function renderList(kind) {
   var ttl = titles[kind];
   if (mLevel) ttl = "等级 L" + mLevel[1] + " 的词";
   if (mKind) ttl = "判过「" + (kindName[mKind[1]] || mKind[1]) + "」的词";
+  var pm = dyn.match(/^predict:([a-z0-9\-+]+)$/);
+  if (pm) {
+    ttl = ({ overdue: "已逾期要复习的词", today: "今天到期要复习的词", "1-3": "1–3 天内到期的词",
+      "4-7": "4–7 天内到期的词", "8-14": "8–14 天内到期的词", "15-30": "15–30 天内到期的词",
+      "30+": "30 天以上到期的词", future: "未来 30 天预计到期的词" })[pm[1]] || "到期词表";
+  }
+  var dm = dyn.match(/^date:(\d{4}-\d{2}-\d{2})$/);
+  if (dm) ttl = dm[1] + " 这天答过的词";
   $("#list-title").textContent = ttl || "列表";
   var recs = recsOf(deck.id);
   var html = "", rows = [];
@@ -4716,6 +5044,52 @@ function renderList(kind) {
     }
     html = rows.length ? '<div class="tiny muted" style="margin:4px 0 8px">共 ' + pool.length + ' 个</div>' + rows.join("")
       : '<div class="empty">这一类还没有词。</div>';
+    body.innerHTML = html;
+    return;
+  }
+  if (kind.indexOf("predict:") === 0) {
+    var pk = kind.slice(8), pnow = today(), plist = [];
+    var byDue = recsOf(deck.id);
+    for (var pk1 in byDue) {
+      if (!Object.prototype.hasOwnProperty.call(byDue, pk1)) continue;
+      var pr = byDue[pk1];
+      if (!pr || pr.graduated || !pr.due) continue;
+      var pd = dayDiff(pnow, pr.due);
+      if (pk === "future") { if (pd >= 0 && pd <= 30) plist.push(pk1); continue; }
+      if (pk === "overdue" && pd < 0) plist.push(pk1);
+      else if (pk === "today" && pd === 0) plist.push(pk1);
+      else if (pk === "1-3" && pd >= 1 && pd <= 3) plist.push(pk1);
+      else if (pk === "4-7" && pd >= 4 && pd <= 7) plist.push(pk1);
+      else if (pk === "8-14" && pd >= 8 && pd <= 14) plist.push(pk1);
+      else if (pk === "15-30" && pd >= 15 && pd <= 30) plist.push(pk1);
+      else if (pk === "30+" && pd > 30) plist.push(pk1);
+    }
+    plist.sort(function (a, b) { return String(byDue[a].due || "").localeCompare(String(byDue[b].due || "")); });
+    for (var pi = 0; pi < plist.length && rows.length < 300; pi++) {
+      var pr2 = byDue[plist[pi]];
+      rows.push(rowHtml(wordByKey(deck.id, plist[pi]), "L" + num(pr2.L, 0) + " · " + (pr2.due || ""), "", plist[pi]));
+    }
+    html = rows.length
+      ? '<div class="tiny muted" style="margin:4px 0 8px">共 ' + plist.length + ' 个 · 点词看详情</div><div class="card">' + rows.join("") + "</div>"
+      : '<div class="empty">这一类没有词。</div>';
+    body.innerHTML = html;
+    return;
+  }
+  if (kind.indexOf("date:") === 0) {
+    var dk3 = kind.slice(5), s3 = ensureStats(), seen3 = {}, dlist = [];
+    for (var li3 = s3.logs.length - 1; li3 >= 0; li3--) {
+      var l3 = s3.logs[li3];
+      if (!l3 || l3.d !== dk3 || !l3.w) continue;
+      if (seen3[l3.w]) continue;
+      seen3[l3.w] = 1; dlist.push(l3.w);
+    }
+    for (var di = 0; di < dlist.length && rows.length < 300; di++) {
+      var rr3 = recs[dlist[di]];
+      rows.push(rowHtml(wordByKey(deck.id, dlist[di]), rr3 ? "L" + num(rr3.L, 0) : "", "", dlist[di]));
+    }
+    html = rows.length
+      ? '<div class="tiny muted" style="margin:4px 0 8px">共 ' + dlist.length + ' 个 · 点词看详情</div><div class="card">' + rows.join("") + "</div>"
+      : '<div class="empty">这一天的作答记录不在了（明细只保留最近 500 条）。</div>';
     body.innerHTML = html;
     return;
   }
