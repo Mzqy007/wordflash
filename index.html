@@ -941,6 +941,9 @@ body.pos-left #opslot>#fixbar>.fix,body.pos-right #opslot>#fixbar>.fix,body.pos-
 #scr-test .tqcol{overflow:hidden !important}
 #scr-test .tword{max-width:100% !important;overflow:hidden;text-overflow:clip}
 @media (orientation: landscape){ #scr-test .tqcol{width:50% !important;max-width:50% !important} }
+/* 第二条细条：本题倒计时（进度条保持单调） */
+.timer2{height:3px;background:#eef0f3;border-radius:2px;overflow:hidden;margin-top:4px}
+.timer2>i{display:block;height:100%;width:0;background:#2f7cf6;border-radius:2px}
 </style>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
@@ -1070,6 +1073,7 @@ body.pos-left #opslot>#fixbar>.fix,body.pos-right #opslot>#fixbar>.fix,body.pos-
         </span>
       </div>
       <div class="timer"><i id="tbar"></i></div>
+      <div class="timer2" id="timer2"><i id="tbar2"></i></div>
       <div class="gmain" id="game-main">
         <div class="gcol gcol-word">
           <div class="qbox" id="qbox">
@@ -3342,11 +3346,14 @@ function sessionTag(cur, sess) {
 /* 顶部进度文案：把本轮到底还剩哪些东西说清楚（新学/回放/回看/巩固分项） */
 function sessionPct(sess, remaining) {
   if (!sess) return 0;
-  if (!num(sess.total0, 0)) sess.total0 = num(sess.firstDone, 0) + num(remaining, 0);
+  var base = num(sess.firstDone, 0) + num(remaining, 0);
+  sess.total0 = Math.max(num(sess.total0, 0), base);
   var t0 = num(sess.total0, 0);
   if (!t0) return 0;
-  var done = Math.max(0, t0 - num(remaining, 0));
-  return Math.max(0, Math.min(100, Math.round(done / t0 * 100)));
+  var done = num(sess.done0, 0);
+  var pct = Math.max(0, Math.min(100, Math.round(done / t0 * 100)));
+  sess.pctMax = Math.max(num(sess.pctMax, 0), pct);
+  return sess.pctMax;
 }
 function statLine(sess, remaining) {
   var i, replayN = 0, revisitN = 0;
@@ -3377,13 +3384,20 @@ function setWordSize(word) {
   var txt = String(word || "");
   var wl = Math.max(1, txt.length);
   var qbox = el.parentElement;
-  var wide = document.body.classList.contains("wide");
-  var availW = (qbox && qbox.clientWidth) ? qbox.clientWidth - 10 : window.innerWidth * (wide ? 0.46 : 0.9);
-  var availH = window.innerHeight * (wide ? 0.32 : 0.34);
-  var byWidth = availW / (wl * 0.6);
+  var r = qbox ? qbox.getBoundingClientRect() : null;
+  var availW = r && r.width > 40 ? Math.floor(r.width) - 12 : 0;
+  if (!availW) {
+    if (!setWordSize._t) { setWordSize._t = 1; requestAnimationFrame(function(){ setWordSize._t = 0; setWordSize(word); }); }
+    return;
+  }
+  var availH = window.innerHeight * 0.30;
+  var byWidth = availW / (wl * 0.58);
   var base = clamp(num(S.settings.wordSize, 44), 32, 80);
-  var size = Math.max(18, Math.min(availH, byWidth, wide ? Math.max(base, 60) : base));
+  // 以「塞得下」为准，滑块的数值只当参考下限，不再死卡字号
+  var size = Math.min(availH, byWidth, Math.max(base * 1.8, 56));
+  size = Math.max(20, Math.min(size, 140));
   el.style.fontSize = Math.round(size) + "px";
+  el.style.whiteSpace = "nowrap";
 }
 
 function nextQuestion() {
@@ -3427,11 +3441,14 @@ function nextQuestion() {
     $("#btn-fuzzy").disabled = false;
     $("#ghint").textContent = "先在脑子里想一下，再点「显示释义」";
     $(".timer").style.display = "none";
+    var t2h = $("#timer2"); if (t2h) t2h.style.display = "none";
   } else {
     $("#gbtns").style.display = "";
     $("#btn-show").style.display = "none";
     $("#ghint").textContent = TOUCH ? "凭第一反应，别纠结" : "1 认识 · 2 模糊 · 3 不认识 · Esc 结束";
     $(".timer").style.display = "";
+    var t2s = $("#timer2"); if (t2s) t2s.style.display = "";
+    var b2 = $("#tbar2"); if (b2) b2.style.width = "0%";
   }
   $("#btn-know").disabled = false;
   $("#btn-no").disabled = false;
@@ -3513,6 +3530,11 @@ function tickTimer() {
   var pct = Math.min(100, el / st.limitMs * 100);
   var bar = $("#tbar");
   bar.className = pct > 75 ? "danger" : (pct > 50 ? "warn" : "");
+  var bar2 = $("#tbar2");
+  if (bar2) {
+    bar2.style.width = pct + "%";
+    bar2.style.background = pct > 75 ? "#e05a4f" : (pct > 50 ? "#e8b23a" : "#2f7cf6");
+  }
   if (el >= st.limitMs) { doAnswer("timeout"); return; }
   G.raf = requestAnimationFrame(tickTimer);
 }
@@ -3565,7 +3587,9 @@ function doAnswer(kind) {
   }
 
   G.answered = true;
+  if (S.session) S.session.done0 = num(S.session.done0, 0) + 1;
   cancelAnimationFrame(G.raf);
+  var tbNow = $("#tbar"); if (tbNow) tbNow.style.width = sessionPct(S.session, 0) + "%";
 
   // 作答前存一份快照：改判时回滚到这一刻，再用另一种判定重算
   G.snap = takeSnap(S.session.cur.k);
@@ -5880,6 +5904,15 @@ else boot();
 })();
 
 
+</script>
+
+<script>
+/* PWA：注册 Service Worker，三星/Chrome 才会给「安装到主屏幕」 */
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("sw.js").catch(function () {});
+  });
+}
 </script>
 <script>
 if ("serviceWorker" in navigator && location.protocol === "https:") {
