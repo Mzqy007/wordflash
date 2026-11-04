@@ -611,6 +611,191 @@ body.pos-left .fixbar,body.pos-right .fixbar{flex-direction:column}
   body:not(.wide) #scr-game .game{height:auto;min-height:calc(100dvh - 16px)}
 }
 
+/* ================= 四组手型：单手（左/右）+ 双手（底部） ================= */
+.layrow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f0f1f4;flex-wrap:wrap}
+.layrow .layname{flex:0 0 96px;font-size:14px;color:#3d434b;font-weight:600}
+.layrow .chips{gap:6px}
+/* —— 竖屏：单手时按钮/选项整块靠左或靠右，双手铺满 —— */
+body.pos-left #scr-game .opslot{width:100%;padding-right:22%}
+body.pos-right #scr-game .opslot{width:100%;padding-left:22%}
+body.pos-left #scr-game .btns,body.pos-right #scr-game .btns{flex-direction:row}
+body.pos-bottom #scr-game .opslot{width:100%;padding:0}
+/* —— 横屏单手：三栏（按钮条 | 答案 | 单词） —— */
+@media (orientation: landscape){
+  body.pos-left #game-wrap.game .gmain,body.pos-right #game-wrap.game .gmain{flex-direction:row}
+  body.pos-right #game-wrap.game .gmain{flex-direction:row-reverse}
+  body.pos-left .opslot,body.pos-right .opslot{flex:0 0 104px;width:104px;height:100%;
+    display:flex;flex-direction:column;padding:8px 6px;gap:6px;background:#f4f5f7}
+  body.pos-left .opslot .btns,body.pos-right .opslot .btns{flex:1;flex-direction:column;gap:8px}
+  body.pos-left .opslot .big,body.pos-right .opslot .big{flex:1;min-height:0;font-size:15px;border-radius:10px}
+  body.pos-left .opslot .fixbar,body.pos-right .opslot .fixbar{flex-direction:column}
+  /* 单手时答案区居中、单词区居中 */
+  body.pos-left .gcol-side,body.pos-right .gcol-side{justify-content:center}
+  /* —— 测试屏：单手时选项列收在拇指侧；双手时选项在底部一行四个 —— */
+  body.pos-left #scr-test .tqwrap,body.pos-right #scr-test .tqwrap{flex-direction:row}
+  body.pos-right #scr-test .tqwrap{flex-direction:row-reverse}
+  body.pos-left #scr-test .tocol,body.pos-right #scr-test .tocol{flex:0 0 38%}
+  body.pos-left #scr-test .tqcol,body.pos-right #scr-test .tqcol{flex:1}
+  body.pos-bottom #scr-test .tqwrap{flex-direction:column}
+  body.pos-bottom #scr-test .tocol{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;
+    flex:0 0 auto;width:100%;padding-bottom:6px}
+  body.pos-bottom #scr-test .tocol .opt{min-height:52px}
+  /* 竖屏单手：测试选项仍竖排，但靠左/靠右收窄 */
+  @media (orientation: portrait){
+    body.pos-left #scr-test .tocol{padding-right:18%}
+    body.pos-right #scr-test .tocol{padding-left:18%}
+  }
+}
+
+/* ===== 单手三栏（opslot 在 .gmain 内，用 order 排位置） ===== */
+#scr-game .gmain{display:flex;flex-direction:column}
+#scr-game .opslot{order:9}
+@media (orientation: landscape){
+  body.pos-left #scr-game .gmain,body.pos-right #scr-game .gmain{flex-direction:row}
+  body.pos-left #scr-game .opslot{order:0;flex:0 0 104px;width:104px;height:100%;
+    display:flex;flex-direction:column;padding:8px 6px;gap:6px;background:#f4f5f7}
+  body.pos-right #scr-game .opslot{order:3;flex:0 0 104px;width:104px;height:100%;
+    display:flex;flex-direction:column;padding:8px 6px;gap:6px;background:#f4f5f7}
+  body.pos-left #scr-game .opslot .btns,body.pos-right #scr-game .opslot .btns{flex:1;flex-direction:column;gap:8px}
+  body.pos-left #scr-game .opslot .big,body.pos-right #scr-game .opslot .big{flex:1;min-height:0;font-size:15px;border-radius:10px}
+  body.pos-left #scr-game .opslot .fixbar,body.pos-right #scr-game .opslot .fixbar{flex-direction:column;margin:0}
+  body.pos-left #scr-game .gcol-side{order:1}
+  body.pos-left #scr-game .gcol-word{order:2}
+  body.pos-left #scr-game .gcol-side,body.pos-right #scr-game .gcol-side{justify-content:center;overflow-y:auto}
+}
+@media (orientation: portrait){
+  body.pos-left #scr-game .opslot{width:100%;padding-right:22%}
+  body.pos-right #scr-game .opslot{width:100%;padding-left:22%}
+  body.pos-left #scr-game .btns,body.pos-right #scr-game .btns{flex-direction:row}
+}
+
+/* 竖屏单手：底部条固定高，靠左/靠右留白 */
+@media (orientation: portrait){
+  body.pos-left #scr-game .opslot,body.pos-right #scr-game .opslot{
+    flex:0 0 auto;height:calc(var(--app-btn-height,64px) + 20px);
+    padding:6px 8px calc(8px + var(--app-btn-margin,0px));order:9;width:100%;background:transparent}
+  body.pos-left #scr-game .opslot{padding-right:24%}
+  body.pos-right #scr-game .opslot{padding-left:24%}
+  body.pos-left #scr-game .opslot .btns,body.pos-right #scr-game .opslot .btns{
+    flex-direction:row;flex:1 1 auto;height:100%}
+  body.pos-left #scr-game .opslot .big,body.pos-right #scr-game .opslot .big{
+    min-height:0;height:100%;font-size:15px;padding:0 4px}
+  body.pos-left #scr-game .opslot .fixbar,body.pos-right #scr-game .opslot .fixbar{
+    flex-direction:row;margin:0}
+}
+
+/* ===== 竖屏最终修正：列布局 + 按钮条整块对齐（不影响单词宽度） ===== */
+@media (orientation: portrait){
+  body.pos-left #scr-game .gmain,body.pos-right #scr-game .gmain{
+    display:flex;flex-direction:column;width:100%;min-width:0}
+  body.pos-left #scr-game .gcol-word,body.pos-right #scr-game .gcol-word,
+  body.pos-left #scr-game .gcol-side,body.pos-right #scr-game .gcol-side{
+    width:100%;min-width:0;order:0}
+  body.pos-left #scr-game .qbox,body.pos-right #scr-game .qbox{width:100%;min-width:0}
+  body.pos-left #scr-game .opslot,body.pos-right #scr-game .opslot{
+    order:2;flex:0 0 auto;width:100%;height:auto;padding:8px 8px calc(8px + var(--app-btn-margin,0px));
+    background:transparent}
+  body.pos-left #scr-game .opslot .btns,body.pos-right #scr-game .opslot .btns{
+    flex-direction:row;height:auto;gap:8px}
+  body.pos-left #scr-game .opslot .btns{width:76%;margin-right:auto;margin-left:0}
+  body.pos-right #scr-game .opslot .btns{width:76%;margin-left:auto;margin-right:0}
+  body.pos-bottom #scr-game .opslot .btns{width:100%}
+  body.pos-left #scr-game .opslot .big,body.pos-right #scr-game .opslot .big{
+    height:var(--app-btn-height,64px);min-height:0;font-size:15px}
+}
+
+/* ===== 竖屏强制定稿（用更高优先级覆盖前面所有遗留规则） ===== */
+@media (orientation: portrait){
+  html body.pos-left #scr-game .gmain,
+  html body.pos-right #scr-game .gmain{flex-direction:column !important}
+  html body.pos-left #scr-game .gcol-word,
+  html body.pos-right #scr-game .gcol-word,
+  html body.pos-left #scr-game .gcol-side,
+  html body.pos-right #scr-game .gcol-side{order:0 !important;width:100% !important;min-width:0 !important}
+  html body.pos-left #scr-game .opslot,
+  html body.pos-right #scr-game .opslot{
+    order:2 !important;flex:0 0 auto !important;width:100% !important;
+    height:calc(var(--app-btn-height,64px) + 16px + var(--app-btn-margin,0px)) !important}
+  html body.pos-left #scr-game .opslot .btns,
+  html body.pos-right #scr-game .opslot .btns{flex-direction:row !important;height:var(--app-btn-height,64px) !important}
+  html body.pos-left #scr-game .opslot .big,
+  html body.pos-right #scr-game .opslot .big{height:100% !important;min-height:0 !important;font-size:15px !important}
+}
+
+/* ===== 横屏单手三栏（只在 wide 下生效，最终覆盖） ===== */
+@media (orientation: landscape){
+  html body.wide.pos-left #scr-game .gmain,
+  html body.wide.pos-right #scr-game .gmain{flex-direction:row !important}
+  html body.wide.pos-left #scr-game .opslot{
+    order:0 !important;flex:0 0 104px !important;width:104px !important;height:100% !important;
+    display:flex !important;flex-direction:column !important;padding:8px 6px !important;gap:6px !important;background:#f4f5f7}
+  html body.wide.pos-right #scr-game .opslot{
+    order:3 !important;flex:0 0 104px !important;width:104px !important;height:100% !important;
+    display:flex !important;flex-direction:column !important;padding:8px 6px !important;gap:6px !important;background:#f4f5f7}
+  html body.wide.pos-left #scr-game .opslot .btns,
+  html body.wide.pos-right #scr-game .opslot .btns{
+    flex:1 1 auto !important;flex-direction:column !important;gap:8px !important;width:100% !important;height:auto !important}
+  html body.wide.pos-left #scr-game .opslot .big,
+  html body.wide.pos-right #scr-game .opslot .big{flex:1 1 0 !important;height:auto !important;min-height:0 !important;font-size:15px !important}
+  html body.wide.pos-left #scr-game .gcol-side{order:1 !important}
+  html body.wide.pos-left #scr-game .gcol-word{order:2 !important}
+  html body.wide.pos-left #scr-game .gcol-side,
+  html body.wide.pos-right #scr-game .gcol-side{justify-content:center !important;overflow-y:auto !important}
+  /* 双手（wide）保持原来的两栏 + 底部条 */
+  html body.wide.pos-bottom #scr-game .opslot{flex:0 0 auto !important;width:100% !important;height:auto !important;display:block !important}
+  html body.wide.pos-bottom #scr-game .opslot .btns{flex-direction:row !important;width:100% !important;height:auto !important}
+}
+
+/* 横屏答题不显示底部提示（避免挤压按钮条） */
+@media (orientation: landscape){
+  html body.wide.in-game #ghint{display:none !important}
+  html body.wide.in-game #game-wrap.game{min-height:calc(100dvh - 8px) !important}
+  html body.wide.in-game .opslot{flex:0 0 auto !important}
+}
+
+/* 横屏双手：按钮条固定贴底，主区让出空间（彻底避免高度挤压） */
+@media (orientation: landscape){
+  html body.wide.in-game.pos-bottom #scr-game .opslot{
+    position:fixed !important;left:0;right:0;bottom:0;z-index:6;
+    height:auto !important;padding:6px 8px calc(6px + env(safe-area-inset-bottom,0px)) !important;background:#f4f5f7}
+  html body.wide.in-game.pos-bottom #scr-game .opslot .btns{width:100% !important;flex-direction:row !important}
+  html body.wide.in-game.pos-bottom #scr-game .gmain{
+    padding-bottom:calc(var(--app-btn-height,64px) + 16px) !important}
+}
+
+/* ===== 最终结构：opslot 固定在 #game-wrap 末尾；单手绝对定位贴边 ===== */
+#game-wrap.game{position:relative !important}
+@media (orientation: landscape){
+  html body.wide.in-game #scr-game .gmain{flex-direction:row !important;padding-bottom:0 !important}
+  html body.wide.pos-left #scr-game .gmain{padding-left:104px !important}
+  html body.wide.pos-right #scr-game .gmain{padding-right:104px !important}
+  html body.wide.pos-left #scr-game .opslot,
+  html body.wide.pos-right #scr-game .opslot{
+    position:absolute !important;top:0;bottom:0;width:104px !important;height:auto !important;
+    display:flex !important;flex-direction:column !important;padding:8px 6px !important;gap:6px !important;
+    background:#f4f5f7;z-index:5}
+  html body.wide.pos-left #scr-game .opslot{left:0}
+  html body.wide.pos-right #scr-game .opslot{right:0}
+  html body.wide.pos-left #scr-game .opslot .btns,
+  html body.wide.pos-right #scr-game .opslot .btns{
+    flex:1 1 auto !important;flex-direction:column !important;gap:8px !important}
+  html body.wide.pos-left #scr-game .opslot .big,
+  html body.wide.pos-right #scr-game .opslot .big{flex:1 1 0 !important;min-height:0 !important;font-size:15px !important}
+  html body.wide.pos-bottom #scr-game .opslot{
+    position:static !important;width:100% !important;height:auto !important;
+    display:block !important;padding:8px 8px calc(8px + var(--app-btn-margin,0px)) !important}
+  html body.wide.pos-bottom #scr-game .opslot .btns{flex-direction:row !important;width:100% !important}
+}
+
+/* 横屏答题：整页锁定，无任何多余留白 */
+@media (orientation: landscape){
+  html body.in-game{overflow:hidden !important}
+  html body.in-game #app{padding-bottom:0 !important;padding-top:8px !important}
+  html body.in-game #scr-game{margin:0 !important;padding:0 !important}
+  html body.in-game #scr-game .game{margin:0 !important}
+  html body.in-game #ghint,html body.in-game .hint{display:none !important}
+}
+
 </style>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
@@ -1038,7 +1223,7 @@ function defaultSettings() {
     // 顽固词：累计错误到这个次数就打标（只在统计/生词本里提示，不影响调度）
     leechAt: 8,
   dayCutoff: 4,
-  pos: "bottom", btnMargin: 24,
+  layFlash: "both", layRecall: "both", layWord: "both", layMeaning: "both", btnMargin: 24,
   wordSize: 44, btnHeight: 64,
   time: { studyFlash: 3000, studyRecall: 0, testFlash: 3000, testMeaning: 3000, testWord: 3000, testRecall: 0 },
   testLimitMs: 3000,
@@ -1103,9 +1288,11 @@ function loadState() {
           o.settings.revealMsV = 3;
         }
         if (o.settings) {
-          if (!o.settings.pos) {
-            var legacy = o.settings.ops || "double";
-            o.settings.pos = legacy === "right" ? "br" : legacy === "left" ? "bl" : "bottom";
+          if (!o.settings.layFlash) {
+            var lg = o.settings.pos || (o.settings.ops === "right" ? "br" : o.settings.ops === "left" ? "bl" : "bottom");
+            var hand = (lg === "left" || lg === "bl") ? "left" : (lg === "right" || lg === "br") ? "right" : "both";
+            o.settings.layFlash = hand; o.settings.layRecall = hand;
+            o.settings.layWord = hand; o.settings.layMeaning = hand;
           }
           /* 计时迁移必须在合并默认值之前做：否则默认 time 会覆盖旧 limitMs */
           if (!o.settings.time) {
@@ -1941,39 +2128,46 @@ function toast(msg) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(function () { el.classList.remove("on"); }, 2200);
 }
+function layoutNow() {
+  var st = S.settings || {};
+  if (curScreen === "test" && typeof T !== "undefined" && T && T.items && T.items[T.idx]) {
+    var qt = T.items[T.idx].qt;
+    if (qt === "word") return st.layWord || "both";
+    if (qt === "meaning") return st.layMeaning || "both";
+    if (qt === "learn") return st.layRecall || "both";
+    return st.layFlash || "both";
+  }
+  if (curScreen === "game") return (st.mode === "learn") ? (st.layRecall || "both") : (st.layFlash || "both");
+  return "both";
+}
 function applyWideSwap() {
-  try {
-    var ds = document.documentElement && document.documentElement.style;
-    if (ds && ds.setProperty) {
-      ds.setProperty("--app-btn-height", clamp(num(S.settings.btnHeight, 64), 60, 120) + "px");
-      ds.setProperty("--app-word-size", clamp(num(S.settings.wordSize, 44), 32, 80) + "px");
-    }
-  } catch (e) {}
-  var pos = (S.settings && S.settings.pos) || "bottom";
-  ["bottom", "bl", "br", "left", "right"].forEach(function (p) {
-    document.body.classList.toggle("pos-" + p, p === pos);
-  });
-  var side = pos === "left" || pos === "right";
-  document.body.classList.toggle("ops-single", side);
-  document.body.classList.toggle("hand-left", pos === "left");
-  document.body.classList.toggle("wide-swap", pos === "left");
+  var lay = layoutNow();
+  var st = S.settings;
+  var root = document.documentElement;
+  if (root && root.style && root.style.setProperty) {
+    try {
+      root.style.setProperty("--app-btn-height", clamp(num(st.btnHeight, 64), 60, 120) + "px");
+      root.style.setProperty("--app-word-size", clamp(num(st.wordSize, 44), 32, 80) + "px");
+      root.style.setProperty("--app-btn-margin", clamp(num(st.btnMargin, 24), 0, 100) + "px");
+    } catch (e) {}
+  }
+  document.body.classList.toggle("pos-left", lay === "left");
+  document.body.classList.toggle("pos-right", lay === "right");
+  document.body.classList.toggle("pos-bottom", lay === "both");
+  document.body.classList.toggle("ops-single", lay !== "both");
+  document.body.classList.toggle("hand-left", lay === "left");
   layoutOps();
 }
 
-/* 单手模式：宽屏时把「判定键 + 改判条」移进拇指那侧的列，竖屏/双手时移回底部 */
 function layoutOps() {
+  var main = $("#game-main");
+  var slot = $("#opslot");
   var wrap = $("#game-wrap");
-  if (!wrap) return;
-  var side = wrap.querySelector(".gcol-side");
-  var slot = $("#opslot"), hint = $("#ghint");
-  if (!slot || !hint) return;
-  var pos = (S.settings && S.settings.pos) || "bottom";
-  var isSide = pos === "left" || pos === "right";
-  var canMove = typeof wrap.insertBefore === "function" && side && typeof side.appendChild === "function";
-  if (!canMove) return;
+  if (!main || !slot || !wrap) return;
   try {
-    if (isSide) { if (slot.parentNode !== side) side.appendChild(slot); }
-    else if (slot.parentNode !== wrap) { wrap.insertBefore(slot, hint); }
+    /* 始终放在 #game-wrap 末尾；单手时由 CSS 绝对定位贴左边/右边 */
+    if (slot.parentNode !== wrap) wrap.appendChild(slot);
+    else if (slot !== wrap.lastChild) wrap.appendChild(slot);
   } catch (e) {}
 }
 
@@ -2621,13 +2815,23 @@ function renderSetup(deckId) {
     '<button class="chip' + (st.mode !== "learn" ? " on" : "") + '" id="set-mode-flash">闪过</button>' +
     '<button class="chip' + (st.mode === "learn" ? " on" : "") + '" id="set-mode-learn">背记</button>' +
     '</div></div>';
-  var posNow = st.pos || "bottom";
-  var POSES = [["bottom", "底部居中"], ["bl", "左下"], ["br", "右下"], ["left", "左侧"], ["right", "右侧"]];
-  html += '<div class="field"><div><div class="lab">操作区位置</div>' +
-    '<div class="sub">按钮放在这一侧；选左右时单词自动镜像到另一边。答题界面锁定不可调。</div></div></div>';
-  html += '<div class="chips" id="set-pos">' + POSES.map(function (p) {
-    return '<button class="chip' + (posNow === p[0] ? " on" : "") + '" data-pos="' + p[0] + '">' + p[1] + '</button>';
-  }).join("") + '</div>';
+  var GROUPS = [
+    ["layFlash", "闪过（学习）"],
+    ["layRecall", "背记（学习）"],
+    ["layWord", "选词（测试）"],
+    ["layMeaning", "选义（测试）"]
+  ];
+  var HANDS = [["left", "左手"], ["right", "右手"], ["both", "双手"]];
+  html += '<div class="field"><div><div class="lab">答题布局（每个模式各自设置）</div>' +
+    '<div class="sub">单手＝判定键/选项在拇指侧、答案居中、单词在另一边；双手＝两侧分栏、按钮/选项在底部。竖屏时一律在底部，只分靠左/靠右/铺满。</div></div></div>';
+  GROUPS.forEach(function (g) {
+    var cur = st[g[0]] || "both";
+    html += '<div class="layrow"><span class="layname">' + g[1] + '</span><span class="chips">' +
+      HANDS.map(function (h) {
+        return '<button class="chip' + (cur === h[0] ? " on" : "") + '" data-lay="' + g[0] + '" data-v="' + h[0] + '">' + h[1] + '</button>';
+      }).join("") + '</span></div>';
+  });
+
   html += '<div class="field"><div><div class="lab">主字号</div><div class="sub">单词显示大小</div></div>' +
     '<div class="row"><input type="range" id="set-word-size" min="32" max="80" step="2" value="' + num(st.wordSize, 44) + '">' +
     '<span class="mono" id="set-word-size-v">' + num(st.wordSize, 44) + 'px</span></div></div>';
@@ -2637,16 +2841,7 @@ function renderSetup(deckId) {
   html += '<div class="field"><div><div class="lab">按钮底边距</div><div class="sub">按钮距屏幕底部的高度</div></div>' +
     '<div class="row"><input type="range" id="set-btn-margin" min="0" max="100" step="4" value="' + num(st.btnMargin, 24) + '">' +
     '<span class="mono" id="set-btn-margin-v">' + num(st.btnMargin, 24) + 'px</span></div></div>';
-  html += '<div class="field"><div><div class="lab">实时预览</div><div class="sub">改上面任何一项这里立刻变；点下面按钮可切竖横与翻面</div></div></div>';
-  html += '<div class="pvwrap"><div class="pv" id="pv">' +
-      '<div class="pvt"><span class="pvword">abandon</span><span class="pvphon">/əˈbændən/</span></div>' +
-      '<div class="pvside" id="pv-side">v. 放弃，抛弃；n. 放纵</div>' +
-      '<div class="pvops" id="pv-ops"><span class="pvbtn">认识</span><span class="pvbtn">模糊</span><span class="pvbtn">不认识</span></div>' +
-    '</div></div>';
-  html += '<div class="chips" id="set-pv">' +
-    '<button class="chip" id="btn-pv-orient">竖屏预览</button>' +
-    '<button class="chip" id="btn-pv-flip">显示释义</button>' +
-    '<button class="chip" id="btn-ui-reset">恢复默认</button></div>';
+  html += '<div class="chips"><button class="chip" id="btn-ui-reset">恢复默认布局</button></div>';
   html += '<hr>';
   html += '<div class="field"><div><div class="lab">每组题数</div><div class="sub">一轮首次出场的词数</div></div></div>';
   html += '<div class="chips" id="set-count">' + [10, 20, 40, 60].map(function (n) {
@@ -2891,6 +3086,7 @@ function nextQuestion() {
 
   var remaining = sess.queue.length + sess.pending.length + (sess.cur ? 1 : 0);
   $("#gstat").textContent = statLine(sess, remaining);
+  applyWideSwap();
 
   G.answered = false;
   G.revealing = false;
@@ -4004,27 +4200,20 @@ function bind() {
       return;
     }
     if (t.id === "set-undo") { S.settings.fastUndo = !S.settings.fastUndo; saveNow(); renderSetup(setupDeckId); return; }
-    if (t.getAttribute && t.getAttribute("data-pos")) {
-      var po = t.getAttribute("data-pos");
-      S.settings.pos = po;
-      saveNow(); applyLayout(); renderSetup(setupDeckId);
-      toast("操作区：" + ({ bottom: "底部居中", bl: "左下", br: "右下", left: "左侧", right: "右侧" }[po] || po));
-      return;
-    }
-    if (t.id === "btn-pv-orient") {
-      var pv1 = $("#pv"); if (pv1) { pv1.dataset.wide = pv1.dataset.wide ? "" : "1"; pvApply(); }
-      t.textContent = (pv1 && pv1.dataset.wide) ? "横屏预览" : "竖屏预览";
-      return;
-    }
-    if (t.id === "btn-pv-flip") {
-      var pv2 = $("#pv"); if (pv2) { pv2.dataset.flip = pv2.dataset.flip ? "" : "1"; pvApply(); }
-      t.textContent = (pv2 && pv2.dataset.flip) ? "隐藏释义" : "显示释义";
+    if (t.getAttribute && t.getAttribute("data-lay")) {
+      var gk = t.getAttribute("data-lay"), gv = t.getAttribute("data-v");
+      if (!gk || !gv) return;
+      S.settings[gk] = gv;
+      saveNow(); applyWideSwap(); renderSetup(setupDeckId);
+      toast("已设为：" + ({ left: "左手", right: "右手", both: "双手" }[gv] || gv));
       return;
     }
     if (t.id === "btn-ui-reset") {
-      S.settings.pos = "bottom"; S.settings.wordSize = 44; S.settings.btnHeight = 64; S.settings.btnMargin = 24;
-      saveNow(); applyLayout(); renderSetup(setupDeckId);
-      toast("界面已恢复默认");
+      S.settings.layFlash = "both"; S.settings.layRecall = "both";
+      S.settings.layWord = "both"; S.settings.layMeaning = "both";
+      S.settings.wordSize = 44; S.settings.btnHeight = 64; S.settings.btnMargin = 24;
+      saveNow(); applyWideSwap(); renderSetup(setupDeckId);
+      toast("已恢复默认布局");
       return;
     }
     if (t.id === "set-mode-flash" || t.id === "set-mode-learn") {
@@ -4414,18 +4603,20 @@ function isWideNow() {
   if (m === "landscape") return landscape && window.innerWidth >= 640;
   return landscape && window.innerHeight <= 560;
 }
+
 function applyLayout() {
-  var wide = isWideNow();
-  document.body.classList.toggle("wide", wide);
-  var oneCol = wide && window.innerWidth >= 1000 && !(S && S.settings && S.settings.wideTwoCol);
-  document.body.classList.toggle("onecol", oneCol);
-  if (S && S.session && S.session.cur) {
-    var cw = wordByKey(S.session.deckId, S.session.cur.k);
-    if (cw) setWordSize(cw.w);
-  }
-  var b = $("#btn-orient");
-  if (b) b.textContent = wide ? "竖屏" : "横屏";
-  applyWideSwap();
+  try {
+    document.body.classList.toggle("wide", isWideNow());
+  } catch (e) {}
+  var onecol = (typeof isWideNow === "function") && isWideNow() && (window.innerWidth >= 1000) && (S.settings.wideTwoCol !== true);
+  try { document.body.classList.toggle("onecol", !!onecol); } catch (e) {}
+  try { applyWideSwap(); } catch (e) {}
+  try {
+    var g = $("#game-wrap"), h = $("#ghint");
+    var inGame = (typeof curScreen !== "undefined" && curScreen === "game") && isWideNow();
+    if (g) { g.style.maxHeight = inGame ? (window.innerHeight - 8) + "px" : ""; g.style.overflow = inGame ? "hidden" : ""; }
+    if (h) { h.style.display = inGame ? "none" : ""; }
+  } catch (e) {}
 }
 function renderScreenByName(n) {
   if (n === "home") renderHome();
@@ -4839,6 +5030,7 @@ function answerTestSub(kind) {
   testNext(it);
 }
 function renderTestQ() {
+  applyWideSwap();
   var body = $("#test-body");
   if (!T || !body) return;
   if (T.idx >= T.items.length) { finishTest(); return; }
