@@ -892,12 +892,55 @@ body.wide #scr-test .tword{font-size:clamp(26px,min(9vh,5.6vw),92px) !important;
 }
 /* 测试屏单词：以 JS 自适应为主，CSS 只做兜底 */
 #scr-test .tword{font-size:clamp(20px,6vh,44px) !important;white-space:nowrap !important}
-/* 测试屏一律上下（不受左右手/横屏影响） */
-#scr-test .tqwrap{display:flex !important;flex-direction:column !important;align-items:stretch !important;gap:14px !important}
-#scr-test .tqcol,#scr-test .tocol{flex:0 0 auto !important;width:100% !important;max-width:100% !important;min-width:0 !important}
-#scr-test .topt{grid-template-columns:1fr !important;gap:10px !important}
-#scr-test .tsubbtns{grid-template-columns:1fr !important;gap:10px !important}
-#scr-test .thint{display:block !important}
+/* 测试屏：竖版上下、横版左右（左右手不改变测试屏方向） */
+body.hand-left #scr-test .tqwrap{flex-direction:row !important}
+
+/* 作答键与改判条：横屏单手时必须完全同宽同位 */
+@media (orientation: landscape){
+  body.pos-right #opslot>.btns,body.pos-right #opslot>#fixbar{width:50% !important;max-width:none !important;margin-left:auto !important;margin-right:0 !important}
+  body.pos-left  #opslot>.btns,body.pos-left  #opslot>#fixbar{width:50% !important;max-width:none !important;margin-right:auto !important;margin-left:0 !important}
+  body.pos-bottom #opslot>.btns,body.pos-bottom #opslot>#fixbar{width:100% !important;margin:0 !important}
+}
+#opslot #fixbar{display:flex !important;gap:10px !important;align-items:stretch}
+#opslot #fixbar .fix{flex:1 1 0 !important;width:auto !important;height:var(--app-btn-height,56px) !important;min-height:0 !important;font-size:16px;border-radius:14px;white-space:nowrap;padding:0 6px}
+/* 修正：按钮/改判条应填满 #opslot（#opslot 本身已是半屏），不要再各占 50% */
+@media (orientation: landscape){
+  body.pos-right #opslot>.btns,body.pos-right #opslot>#fixbar,
+  body.pos-left  #opslot>.btns,body.pos-left  #opslot>#fixbar{width:100% !important;max-width:none !important;margin:0 !important}
+}
+#opslot>.btns{width:100% !important;max-width:none !important;margin:0 !important}
+/* 竖屏学习屏：单词垂直居中，释义在下方，不被顶栏压住 */
+@media (orientation: portrait){
+  #scr-game .gmain{display:flex !important;flex-direction:column !important;align-items:center !important;justify-content:flex-start !important;gap:10px;width:100%}
+  #scr-game .gcol-word{flex:1 1 auto !important;width:100% !important;max-width:100% !important;display:flex !important;flex-direction:column !important;align-items:center !important;justify-content:center !important}
+  #scr-game .gcol-side{flex:0 0 auto !important;width:100% !important;max-width:100% !important}
+  #scr-game #qbox{min-height:0 !important}
+}
+@media (orientation: landscape){
+  body.hand-left #scr-test .tqwrap{flex-direction:row !important;align-items:center !important}
+  #scr-test .tqcol{order:1 !important}
+  #scr-test .tocol{order:2 !important}
+}
+
+/* 测试屏：单词与音标之间留出空隙，避免长单词压到音标/被裁 */
+#scr-test .tword{margin:0 0 4px !important;max-width:100% !important}
+#scr-test .tword + *{margin-top:10px !important}
+/* 唯一权威：作答键与改判条几何完全一致（任何手型/方向/窗口） */
+#opslot>.btns,#opslot>#fixbar{width:100% !important;max-width:none !important;margin:0 !important;gap:10px !important;box-sizing:border-box}
+#opslot>.btns>.big,#opslot>#fixbar>.fix{flex:1 1 0 !important;min-width:0 !important;width:auto !important;height:var(--app-btn-height,56px) !important;font-size:16px !important;white-space:nowrap !important;line-height:1.1}
+/* 高优先级覆盖旧规则（旧规则带 body.pos-* 前缀，特异性更高） */
+body.pos-left #opslot>.btns,body.pos-right #opslot>.btns,body.pos-bottom #opslot>.btns,
+body.pos-left #opslot>#fixbar,body.pos-right #opslot>#fixbar,body.pos-bottom #opslot>#fixbar{
+  width:100% !important;max-width:none !important;margin:0 !important;gap:10px !important;justify-content:stretch !important
+}
+body.pos-left #opslot>.btns>.big,body.pos-right #opslot>.btns>.big,body.pos-bottom #opslot>.btns>.big,
+body.pos-left #opslot>#fixbar>.fix,body.pos-right #opslot>#fixbar>.fix,body.pos-bottom #opslot>#fixbar>.fix{
+  flex:1 1 0 !important;min-width:0 !important;width:auto !important;height:var(--app-btn-height,56px) !important;font-size:16px !important;white-space:nowrap !important
+}
+/* 测试屏单词：放在左栏里，最多不超过栏目宽度，永不溢出到选项 */
+#scr-test .tqcol{overflow:hidden !important}
+#scr-test .tword{max-width:100% !important;overflow:hidden;text-overflow:clip}
+@media (orientation: landscape){ #scr-test .tqcol{width:50% !important;max-width:50% !important} }
 </style>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
@@ -2255,6 +2298,7 @@ function applyWideSwap() {
   document.body.classList.toggle("ops-single", lay !== "both");
   document.body.classList.toggle("hand-left", lay === "left");
   layoutOps();
+  if (typeof pinBars === "function") setTimeout(pinBars, 0);
 }
 
 function layoutOps() {
@@ -2684,15 +2728,22 @@ function chartSeries() {
 function bigChartHtml() {
   var rows = chartSeries();
   var mode = chartMode;
-  var showDue = mode === "load";
+  var showDue = mode !== "test";
   if (!showDue) rows = rows.filter(function (r) { return !r.isFuture; });
   var maxV = 5;
   rows.forEach(function (r) {
     var t = mode === "load" ? (r.total || 0) : (mode === "test" ? (r.tok + r.tbad) : (r.ok + r.fz + r.no));
     if (t > maxV) maxV = t;
   });
-  var tickStep = Math.max(1, Math.ceil(maxV / 4));
-  maxV = tickStep * 4;
+  // 刻度自适应：取 1/2/3/5/10 × 10^n 的“好看步长”，并给数据留 20% 余量
+  var target = Math.max(1, maxV) * 1.2 / 4;
+  var pow = Math.pow(10, Math.floor(Math.log(target) / Math.LN10));
+  var steps = [1, 2, 3, 5, 10];
+  var tickStep = pow;
+  for (var si = 0; si < steps.length; si++) {
+    if (steps[si] * pow >= target) { tickStep = steps[si] * pow; break; }
+  }
+  if (tickStep < 1) tickStep = 1;
   maxV = tickStep * 4;
   var hasData = false;
   rows.forEach(function (r) {
@@ -2751,7 +2802,7 @@ function bigChartHtml() {
       ? '<i class="lg rv"></i>复习<i class="lg nw"></i>新学<i class="lg fz"></i>预计到期'
       : (mode === "test"
         ? '<i class="lg ok"></i>测试对<i class="lg no"></i>测试错'
-        : '<i class="lg ok"></i>认识<i class="lg fzz"></i>模糊<i class="lg no"></i>忘记')) + '</div>' +
+        : '<i class="lg ok"></i>认识<i class="lg fzz"></i>模糊<i class="lg no"></i>忘记<i class="lg fz"></i>预计到期')) + '</div>' +
     '<div class="cw"><div class="caxis">' + ticks + '</div><div class="cscroll" id="chart-scroll"><div class="cin" style="width:' + width + 'px">' + bars + '</div></div></div>' +
     '<div class="tiny muted" style="margin-top:8px">' + (hasData ? "左右滑动看全部历史；点柱子看明细" : "这一档还没有数据，先去做一轮再来看") + '</div></div>';
 }
@@ -3289,6 +3340,14 @@ function sessionTag(cur, sess) {
 }
 
 /* 顶部进度文案：把本轮到底还剩哪些东西说清楚（新学/回放/回看/巩固分项） */
+function sessionPct(sess, remaining) {
+  if (!sess) return 0;
+  if (!num(sess.total0, 0)) sess.total0 = num(sess.firstDone, 0) + num(remaining, 0);
+  var t0 = num(sess.total0, 0);
+  if (!t0) return 0;
+  var done = Math.max(0, t0 - num(remaining, 0));
+  return Math.max(0, Math.min(100, Math.round(done / t0 * 100)));
+}
 function statLine(sess, remaining) {
   var i, replayN = 0, revisitN = 0;
   var scan = function (arr) {
@@ -3359,6 +3418,7 @@ function nextQuestion() {
   $("#reveal-box").innerHTML = "";
   var fb0 = $("#fixbar");
   if (fb0) { fb0.style.display = "none"; fb0.innerHTML = ""; }
+  setTimeout(pinBars, 0);
   var learnMode = (st.mode === "learn");
   if (learnMode) {
     // 背记：先只给单词，点「显示释义」再看含义，然后三选一（不计时）
@@ -3379,6 +3439,8 @@ function nextQuestion() {
 
   var remaining = sess.queue.length + sess.pending.length + (sess.cur ? 1 : 0);
   $("#gstat").textContent = statLine(sess, remaining);
+  var tbP = $("#tbar");
+  if (tbP) { tbP.style.width = sessionPct(sess, remaining) + "%"; }
 
   G.answered = false;
   G.revealing = false;
@@ -3388,7 +3450,7 @@ function nextQuestion() {
   G.startAt = performance.now();
   cancelAnimationFrame(G.raf);
   if (!learnMode) G.raf = requestAnimationFrame(tickTimer);
-  else { var tb = $("#tbar"); if (tb) { tb.style.width = "0%"; } }
+  else { var tb = $("#tbar"); if (tb) { tb.style.width = sessionPct(sess, 0) + "%"; } }
 }
 
 /* 背记模式：点「显示释义」先把含义/例句放出来，再让用户选 */
@@ -3450,7 +3512,6 @@ function tickTimer() {
   var el = performance.now() - G.startAt;
   var pct = Math.min(100, el / st.limitMs * 100);
   var bar = $("#tbar");
-  bar.style.width = pct + "%";
   bar.className = pct > 75 ? "danger" : (pct > 50 ? "warn" : "");
   if (el >= st.limitMs) { doAnswer("timeout"); return; }
   G.raf = requestAnimationFrame(tickTimer);
@@ -3608,7 +3669,9 @@ function renderReveal(out) {
   $("#reveal-box").innerHTML = html;
   // 三个判定按钮整排收起来，改判条放到同一个底部区域（位置不再跳来跳去）
   $("#gbtns").style.display = "none";
+  pinBars();
   var fbar = $("#fixbar");
+  pinBars();
   if (fbar) {
     if (st.fastUndo) {
       fbar.style.display = "";
@@ -5431,22 +5494,77 @@ function renderTestQ() {
   body.innerHTML = '<div class="tprog"><i style="width:' + pct + '%"></i></div>' +
     '<div class="tqwrap"><div class="tqcol">' + left + '</div><div class="tocol">' + right + '</div></div>' +
     '<div class="tiny muted thint" style="margin-top:14px;text-align:center">' + hint + '</div>';
-  fitTestWord();
+  fitTestWord(0);
+  requestAnimationFrame(function () { fitTestWord(1); });
   if (it.opts || it.qt === "flash") startTestTimer(it);
 }
 
-function fitTestWord() {
+function pinBars() {
+  var op = $("#opslot");
+  if (!op) return;
+  if (!op.style || typeof op.style.setProperty !== "function") return;
+  var cls = document.body.className || "";
+  var landscape = window.innerWidth > window.innerHeight;
+  var side = /pos-left|pos-right/.test(cls) && landscape;
+  op.style.setProperty("display", "flex", "important");
+  op.style.setProperty("flex-direction", "column", "important");
+  op.style.setProperty("justify-content", "flex-end", "important");
+  op.style.setProperty("align-items", "stretch", "important");
+  op.style.setProperty("box-sizing", "border-box", "important");
+  op.style.setProperty("width", side ? "50%" : "100%", "important");
+  op.style.setProperty("max-width", side ? "50%" : "none", "important");
+  op.style.setProperty("margin-left", /pos-right/.test(cls) && side ? "auto" : "0", "important");
+  op.style.setProperty("margin-right", /pos-left/.test(cls) && side ? "auto" : "0", "important");
+  op.style.setProperty("padding-left", "14px", "important");
+  op.style.setProperty("padding-right", "14px", "important");
+  ["#gbtns", "#fixbar"].forEach(function (sel) {
+    var el = $(sel);
+    if (!el) return;
+    el.style.setProperty("width", "100%", "important");
+    el.style.setProperty("max-width", "none", "important");
+    el.style.setProperty("margin", "0", "important");
+    el.style.setProperty("gap", "10px", "important");
+    el.style.setProperty("flex", "0 0 auto", "important");
+    el.style.setProperty("justify-content", "stretch", "important");
+    el.style.setProperty("box-sizing", "border-box", "important");
+    for (var i = 0; i < el.children.length; i++) {
+      var b = el.children[i];
+      b.style.setProperty("flex", "1 1 0", "important");
+      b.style.setProperty("min-width", "0", "important");
+    }
+  });
+}
+function fitTestWord(tries) {
   var el = document.querySelector("#scr-test .tword");
   if (!el) return;
   var box = el.parentElement;
-  var w = (box && box.clientWidth) ? box.clientWidth : window.innerWidth;
+  var r = box ? box.getBoundingClientRect() : null;
+  var w = r && r.width > 40 ? Math.floor(r.width) : 0;
+  // 布局还没算完就下一帧再量，别用 0 宽度估出个天文数字字号
+  if (!w) {
+    if ((tries || 0) < 5) requestAnimationFrame(function () { fitTestWord((tries || 0) + 1); });
+    return;
+  }
   var len = Math.max(1, (el.textContent || "").length);
-  var maxByH = Math.round(window.innerHeight * 0.20);
-  var byW = Math.round((w - 14) / (len * 0.62));
-  var size = Math.max(16, Math.min(maxByH, byW, 80));
-  el.style.fontSize = size + "px";
+  var maxByH = Math.round(window.innerHeight * 0.24);
+  var byW = Math.round((w - 28) / (len * 0.66));
+  var size = Math.max(15, Math.min(maxByH, byW, 76));
+  el.style.webkitTextSizeAdjust = "100%";
   el.style.whiteSpace = "nowrap";
-  el.style.overflow = "hidden";
+  el.style.overflow = "visible";
+  el.style.lineHeight = "1.06";
+  // 实测校验：按真实渲染宽度逐步缩小，直到塞得下
+  for (var i = 0; i < 8; i++) {
+    el.style.fontSize = size + "px";
+    if (el.scrollWidth <= (w - 6) || size <= 15) break;
+    size = Math.max(15, Math.floor(size * 0.93));
+  }
+  // 极端长词：实在放不下就允许换行，绝不再裁切
+  if (el.scrollWidth > (w - 6)) {
+    el.style.whiteSpace = "normal";
+    el.style.wordBreak = "break-word";
+    el.style.hyphens = "auto";
+  }
 }
 function finishTest() {
   if (!T) return;
