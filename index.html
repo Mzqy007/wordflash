@@ -484,6 +484,49 @@ body.wide #scr-test .tword{font-size:min(11vh,7vw)}
   body.wide #scr-test .tsub .tword{font-size:min(13vh,7vw)}
 }
 
+/* ---------- 单手 / 双手 操作方式 ---------- */
+/* 单手·宽屏：判定键与改判条都进拇指那一列，竖排 */
+body.wide.ops-single .gcol-side{align-items:stretch;justify-content:center;overflow-y:auto}
+body.wide.ops-single #reveal-box{width:100%}
+body.wide.ops-single #gbtns{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px;width:100%}
+body.wide.ops-single #gbtns .big{width:100%;min-height:50px;font-size:16.5px;padding:10px 8px}
+body.wide.ops-single #fixbar{margin-top:8px;width:100%}
+body.wide.ops-single #fixbar .fix{min-height:44px}
+body.wide.ops-single #ghint{display:none}
+/* 左手：单词到右边，操作区在左 */
+body.wide.hand-left .gmain{flex-direction:row-reverse}
+/* 单手·竖屏：按钮收窄靠手侧 */
+body.ops-single:not(.wide) #gbtns{max-width:74%;margin-left:auto}
+body.ops-single:not(.wide).hand-left #gbtns{margin-left:0;margin-right:auto}
+/* 测试屏也跟随左右手 */
+body.hand-left .tqwrap{flex-direction:row-reverse}
+body.ops-single:not(.wide) .tocol{max-width:80%;margin-left:auto}
+body.ops-single:not(.wide).hand-left .tocol{margin-left:0;margin-right:auto}
+
+/* ---------- 主页大数字 ± 本轮题数 ---------- */
+.bignum{display:flex;align-items:center;gap:10px}
+.bignum .v{margin:0}
+.cntbtn{width:34px;height:34px;border-radius:17px;border:0;background:rgba(255,255,255,.22);color:#fff;
+  font-size:19px;line-height:1;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.cntbtn:active{background:rgba(255,255,255,.34)}
+
+/* ---------- 界面自定义：按钮高度 / 主字号变量 ---------- */
+.btns .big{min-height:var(--app-btn-height,64px)}
+
+/* ---------- 热力图 / 时间轴 ---------- */
+.hm{display:flex;gap:3px;overflow-x:auto;padding-bottom:4px;margin-top:10px}
+.hmcol{display:flex;flex-direction:column;gap:3px}
+.hmcell{width:11px;height:11px;border-radius:2px;background:#eef0f3}
+.hmcell.lv1{background:#c7e3ff}.hmcell.lv2{background:#8fc4ff}.hmcell.lv3{background:#4f9bff}.hmcell.lv4{background:#1f6bff}
+.tl{margin-top:10px;display:flex;flex-direction:column;gap:8px}
+.tlrow{display:flex;align-items:center;gap:8px;font-size:13px}
+.tldot{width:8px;height:8px;border-radius:50%;background:#c9ced6}
+.tldot.ok{background:#2fb36b}.tldot.bad{background:#e0574d}.tldot.next{background:#2f6bff}
+.tld{width:44px;color:#8a9099}
+/* ---------- 宽版首页：hero 视觉居中 ---------- */
+body.wide .hero{grid-template-columns:minmax(0,1fr) auto;justify-items:start;align-items:center}
+body.wide .hero .btn{justify-self:end}
+
 </style>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
@@ -524,7 +567,7 @@ body.wide #scr-test .tword{font-size:min(11vh,7vw)}
 
     <div class="hero">
       <div class="k" id="home-kicker">今天还没开始</div>
-      <div class="v" id="home-today">0 词</div>
+      <div class="bignum"><button class="cntbtn" id="home-cnt-m" aria-label="减少本轮题数">−</button><div class="v" id="home-today">0 词</div><button class="cntbtn" id="home-cnt-p" aria-label="增加本轮题数">＋</button></div>
       <button class="btn" id="btn-start">开始今天的学习</button>
       <div class="herobtns">
         <button class="btn test" id="btn-test">开始测试</button>
@@ -585,7 +628,7 @@ body.wide #scr-test .tword{font-size:min(11vh,7vw)}
         <button class="chip" data-mode="flash">闪过</button>
       </div>
     </div>
-    <div class="tiny muted" style="margin-top:16px;text-align:center">单词闪过 · 纯前端 · 离线可用 · v6.2 · 2026-11-03</div>
+    <div class="tiny muted" style="margin-top:16px;text-align:center">单词闪过 · 纯前端 · 离线可用 · v6.2 · 2026-11-04</div>
     <input type="file" id="file-import" accept=".json" hidden>
   </section>
 
@@ -716,6 +759,12 @@ body.wide #scr-test .tword{font-size:min(11vh,7vw)}
 <div class="toast" id="toast"></div>
 
 <!-- 测试配置面板（底部弹出） -->
+<div class="pausemask" id="test-pause" style="display:none"><div class="pausepanel">
+  <div class="pt">测试已暂停</div><div class="ps" id="test-pause-tip">连续两次没有作答，已自动暂停。点「继续」接着来。</div>
+  <button class="btn primary" id="btn-test-resume">继续测试</button>
+  <button class="btn" id="btn-test-quit2">结束本次测试</button>
+</div></div>
+
 <div class="mask" id="test-mask" style="display:none">
   <div class="sheet" id="test-panel">
     <div class="spread"><div class="strong" style="font-size:17px">开始测试</div>
@@ -895,6 +944,9 @@ function defaultSettings() {
     // 顽固词：累计错误到这个次数就打标（只在统计/生词本里提示，不影响调度）
     leechAt: 8,
   dayCutoff: 4,
+  ops: "double",
+  wordSize: 44, btnHeight: 64,
+  time: { studyFlash: 3000, studyRecall: 0, testFlash: 3000, testMeaning: 3000, testWord: 3000, testRecall: 0 },
   testLimitMs: 3000,
     // 最大间隔上限（天）：防止 ebb×倍率 把复习推到几年以后
     maxInterval: 365
@@ -956,7 +1008,18 @@ function loadState() {
           };
           o.settings.revealMsV = 3;
         }
-        if (o.settings) { var d = defaultSettings(); for (var k in d) if (!(k in o.settings)) o.settings[k] = d[k]; st.settings = o.settings; }
+        if (o.settings) {
+          if (o.settings.wideSwap === true && !o.settings.ops) o.settings.ops = "left";
+          /* 计时迁移必须在合并默认值之前做：否则默认 time 会覆盖旧 limitMs */
+          if (!o.settings.time) {
+            o.settings.time = { studyFlash: num(o.settings.limitMs, 3000), studyRecall: 0,
+              testFlash: num(o.settings.testLimitMs, 3000), testMeaning: num(o.settings.testLimitMs, 3000),
+              testWord: num(o.settings.testLimitMs, 3000), testRecall: 0 };
+          }
+          var d = defaultSettings(); for (var k in d) if (!(k in o.settings)) o.settings[k] = d[k];
+          o.settings.limitMs = num(o.settings.time.studyFlash, 3000);
+          st.settings = o.settings;
+        }
         if (Array.isArray(o.decks)) st.decks = o.decks;
         if (o.records && typeof o.records === "object") st.records = o.records;
         // v5 迁移：判定历史改成紧凑编码（43B → 17B），已毕业的词只留 3 条
@@ -1252,6 +1315,7 @@ function ensureRec(deckId, key) { if (typeof TRACE !== "undefined" && TRACE) con
       L: 0, stage: 0, due: today(), graduated: false,
       lapses: 0, reviewCount: 0, rightCount: 0, wrongCount: 0, fuzzyCount: 0,
       avgMs: 0, lastMs: 0, lastSeen: null, lastLevelUp: null, revisit: false,
+      correctStreak: 0, confusable: "",
       lastMode: S.settings && S.settings.mode ? S.settings.mode : "flash"
     };
     all[key] = r;
@@ -1586,7 +1650,12 @@ function submitAnswer(kind, ms) {
     if (isKnown) {
       rr.stage = Math.min(rr.stage + 1, 5);
       if (rr.lastLevelUp !== t) { rr.L = Math.min(rr.L + 1, 5); rr.lastLevelUp = t; }
+      rr.correctStreak = num(rr.correctStreak, 0) + 1;
       if (rr.L >= 5 && rr.stage >= num(st.gradStage, 3)) { rr.graduated = true; rr.leech = false; }
+      if (!rr.graduated && (rr.weak || num(rr.L, 0) <= 2) && num(rr.correctStreak, 0) >= 2) {
+        rr.L = 5; rr.stage = Math.max(num(rr.stage, 0), 3); rr.graduated = true;
+        rr.weak = false; rr.leech = false; rr.correctStreak = 0;
+      }
       rr.due = nextDue(t, st.ebb[rr.stage] * st.mult[rr.L]);
       rr.rightCount++;
     } else if (isFuzzy) {
@@ -1599,6 +1668,7 @@ function submitAnswer(kind, ms) {
       schedule("revisit", key, num(st.slowRevisitGap, 5));
     } else {
       // 复习答错：不再「明天见」就完事，当天也进滚动，直到连续答对为止
+      rr.correctStreak = 0;
       rr.L = 0; rr.stage = 0; rr.due = addDays(t, 1); rr.lapses++; rr.wrongCount++;
       enterRelearn(key);
     }
@@ -1761,8 +1831,43 @@ function toast(msg) {
   toastTimer = setTimeout(function () { el.classList.remove("on"); }, 2200);
 }
 function applyWideSwap() {
-  var on = !!(S.settings && S.settings.wideSwap);
-  if (document.body && document.body.classList) document.body.classList.toggle("wide-swap", on);
+  try {
+    var ds = document.documentElement && document.documentElement.style;
+    if (ds && ds.setProperty) {
+      ds.setProperty("--app-btn-height", clamp(num(S.settings.btnHeight, 64), 60, 120) + "px");
+      ds.setProperty("--app-word-size", clamp(num(S.settings.wordSize, 44), 32, 80) + "px");
+    }
+  } catch (e) {}
+  var ops = (S.settings && S.settings.ops) || "double";
+  var single = ops === "right" || ops === "left";
+  document.body.classList.toggle("ops-single", single);
+  document.body.classList.toggle("hand-left", ops === "left");
+  document.body.classList.toggle("wide-swap", ops === "left");
+  layoutOps();
+}
+
+/* 单手模式：宽屏时把「判定键 + 改判条」移进拇指那侧的列，竖屏/双手时移回底部 */
+function layoutOps() {
+  var game = $("#scr-game");
+  if (!game) return;
+  var side = game.querySelector(".gcol-side");
+  var btns = $("#gbtns"), fix = $("#fixbar"), hint = $("#ghint");
+  if (!btns || !side || !hint) return;
+  var single = document.body.classList.contains("ops-single") && document.body.classList.contains("wide");
+  var canMove = typeof game.insertBefore === "function" && typeof side.appendChild === "function";
+  if (!canMove) return;
+  try {
+    if (single) {
+      if (btns.parentNode !== side) {
+        if (fix) side.appendChild(fix);
+        side.appendChild(btns);
+      }
+    } else if (btns.parentNode !== game) {
+      if (fix && fix.parentNode !== game) game.insertBefore(fix, hint);
+      game.insertBefore(btns, hint);
+    }
+  } catch (e) {}
+
 }
 
 var TAB_SCREENS = ["home", "lib", "stats", "me"];
@@ -1821,8 +1926,43 @@ function deckStats(deck) {
 }
 
 var liveSessionOn = false;
+var deferredInstall = null;
+function isStandalone() {
+  try {
+    return (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) ||
+      (window.navigator && window.navigator.standalone === true);
+  } catch (e) { return false; }
+}
+function installCardHtml() {
+  if (isStandalone()) {
+    return '<div class="card"><h2 style="margin:0 0 4px">已安装为 App</h2>' +
+      '<div class="tiny muted">现在是无地址栏的全屏模式，和普通 App 一样。</div></div>';
+  }
+  return '<div class="card" id="install-card"><h2 style="margin:0 0 4px">安装到桌面</h2>' +
+    '<div class="tiny muted">装好后从桌面图标打开：没有浏览器地址栏，断网也能背。</div>' +
+    '<button class="btn primary" id="btn-install" style="margin-top:12px;width:100%">' +
+    (deferredInstall ? "安装到桌面" : "查看安装步骤") + '</button></div>';
+}
+function doInstall() {
+  if (deferredInstall) {
+    try {
+      deferredInstall.prompt();
+      if (deferredInstall.userChoice) {
+        deferredInstall.userChoice.then(function () { deferredInstall = null; renderMe(); });
+      }
+      return;
+    } catch (e) {}
+  }
+  var msg = "这个浏览器不支持一键安装。\n\n" +
+    "① 用 Chrome 打开本页\n" +
+    "② 点右上角「⋮」→ 选「安装应用」（不是「添加到主屏幕」）\n" +
+    "③ 回到桌面，用新图标打开，应没有地址栏\n\n" +
+    "若菜单里只有「添加到主屏幕」、装出来还带地址栏：说明那是旧的网页快捷方式 —— 先删掉旧图标再装。";
+  if (window.alert) window.alert(msg);
+}
+
 function renderHome() {
-  daily(S.decks.length ? S.decks[0].id : "");
+  var d = daily(S.decks.length ? S.decks[0].id : "");
   var deck = S.decks[0];
   if (!deck) {
     $("#home-kicker").textContent = "还没有词库";
@@ -1840,6 +1980,7 @@ function renderHome() {
   var total = plan.total;
   var blN = plan.backlog;
   $("#home-today").textContent = total + " 词";
+  $("#home-sub").textContent = "已复习 " + num(d.reviewDone, 0) + "/" + revTake + " · 新学 " + num(d.newDone, 0) + "/" + newTake;
   var modeName = (S.settings.mode === "learn") ? "背记" : "闪过";
   var live = (S.session && !S.session.finished && S.session.queue) ? S.session : null;
   if (live) {
@@ -2040,6 +2181,50 @@ function barRow(label, v, max, unit) {
   return '<div class="brow"><span class="bl">' + esc(label) + '</span><span class="bt"><i style="width:' + pct + '%"></i></span>' +
     '<span class="bv">' + esc(v) + (unit || "") + '</span></div>';
 }
+function heatmapHtml() {
+  var s = ensureStats(), N = 26 * 7, cells = [], max = 1;
+  var base = new Date(today() + "T00:00:00");
+  for (var i = N - 1; i >= 0; i--) {
+    var dd = new Date(base.getTime() - i * 86400000);
+    var ds = fmtDate(dd), day = s.days[ds] || {};
+    var n = num(day.new, 0) + num(day.review, 0) + num(day.testN, 0);
+    if (n > max) max = n;
+    cells.push({ d: ds, n: n });
+  }
+  var html = '<div class="card"><h2>学习热力图 <span class="tiny muted">近 26 周</span></h2><div class="hm">';
+  for (var w = 0; w < 26; w++) {
+    html += '<div class="hmcol">';
+    for (var r = 0; r < 7; r++) {
+      var c = cells[w * 7 + r]; if (!c) continue;
+      var lv = c.n === 0 ? 0 : c.n <= max * 0.25 ? 1 : c.n <= max * 0.5 ? 2 : c.n <= max * 0.75 ? 3 : 4;
+      html += '<div class="hmcell lv' + lv + '" title="' + c.d + ' · ' + c.n + ' 题"></div>';
+    }
+    html += '</div>';
+  }
+  html += '</div><div class="tiny muted" style="margin-top:8px">每格一天：新学 + 复习 + 测试题数</div></div>';
+  return html;
+}
+
+function timelineHtml(r) {
+  var hist = (r && r.hist) ? r.hist.slice(-6) : [];
+  if (!hist.length && !r && !r.due) return "";
+  var nodes = "";
+  for (var i = 0; i < hist.length; i++) {
+    var h = hist[i], k = h.k, txt;
+    if (k === "f" || k === "s" || k === "k") txt = "答对";
+    else if (k === "z") txt = "模糊";
+    else if (k === "t") txt = "超时";
+    else txt = "答错";
+    var ds = String(h.d || "");
+    nodes += '<div class="tlrow"><span class="tldot ' + (txt === "答对" ? "ok" : "bad") + '"></span>' +
+      '<span class="tld">' + esc(ds.slice(4, 6) + "/" + ds.slice(6, 8)) + '</span>' +
+      '<span class="tlt">' + esc(txt) + '</span></div>';
+  }
+  var next = (r && !r.graduated) ? esc(r.due || "") : "已掌握";
+  nodes += '<div class="tlrow"><span class="tldot next"></span><span class="tld">下次</span><span class="tlt">' + next + '</span></div>';
+  return '<div class="card" style="margin-top:12px"><h2>记忆时间轴</h2><div class="tl">' + nodes + '</div></div>';
+}
+
 function renderStats() {
   var el = $("#stats-body");
   if (!el) return;
@@ -2174,6 +2359,7 @@ function renderStats() {
     }
   }
 
+  html += heatmapHtml();
   html += '<div class="tiny muted" style="margin-top:16px;text-align:center">只统计这台设备上的记录</div>';
   el.innerHTML = html;
 }/* ---------------- 界面：我的 ---------------- */
@@ -2203,7 +2389,7 @@ function renderMe() {
     '<div class="leechrow" data-me-act="reset-adv"><span>恢复默认数值</span><span class="tiny muted">只改参数，不动学习记录 ›</span></div>' +
     '<div class="leechrow" data-me-act="clear"><span style="color:#c0342b">清空学习数据</span><span class="tiny muted">保设置，清记录 ›</span></div>' +
     '</div>';
-  body.innerHTML = html;
+  body.innerHTML = installCardHtml() + html;
 }
 
 /* 参数体检：只用「闪过」模式的反应时间，因为背记模式不计时 */
@@ -2262,6 +2448,10 @@ function kindNameOf(k) {
   var m = { fast: "快认", slow: "认识", know: "认识", fuzzy: "模糊", no: "不认识", timeout: "超时" };
   return m[k] || k || "";
 }
+function stars(L) {
+  var n = clamp(num(L, 0) + 1, 1, 5);
+  return "★★★★★".slice(0, n) + "☆☆☆☆☆".slice(0, 5 - n);
+}
 function lvBadge(L) {
   var n = clamp(L | 0, 0, 5);
   return '<span class="lvbadge l' + n + '">L' + n + '</span>';
@@ -2289,6 +2479,14 @@ function renderSetup(deckId) {
     '<button class="chip' + (st.mode !== "learn" ? " on" : "") + '" id="set-mode-flash">闪过</button>' +
     '<button class="chip' + (st.mode === "learn" ? " on" : "") + '" id="set-mode-learn">背记</button>' +
     '</div></div>';
+  var opsNow = st.ops || "double";
+  html += '<div class="field"><div><div class="lab">操作方式</div>' +
+    '<div class="sub">单手＝按钮和释义都在同一边（拇指侧）；双手＝按钮横铺，左右手各一半</div></div></div>';
+  html += '<div class="row" id="set-ops">' +
+    '<button class="chip' + (opsNow === "double" ? " on" : "") + '" id="set-ops-double">双手</button>' +
+    '<button class="chip' + (opsNow === "right" ? " on" : "") + '" id="set-ops-right">单手·右手</button>' +
+    '<button class="chip' + (opsNow === "left" ? " on" : "") + '" id="set-ops-left">单手·左手</button>' +
+    '</div>';
   html += '<hr>';
   html += '<div class="field"><div><div class="lab">每组题数</div><div class="sub">一轮首次出场的词数</div></div></div>';
   html += '<div class="chips" id="set-count">' + [10, 20, 40, 60].map(function (n) {
@@ -2374,7 +2572,14 @@ function renderSetup(deckId) {
     '<label class="advcell"><span class="tiny muted">毕业条件（阶段 ≥）</span><input type="number" id="adv-gradStage" value="' + num(st.gradStage, 3) + '"></label>' +
     '<label class="advcell"><span class="tiny muted">一天从几点开始（0–6 点）</span><input type="number" id="adv-dayCutoff" value="' + num(st.dayCutoff, 4) + '"></label>' +
       '<label class="advcell"><span class="tiny muted">最大间隔（天）</span><input type="number" id="adv-maxInterval" value="' + num(st.maxInterval, 365) + '"></label>' +
-      '<label class="advcell"><span class="tiny muted">测试每题时限（秒）</span><input type="number" id="adv-testLimit" step="0.5" value="' + (num(st.testLimitMs, 3000) / 1000) + '"></label>' +
+      '<label class="advcell"><span class="tiny muted">答题主字号（px）</span><input type="number" id="adv-wordSize" step="2" min="32" max="80" value="' + clamp(num(st.wordSize, 44), 32, 80) + '"></label>' +
+      '<label class="advcell"><span class="tiny muted">判定按钮高度（px）</span><input type="number" id="adv-btnHeight" step="4" min="60" max="120" value="' + clamp(num(st.btnHeight, 64), 60, 120) + '"></label>' +
+      '<label class="advcell"><span class="tiny muted">学习·闪过 限时（秒）</span><input type="number" id="adv-t-sflash" step="0.5" value="' + (num(st.time && st.time.studyFlash, 3000) / 1000) + '"></label>' +
+      '<label class="advcell"><span class="tiny muted">学习·背记 限时（0=不计时）</span><input type="number" id="adv-t-srecall" step="0.5" value="' + (num(st.time && st.time.studyRecall, 0) / 1000) + '"></label>' +
+      '<label class="advcell"><span class="tiny muted">测·闪过 限时（秒）</span><input type="number" id="adv-t-tflash" step="0.5" value="' + (num(st.time && st.time.testFlash, 3000) / 1000) + '"></label>' +
+      '<label class="advcell"><span class="tiny muted">测·选义 限时（秒）</span><input type="number" id="adv-t-tmeaning" step="0.5" value="' + (num(st.time && st.time.testMeaning, 3000) / 1000) + '"></label>' +
+      '<label class="advcell"><span class="tiny muted">测·选词 限时（秒）</span><input type="number" id="adv-t-tword" step="0.5" value="' + (num(st.time && st.time.testWord, 3000) / 1000) + '"></label>' +
+      '<label class="advcell"><span class="tiny muted">测·背记 限时（0=不计时）</span><input type="number" id="adv-t-trecall" step="0.5" value="' + (num(st.time && st.time.testRecall, 0) / 1000) + '"></label>' +
     '</div><div class="grid2" style="margin-top:8px">' +
     '<label class="advcell"><span class="tiny muted">顽固词阈值（累计错误次数）</span><input type="number" id="adv-leechAt" value="' + num(st.leechAt, 8) + '"></label>' +
     '</div></div>';
@@ -2468,7 +2673,8 @@ function setWordSize(word) {
   var availW = (qbox && qbox.clientWidth) ? qbox.clientWidth - 10 : window.innerWidth * (wide ? 0.46 : 0.9);
   var availH = window.innerHeight * (wide ? 0.32 : 0.34);
   var byWidth = availW / (wl * 0.6);
-  var size = Math.max(18, Math.min(availH, byWidth, wide ? 104 : 150));
+  var base = clamp(num(S.settings.wordSize, 44), 32, 80);
+  var size = Math.max(18, Math.min(availH, byWidth, wide ? Math.max(base, 60) : base));
   el.style.fontSize = Math.round(size) + "px";
 }
 
@@ -2575,6 +2781,16 @@ function stopTimer() {
   if (G.raf) { try { cancelAnimationFrame(G.raf); } catch (e) {} G.raf = 0; }
 }
 
+function autoPauseGame() {
+  if (!S.session || !S.session.cur) return;
+  G.paused = true;
+  cancelAnimationFrame(G.raf);
+  var pm = $("#pause-mask"); if (pm) pm.style.display = "flex";
+  var ps = pm && pm.querySelector(".ps");
+  if (ps) ps.textContent = "连续两次没有作答，已自动暂停。点「继续」接着来。";
+  scheduleSave();
+}
+
 function tickTimer() {
   /* 不在答题屏就不计时，更不能悄悄判超时（切屏/打开测试/返回时遗留的定时器） */
   if (typeof curScreen !== "undefined" && curScreen !== "game") { G.raf = 0; return; }
@@ -2592,6 +2808,7 @@ function tickTimer() {
 function doAnswer(kind) {
   if (!S.session || !S.session.cur) return;
   if (G.answered || G.paused) return;
+  if (kind === "timeout") { G.zeroStreak = (G.zeroStreak || 0) + 1; } else { G.zeroStreak = 0; }
   var st = S.settings;
   var now = performance.now();
   var ms;
@@ -2641,7 +2858,37 @@ function doAnswer(kind) {
   var out = submitAnswer(kind, ms);
   if (!out) return;
   renderReveal(out);
+  if ((G.zeroStreak || 0) >= 2) { autoPauseGame(); return; }
   scheduleSave();
+}
+
+function levCost(a, b, cap) {
+  if (Math.abs(a.length - b.length) > cap) return cap + 1;
+  var prev = [], cur = [], i, j;
+  for (j = 0; j <= b.length; j++) prev[j] = j;
+  for (i = 1; i <= a.length; i++) {
+    cur[0] = i;
+    for (j = 1; j <= b.length; j++) {
+      cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    }
+    prev = cur.slice();
+  }
+  return prev[b.length];
+}
+function nearWord(word) {
+  var w = normKey(word);
+  if (w.length < 4) return "";
+  var deck = S.decks[0]; if (!deck) return "";
+  var list = deck.builtin ? (window.WORD_DATA ? window.WORD_DATA.words : []) : deck.words;
+  var best = "", bestD = 3;
+  for (var i = 0; i < list.length; i++) {
+    var o = list[i].w; var k = normKey(o);
+    if (k === w || k.charAt(0) !== w.charAt(0)) continue;
+    if (Math.abs(k.length - w.length) > 1) continue;
+    var d = levCost(w, k, 2);
+    if (d < bestD) { bestD = d; best = o; if (d === 1) break; }
+  }
+  return best;
 }
 
 function renderReveal(out) {
@@ -2682,6 +2929,13 @@ function renderReveal(out) {
   }
   if (out.graduated) html += '<span class="badge fast">已掌握 🎉</span>';
   html += "</div>";
+  if (!knownNow && w && w.w) {
+    var nw = nearWord(w.w);
+    if (nw) {
+      html += '<div class="tiny muted" style="margin-top:6px">注意与 <b>' + esc(nw) + '</b> 区分</div>';
+      try { ensureRec(sess.deckId, out.k).confusable = nw; } catch (e) {}
+    }
+  }
   html += '<div class="mean">' + esc(w.m || "（无释义）") + "</div>";
   if (w.e) {
     if (w.e.length > 90) {
@@ -3104,7 +3358,8 @@ function renderBookDetail(deckId, key) {
       '</div>';
 
     if (hist.length) {
-      html += '<div class="card" style="margin-top:12px"><h2>最近判定</h2><div class="list" style="margin-top:6px">' +
+      html += timelineHtml(r);
+  html += '<div class="card" style="margin-top:12px"><h2>最近判定</h2><div class="list" style="margin-top:6px">' +
         hist.map(function (h) {
           var nm = kindName[h.kind] || h.kind;
           return '<div class="wrow"><div class="w" style="font-size:14px">' + esc(h.d || "") + '</div>' +
@@ -3204,6 +3459,10 @@ function bind() {
     renderMe();
     toast("已按建议调整：时限 " + (d.wantLimit / 1000).toFixed(1) + "s · 快认线 " + (d.wantLimit * d.wantRatio / 1000).toFixed(2) + "s");
   });
+  on("#me-body", "click", function (ev) {
+    var t = ev.target;
+    if (t && t.closest && t.closest("#btn-install")) { doInstall(); return; }
+  });
   on("#me-mode", "click", function (ev) {
     var b = ev.target.closest && ev.target.closest(".chip[data-mode]");
     if (!b) return;
@@ -3213,6 +3472,15 @@ function bind() {
   on("#btn-quit", "click", quitSession);
 
   /* ---- 首页模式切换 ---- */
+  function bumpCount(dv) {
+    var cur = (S.settings.countValue === "all") ? 200 : clamp(Math.round(num(S.settings.countValue, 20)), 5, 200);
+    S.settings.countValue = clamp(cur + dv, 5, 200);
+    saveNow();
+    renderHome();
+    toast("本轮 " + S.settings.countValue + " 题");
+  }
+  on("#home-cnt-m", "click", function () { bumpCount(-10); });
+  on("#home-cnt-p", "click", function () { bumpCount(10); });
   on("#home-mode", "click", function (ev) {
     var b = ev.target.closest && ev.target.closest(".chip[data-mode]");
     if (!b) return;
@@ -3258,6 +3526,15 @@ function bind() {
     testCfg.count = (v === "all") ? "all" : num(v, 20);
     renderTestSheet();
   });
+  on("#btn-test-resume", "click", function () {
+    hideTestPause();
+    var it = T && T.items ? T.items[T.idx] : null;
+    if (it && T.timerId === 0) startTestTimer(it);
+  });
+  on("#btn-test-quit2", "click", function () {
+    hideTestPause();
+    if (window.confirm("结束本次测试并看成绩？")) finishTest();
+  });
   on("#test-body", "click", function (ev) {
     var t = ev.target;
     if (!t || !t.closest) return;
@@ -3268,7 +3545,7 @@ function bind() {
       var mn = $("#test-mean"); if (mn) mn.style.display = "";
       var sb = $("#test-subbtns"); if (sb) sb.style.display = "";
       var slot = $("#test-bar-slot");
-      if (slot) slot.innerHTML = '<div class="tbar"><i class="run" style="animation-duration:' + testLimit() + 'ms"></i></div>';
+      if (slot) slot.innerHTML = testLimit(it.qt) ? ('<div class="tbar"><i class="run" style="animation-duration:' + testLimit(it.qt) + 'ms"></i></div>') : '';
       var shb = $("#btn-test-show"); if (shb) shb.style.display = "none";
       startTestTimer(it);
       return;
@@ -3504,13 +3781,22 @@ function bind() {
   // 设置页（事件委托）
   $("#setup-body").addEventListener("click", function (ev) {
     var t = ev.target;
-    if (t.classList.contains("chip")) {
+    /* 只有带 data-n 的才是「每组题数」chip；模式/操作方式 chip 不能被当成题数 */
+    if (t.classList.contains("chip") && t.getAttribute("data-n") != null) {
       var n = t.getAttribute("data-n");
       S.settings.countValue = (n === "all") ? "all" : Number(n);
       saveNow(); renderSetup(setupDeckId);
       return;
     }
     if (t.id === "set-undo") { S.settings.fastUndo = !S.settings.fastUndo; saveNow(); renderSetup(setupDeckId); return; }
+    if (t.id === "set-ops-double" || t.id === "set-ops-right" || t.id === "set-ops-left") {
+      S.settings.ops = t.id === "set-ops-double" ? "double" : (t.id === "set-ops-right" ? "right" : "left");
+      saveNow();
+      applyLayout();
+      renderSetup(setupDeckId);
+      toast(S.settings.ops === "double" ? "已切到双手" : (S.settings.ops === "right" ? "已切到单手·右手" : "已切到单手·左手"));
+      return;
+    }
     if (t.id === "set-mode-flash" || t.id === "set-mode-learn") {
       var nm = (t.id === "set-mode-learn") ? "learn" : "flash";
       if (S.settings.mode === nm) return;
@@ -3596,7 +3882,18 @@ function bind() {
       else if (t.id === "adv-slowRevisitGap") { S.settings.slowRevisitGap = clamp(Math.round(sv), 1, 60); }
       else if (t.id === "adv-dayCutoff") { S.settings.dayCutoff = clamp(Math.round(sv), 0, 6); }
     else if (t.id === "adv-maxInterval") { S.settings.maxInterval = clamp(Math.round(sv), 1, 36500); }
-    else if (t.id === "adv-testLimit") { S.settings.testLimitMs = clamp(Math.round(sv * 1000), 1000, 15000); }
+    else if (t.id === "adv-wordSize") { S.settings.wordSize = clamp(Math.round(sv), 32, 80); applyLayout(); if (S.session && !S.session.finished) setWordSize(S.session.cur && S.session.cur.w); }
+  else if (t.id === "adv-btnHeight") { S.settings.btnHeight = clamp(Math.round(sv), 60, 120); applyLayout(); }
+  else if (t.id.indexOf("adv-t-") === 0) {
+    var tkey = { "adv-t-sflash": "studyFlash", "adv-t-srecall": "studyRecall", "adv-t-tflash": "testFlash", "adv-t-tmeaning": "testMeaning", "adv-t-tword": "testWord", "adv-t-trecall": "testRecall" }[t.id];
+    if (tkey) {
+      S.settings.time = S.settings.time || {};
+      var tms = clamp(Math.round(sv * 1000), 0, 15000);
+      S.settings.time[tkey] = tms;
+      if (tkey === "studyFlash") S.settings.limitMs = tms > 0 ? tms : 3000;
+      if (tkey === "testMeaning") S.settings.testLimitMs = tms > 0 ? tms : 3000;
+    }
+  }
       else if (t.id === "adv-leechAt") { S.settings.leechAt = clamp(Math.round(sv), 1, 99); }
       saveNow(); return;
     }
@@ -3883,6 +4180,7 @@ function applyLayout() {
   }
   var b = $("#btn-orient");
   if (b) b.textContent = wide ? "竖屏" : "横屏";
+  applyWideSwap();
 }
 function renderScreenByName(n) {
   if (n === "home") renderHome();
@@ -4125,13 +4423,22 @@ function startTest() {
   show("test", { noPush: false });
 }
 
-function testLimit() { return clamp(num(S.settings.testLimitMs, 3000), 1000, 15000); }
+function testLimit(qt) {
+  var t = S.settings.time || {};
+  var v = (qt === "flash") ? num(t.testFlash, 3000)
+    : (qt === "meaning") ? num(t.testMeaning, 3000)
+    : (qt === "word") ? num(t.testWord, 3000)
+    : (qt === "learn") ? num(t.testRecall, 0)
+    : num(t.testMeaning, 3000);
+  return v > 0 ? clamp(v, 1000, 15000) : 0;
+}
 function qtName(qt) { return qt === "meaning" ? "选义" : qt === "word" ? "选词" : qt === "learn" ? "背记" : "闪过"; }
 function clearTestTimer() { if (T && T.timerId) { clearTimeout(T.timerId); T.timerId = 0; } }
 function startTestTimer(it) {
   clearTestTimer();
-  var ms = testLimit();
+  var ms = testLimit(it.qt);
   it.qStart = Date.now();
+  if (!ms) return;
   T.timerId = setTimeout(function () {
     if (!T || T.finished) return;
     var cur = T.items[T.idx];
@@ -4165,6 +4472,8 @@ function testNext(it) {
 function testTimeUp(it) {
   clearTestTimer();
   it.timedOut = true;
+  T.zeroStreak = (T.zeroStreak || 0) + 1;
+  if (T.zeroStreak >= 2) { showTestPause(); }
   it.ms = Date.now() - (it.qStart || Date.now());
   if (it.opts) it.chosen = -2; else it.sub = "timeout";
   T.answers++;
@@ -4175,6 +4484,17 @@ function testTimeUp(it) {
   var sh = $("#btn-test-show"); if (sh) sh.style.display = "none";
   testNext(it);
 }
+function showTestPause() {
+  if (!T) return;
+  T.paused = true;
+  clearTestTimer();
+  var m = $("#test-pause"); if (m) m.style.display = "flex";
+}
+function hideTestPause() {
+  var m = $("#test-pause"); if (m) m.style.display = "none";
+  if (T) { T.paused = false; T.zeroStreak = 0; }
+}
+
 function answerTestObj(oi) {
   if (!T || T.finished) return;
   var it = T.items[T.idx];
@@ -4216,7 +4536,7 @@ function renderTestQ() {
   $("#test-title").textContent = "测试 · " + qtName(it.qt) + " " + (T.idx + 1) + "/" + T.items.length;
   var pct = Math.round(T.idx / T.items.length * 100);
   var left = "", right = "";
-  var bar = '<div class="tbar" id="test-bar"><i class="run" style="animation-duration:' + testLimit() + 'ms"></i></div>';
+  var bar = testLimit(it.qt) ? ('<div class="tbar" id="test-bar"><i class="run" style="animation-duration:' + testLimit(it.qt) + 'ms"></i></div>') : '';
   if (it.opts) {
     left = (it.qt === "meaning")
       ? '<div class="tword">' + esc(it.w.w) + '</div><div class="tphon">' + esc(it.w.p || "") + '</div>'
@@ -4258,6 +4578,10 @@ function finishTest() {
   ensureStats();
   var runs = Array.isArray(S.stats.testRuns) ? S.stats.testRuns : [];
   if (T.answers > 0) {
+    var tday = statDay(today());
+    tday.ms = num(tday.ms, 0) + used;
+    tday.testN = num(tday.testN, 0) + T.answers;
+    tday.testMs = num(tday.testMs, 0) + used;
     runs.push({ d: today(), n: T.answers, right: T.right, ms: used, src: T.cfg.src, qts: T.cfg.qts.join("+") });
     if (runs.length > 20) runs = runs.slice(runs.length - 20);
     S.stats.testRuns = runs;
@@ -4535,6 +4859,14 @@ function bookApply(act) {
 /* ---------------- 启动 ---------------- */
 function boot() {
   S = loadState();
+  window.addEventListener("beforeinstallprompt", function (e) {
+    try { e.preventDefault(); } catch (err) {}
+    deferredInstall = e;
+  });
+  window.addEventListener("appinstalled", function () {
+    deferredInstall = null;
+    try { toast("已安装到桌面，从图标打开就是 App 模式"); } catch (err) {}
+  });
   bind();
   // 开机永远先进首页：不再自动跳进答题页（安卓切方向/全屏/后台回来都会重载页面，
   // 以前这里 resumeSession() 会导致「莫名其妙跳出背单词界面」）
