@@ -1,5 +1,5 @@
-var CACHE = "wordflash-v7";
-var ASSETS = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png", "./icon-180.png"];
+var CACHE = "wordflash-v14";
+var ASSETS = ["./", "./index.html", "./style.css", "./app.js", "./algo.js", "./wordbank.js", "./manifest.json", "./icon-192.png", "./icon-512.png", "./icon-180.png"];
 self.addEventListener("install", function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) {
     return Promise.all(ASSETS.map(function (u) { return c.add(u).catch(function () { return null; }); }));
