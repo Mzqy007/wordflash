@@ -1479,7 +1479,7 @@ body.immersive .hint,body.immersive #opslot .rsub,body.immersive .wordcard .tag,
 body.immersive #btn-speak,body.immersive #btn-swap,body.immersive #btn-lock{display:none !important}
 body.immersive .word,body.immersive .rw,body.immersive #rogue-word{color:#eef3fa !important}
 body.immersive #scr-home,body.immersive .rbar .rhp,body.immersive .rtags{color:#c9d1dc !important}
-body.immersive #scr-home{display:none !important}
+
 body.immersive #scr-rogue .rbtns .btn{background:#111419 !important;color:#eef3fa !important;border:1px solid #262b34 !important}
 body.immersive #scr-rogue .rsub,body.immersive #rogue-hint,body.immersive .rck-h{color:#6f7885 !important}
 body.immersive .phonetic{color:#7d848f !important}
@@ -1627,6 +1627,161 @@ body.low-fx .san{display:none !important}
 #btn-rogue-no.holding::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:100%;
   background:#3b82f6;transform-origin:left;animation:mistap .3s linear forwards}
 @keyframes mistap{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+
+
+/* P1 沉浸模式视觉修正 */
+body.immersive .progressline,body.immersive .rprog{background:#333 !important}
+body.immersive .progressline>i,body.immersive .rprogfill{background:#3b82f6 !important}
+body.immersive .word,body.immersive .rw,body.immersive #rogue-word{color:#fff !important}
+body.immersive .phonetic,body.immersive .rp{color:#c9ced8 !important}
+body.immersive .btns .big,body.immersive .rbtns .btn{background:#1c1c1e !important;border-color:#2c2c2e !important;color:#fff !important}
+body.immersive .tag,body.immersive .pill,body.immersive .rcnt{display:none !important}
+#imm-exit{display:none;position:fixed;right:8px;top:8px;z-index:90;width:34px;height:34px;
+  border:0;border-radius:50%;background:rgba(255,255,255,.14);color:rgba(255,255,255,.72);
+  font-size:15px;line-height:1;pointer-events:auto}
+#imm-exit:active{background:rgba(255,255,255,.28)}
+.mask:not(.on){display:none !important}
+
+
+/* 沉浸模式进度条对比 */
+body.immersive .progressline,body.immersive .timerbar,body.immersive #timer,
+body.immersive #timer2,body.immersive .tbar,body.immersive .track,
+body.immersive .rtimer,body.immersive #rogue-tbar{background:#333 !important}
+body.immersive .progressline>i,body.immersive .timerfill,body.immersive #timerfill,
+body.immersive .fill,body.immersive .rprogfill,body.immersive .rtimerfill{background:#3b82f6 !important}
+
+
+/* 沉浸模式：全元素兜底 */
+body.immersive .big,body.immersive .btns .big,body.immersive #opslot .big,
+body.immersive .btns .btn,body.immersive .btn.ghost{background:#1c1c1e !important;color:#fff !important;border-color:#2c2c2e !important}
+body.immersive .phonetic,body.immersive .ph,body.immersive .rp{color:#b9c0cb !important}
+body.immersive #tbar,body.immersive .gprog,body.immersive #progress{background:#333 !important}
+body.immersive #tbar>i,body.immersive .gprog>i,body.immersive #progress>i{background:#3b82f6 !important}
+body.immersive #timer2{background:#262a31 !important}
+
+
+/* v31.1 视觉收尾 */
+body.immersive .timer,body.immersive .timer2{background:#333 !important}
+body.immersive #tbar,body.immersive #tbar2{background:#3b82f6 !important}
+body.immersive .btns .big,body.immersive .btns .big.warn,body.immersive .btns .big.no{
+  background:#1c1c1e !important;border:1px solid #2c2c2e !important;color:#fff !important;box-shadow:none !important}
+.rcheck:not(.on){display:none !important}
+
+
+/* 防手滑：横屏触控稳定 */
+#btn-rogue-no{touch-action:manipulation}
+
+
+/* ================= 新横屏布局（Step 2） ================= */
+@media (orientation: landscape) {
+  /* 主观题：单词/释义左右各半；按钮按手型落位 */
+  body.layout-left #scr-game .gmain,
+  body.layout-right #scr-game .gmain,
+  body.layout-both #scr-game .gmain{display:flex;flex-direction:row;align-items:stretch;gap:0;height:calc(100dvh - 74px);min-height:0}
+  body.layout-left #scr-game .gmain>.gcol,
+  body.layout-right #scr-game .gmain>.gcol,
+  body.layout-both #scr-game .gmain>.gcol{flex:1 1 50%;min-width:0;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:8px 14px}
+  body.layout-left #scr-game #opslot{position:fixed;left:12px;bottom:12px;width:calc(50% - 20px);z-index:8}
+  body.layout-right #scr-game #opslot{position:fixed;right:12px;bottom:12px;width:calc(50% - 20px);z-index:8}
+  body.layout-both #scr-game #opslot{position:fixed;left:50%;transform:translateX(-50%);bottom:10px;width:min(780px,94vw);z-index:8}
+  body.layout-left #scr-game #opslot .btns,
+  body.layout-right #scr-game #opslot .btns,
+  body.layout-both #scr-game #opslot .btns{width:100%;max-width:none;margin:0}
+
+  /* 客观题：左题目 / 右选项，互不挤压 */
+  body.layout-left #scr-test .tqwrap,
+  body.layout-right #scr-test .tqwrap,
+  body.layout-both #scr-test .tqwrap{display:flex;flex-direction:row;align-items:stretch;gap:14px;height:calc(100dvh - 140px);min-height:0}
+  body.layout-right #scr-test .tqwrap{flex-direction:row-reverse}
+  body.layout-left #scr-test .tqcol,
+  body.layout-right #scr-test .tqcol,
+  body.layout-both #scr-test .tqcol{flex:1 1 50%;min-width:0;display:flex;flex-direction:column;justify-content:center;align-items:center}
+  body.layout-left #scr-test .tocol,
+  body.layout-right #scr-test .tocol,
+  body.layout-both #scr-test .tocol{flex:1 1 50%;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:8px}
+  #scr-test .topt,#scr-test .topt b{white-space:normal !important;word-break:break-word;overflow-wrap:anywhere;max-width:100%}
+  #scr-test .tocol .topt,#scr-test .tocol button{width:100%;min-height:44px;text-align:left;white-space:normal;word-break:break-word;overflow-wrap:anywhere;padding:8px 12px}
+  #scr-test .tobtn{height:auto;min-height:44px;white-space:normal;word-break:break-word}
+  #scr-game .word,#scr-game .meaning{max-width:100%;word-break:break-word;overflow-wrap:anywhere}
+}
+
+/* 设置页：6 组布局预设 */
+.l2row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0f2f5}
+.l2row:last-child{border-bottom:0}
+.l2lab{flex:0 0 88px;font-size:13px;color:#6b7280}
+.l2chips{flex:1;display:flex;gap:8px;flex-wrap:wrap}
+.l2chips .chip{height:34px;padding:0 14px;font-size:13px}
+@media (prefers-color-scheme: dark){.l2row{border-color:#262b33}.l2lab{color:#9aa3af}}
+
+
+/* ===== 布局硬约束（覆盖旧 !important 规则）===== */
+@media (orientation: landscape){
+  body.layout-left #scr-game #opslot,body.layout-right #scr-game #opslot,body.layout-both #scr-game #opslot{
+    position:fixed !important;bottom:10px !important;top:auto !important;height:auto !important;
+    background:transparent !important;padding:0 !important;z-index:9 !important;max-width:none !important}
+  body.layout-left #scr-game #opslot{left:12px !important;right:auto !important;width:calc(50% - 22px) !important}
+  body.layout-right #scr-game #opslot{right:12px !important;left:auto !important;width:calc(50% - 22px) !important}
+  body.layout-both #scr-game #opslot{left:50% !important;right:auto !important;transform:translateX(-50%) !important;width:min(780px,94vw) !important}
+  body.layout-left #scr-game #opslot .btns,body.layout-right #scr-game #opslot .btns,body.layout-both #scr-game #opslot .btns{
+    width:100% !important;max-width:none !important;margin:0 !important;display:flex !important;gap:8px !important}
+  body.layout-left #scr-game #opslot .big,body.layout-right #scr-game #opslot .big,body.layout-both #scr-game #opslot .big{
+    flex:1 1 0 !important;min-width:0 !important;height:var(--lay-opth,56px) !important}
+  body.layout-left #scr-game .gmain,body.layout-right #scr-game .gmain,body.layout-both #scr-game .gmain{
+    display:flex !important;flex-direction:row !important;height:calc(100dvh - 76px) !important;padding-bottom:96px !important;box-sizing:border-box}
+  body.layout-left #scr-game .gmain>.gcol,body.layout-right #scr-game .gmain>.gcol,body.layout-both #scr-game .gmain>.gcol{
+    flex:1 1 50% !important;min-width:0 !important;max-width:none !important;padding:6px 14px !important}
+
+  body.layout-left #scr-test .tqwrap,body.layout-right #scr-test .tqwrap,body.layout-both #scr-test .tqwrap{
+    display:flex !important;flex-direction:row !important;gap:12px !important;height:calc(100dvh - 132px) !important;min-height:0 !important}
+  body.layout-right #scr-test .tqwrap{flex-direction:row-reverse !important}
+  body.layout-left #scr-test .tqcol,body.layout-right #scr-test .tqcol,body.layout-both #scr-test .tqcol{flex:1 1 50% !important;min-width:0 !important}
+  body.layout-left #scr-test .tocol,body.layout-right #scr-test .tocol,body.layout-both #scr-test .tocol{
+    flex:1 1 50% !important;min-width:0 !important;display:flex !important;flex-direction:column !important;justify-content:center !important;gap:8px !important;overflow-y:auto !important}
+  body.layout-left #scr-test .tocol>*,body.layout-right #scr-test .tocol>*,body.layout-both #scr-test .tocol>*{
+    width:100% !important;min-height:44px !important;white-space:normal !important;word-break:break-word !important;overflow-wrap:anywhere !important;height:auto !important}
+  body.layout-left #scr-test .tqcol .topt,body.layout-right #scr-test .tqcol .topt,body.layout-both #scr-test .tqcol .topt{
+    white-space:normal !important;word-break:break-word !important;overflow-wrap:anywhere !important;max-width:100% !important}
+}
+
+
+/* 布局：不依赖媒体查询的最终覆盖（class 只在横屏挂载） */
+body.layout-left #scr-game #opslot{position:fixed!important;left:12px!important;right:auto!important;bottom:10px!important;top:auto!important;width:calc(50% - 22px)!important;max-width:none!important;transform:none!important;padding:0!important;background:transparent!important;z-index:9!important}
+body.layout-right #scr-game #opslot{position:fixed!important;right:12px!important;left:auto!important;bottom:10px!important;top:auto!important;width:calc(50% - 22px)!important;max-width:none!important;transform:none!important;padding:0!important;background:transparent!important;z-index:9!important}
+body.layout-left #scr-game #opslot .btns,body.layout-right #scr-game #opslot .btns{width:100%!important;max-width:none!important;margin:0!important;display:flex!important;gap:8px!important}
+body.layout-left #scr-game #opslot .btns .big,body.layout-right #scr-game #opslot .btns .big{flex:1 1 0!important;min-width:0!important;width:auto!important}
+
+
+/* 肉鸽战报 */
+.rvlist{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+.rvrow{padding:10px 2px;border-bottom:1px solid #f0f1f4}
+.rvrow:last-child{border-bottom:0}
+.rvh{display:flex;align-items:baseline;gap:8px}
+.rvm{display:flex;gap:14px;margin-top:4px;font-size:12.5px;color:#6b7280}
+.rvi{margin-top:6px;display:flex;flex-wrap:wrap;gap:6px}
+.rvi em{font-style:normal;font-size:11.5px;color:#3f4550;background:#f3f5f8;border-radius:8px;padding:2px 7px}
+@media (prefers-color-scheme: dark){
+  .rvrow{border-color:#252a32}
+  .rvm{color:#9aa3af}
+  .rvi em{background:#20242b;color:#c9d1dc}
+}
+/* 日期滚轮 */
+#exam-mask{display:none}
+#exam-mask.on{display:flex}
+.exsheet{padding:14px 16px 18px}
+.wheels{display:flex;gap:10px;margin:10px 0 6px;position:relative}
+.wheels::after{content:"";position:absolute;left:0;right:0;top:50%;height:38px;transform:translateY(-50%);
+  border-top:1px solid #e6e9ef;border-bottom:1px solid #e6e9ef;pointer-events:none}
+.wheel{flex:1 1 0;height:180px;overflow-y:auto;scroll-snap-type:y mandatory;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;text-align:center}
+.wheel::-webkit-scrollbar{display:none}
+.witem{height:38px;line-height:38px;scroll-snap-align:center;font-size:16px;color:#9aa0a8;transition:color .15s}
+.witem.on{color:#23262b;font-weight:700}
+.wsel{text-align:center;font-size:13px;color:#6b7280;margin:6px 0 12px;letter-spacing:.4px}
+@media (prefers-color-scheme: dark){
+  .wheels::after{border-color:#2a2f38}
+  .witem{color:#7d8694}
+  .witem.on{color:#f0f2f6}
+}
 
 </style>
 <link rel="manifest" href="manifest.json">
@@ -1874,6 +2029,7 @@ body.low-fx .san{display:none !important}
   <!-- ============ 游戏屏 ============ -->
   <section id="scr-game" class="screen">
   <div class="immzone" id="imm-zone" title="双击退出沉浸模式"></div>
+<button id="imm-exit" title="退出沉浸模式">✕</button>
     <div id="game-wrap" class="game">
       <div class="gbar">
         <span id="gstat" class="mono"></span>
@@ -1992,7 +2148,21 @@ body.low-fx .san{display:none !important}
   </nav>
 
 </div>
-<div class="toast" id="toast"></div>
+  <div class="toast" id="toast"></div>
+
+  <div class="mask" id="exam-mask">
+    <div class="sheet exsheet">
+      <div class="barhd"><b>考研日期</b></div>
+      <div class="wheels">
+        <div class="wheel" id="w-y"></div>
+        <div class="wheel" id="w-m"></div>
+        <div class="wheel" id="w-d"></div>
+      </div>
+      <div class="wsel" id="exam-preview">—</div>
+      <button class="btn" id="btn-exam-ok">确定</button>
+      <button class="btn ghost" id="btn-exam-cancel">取消</button>
+    </div>
+  </div>
 
 <!-- 测试配置面板（底部弹出） -->
 <div class="mask" id="cnt-mask" style="display:none"><div class="sheet" style="max-width:360px;margin:0 auto">
@@ -3234,130 +3404,69 @@ function toast(msg) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(function () { el.classList.remove("on"); }, 2200);
 }
-/* ===== 三级联动布局（阶段一：独立存储 + 静态预览 + 微调）===== */
-var LAY3_O = [["p", "竖屏"], ["l", "横屏"]];
-var LAY3_H = [["L", "左手"], ["R", "右手"], ["B", "双手"]];
-var LAY3_M = [["sf", "学习·闪过"], ["sr", "学习·背记"], ["tf", "测试·闪过"], ["tr", "测试·背记"], ["tm", "测试·选义"], ["tw", "测试·选词"]];
-var laySel = { o: "p", h: "B", m: "sf", el: "word" };
-function lay3Key(o, h, m) { return o + "|" + h + "|" + m; }
-function lay3Def(m) { return { size: m.charAt(0) === "s" ? 44 : 30, w: 74, h: 56, vert: false }; }
-function lay3Cfg() {
-  var st = S.settings; st.lay3 = st.lay3 || {};
-  var key = lay3Key(laySel.o, laySel.h, laySel.m), d = lay3Def(laySel.m), c = st.lay3[key] || {};
-  return { key: key, size: num(c.size, d.size), w: num(c.w, d.w), h: num(c.h, d.h), vert: !!c.vert, pos: c.pos || {} };
+/* ===== 答题布局（6 组预设 × 左/右/双手，各自独立保存）===== */
+var LAY2_MODES = [["sf", "学习·闪过"], ["sr", "学习·背记"], ["tw", "测试·选词"], ["tm", "测试·选义"], ["tr", "测试·背记"], ["tf", "测试·闪过"]];
+function lay2() { var st = S.settings; st.layout2 = st.layout2 || {}; return st.layout2; }
+function lay2Get(m) { var v = (lay2() || {})[m]; return (v === "left" || v === "right") ? v : "both"; }
+function lay2Set(m, v) {
+  var o = lay2(); o[m] = (v === "left" || v === "right") ? v : "both";
+  S.settings.layout2 = o; saveNow();
+  applyLay2(); renderLay2();
+  try { toast("已保存：" + ({"left":"左手","right":"右手","both":"双手"}[o[m]]) + "布局"); } catch (e) {}
 }
-function lay3Save(patch) {
-  var st = S.settings; st.lay3 = st.lay3 || {};
-  var key = lay3Key(laySel.o, laySel.h, laySel.m), d = lay3Def(laySel.m);
-  var cur = st.lay3[key] || {};
-  var out = {
-    size: num(patch.size, num(cur.size, d.size)),
-    w: num(patch.w, num(cur.w, d.w)),
-    h: num(patch.h, num(cur.h, d.h)),
-    vert: (patch.vert === undefined ? !!cur.vert : !!patch.vert)
-  };
-  var pos = (patch.pos !== undefined) ? patch.pos : (cur.pos || null);
-  if (pos && Object.keys(pos).length) out.pos = pos;
-  st.lay3[key] = out;
-  saveNow();
-}
-function lay3Current() {   // 答题页只读：按当前设备状态取配置
-  var st = S.settings || {};
-  var o = (typeof isWideNow === "function" && isWideNow()) ? "l" : "p";
-  var handRaw = (curScreen === "test") ? (st.layWord || "both") : ((st.mode === "learn") ? (st.layRecall || "both") : (st.layFlash || "both"));
-  var h = handRaw === "left" ? "L" : (handRaw === "right" ? "R" : "B");
-  var m = "sf";
+function lay2CurMode() {
   if (curScreen === "test" && typeof T !== "undefined" && T && T.items && T.items[T.idx]) {
     var qt = T.items[T.idx].qt;
-    m = qt === "meaning" ? "tm" : (qt === "word" ? "tw" : (qt === "learn" ? "tr" : "tf"));
-  } else if (curScreen === "game") {
-    m = (st.mode === "learn") ? "sr" : "sf";
+    return qt === "word" ? "tw" : (qt === "meaning" ? "tm" : (qt === "learn" ? "tr" : "tf"));
   }
-  var key = lay3Key(o, h, m), d = lay3Def(m);
-  var c = (st.lay3 || {})[key] || {};
-  return { size: num(c.size, d.size), w: num(c.w, d.w), h: num(c.h, d.h), vert: !!c.vert };
+  if (curScreen === "game") return (S.settings.mode === "learn") ? "sr" : "sf";
+  return null;
 }
-function applyLay3() {
-  var c = lay3Cfg();
-  var root = document.documentElement;
-  if (root && root.style && root.style.setProperty) {
-    try {
-      root.style.setProperty("--lay-wsize", num(c.size, 44) + "px");
-      root.style.setProperty("--lay-opth", num(c.h, 56) + "px");
-      root.style.setProperty("--lay-optw", num(c.w, 74) + "%");
-    } catch (e) {}
+function lay2CurLayout() { var m = lay2CurMode(); return m ? lay2Get(m) : null; }
+function applyLay2() {
+  var ops = $("#opslot");
+  if (ops && ops.style && typeof ops.style.removeProperty === "function") {
+    ["width","max-width","margin","margin-left","margin-right","left","right","position","bottom","transform"].forEach(function (p) {
+      ops.style.removeProperty(p);
+    });
   }
-  var b = document.body;
-  if (!b) return;
-  b.classList.remove("landscape-left", "landscape-right", "landscape-both", "landscape-test");
-  b.classList.toggle("lay-vert", !!c.vert);
-  if (!isWideNow()) return;
-  var isTest = (curScreen === "test");
-  if (isTest) { b.classList.add("landscape-test"); return; }
-  var hand = (S.settings.mode === "learn") ? (S.settings.layRecall || "both") : (S.settings.layFlash || "both");
-  b.classList.add(hand === "left" ? "landscape-left" : (hand === "right" ? "landscape-right" : "landscape-both"));
+  var b = document.body; if (!b) return;
+  b.classList.remove("layout-left", "layout-right", "layout-both");
+  var lay = lay2CurLayout();
+  b.classList.toggle("layout-portrait", !!(window.matchMedia && !window.matchMedia("(orientation: landscape)").matches));
+  if (!lay) return;
+  b.classList.add("layout-" + lay);
+  b.classList.toggle("in-game", curScreen === "game");
 }
-function lay3Chips(list, cur, attr) {
-  return list.map(function (x) {
-    return '<button class="chip' + (cur === x[0] ? " on" : "") + '" data-l3="' + attr + '" data-v="' + x[0] + '">' + x[1] + '</button>';
+function renderLay2() {
+  var box = $("#lay3"); if (!box) return;
+  box.innerHTML = LAY2_MODES.map(function (m) {
+    return '<div class="l2row"><span class="l2lab">' + m[1] + '</span><span class="chips l2chips">' +
+      [["left", "左手"], ["right", "右手"], ["both", "双手"]].map(function (o) {
+        return '<button class="chip' + (lay2Get(m[0]) === o[0] ? " on" : "") + '" data-l2="' + m[0] + '" data-v="' + o[0] + '">' + o[1] + '</button>';
+      }).join("") + '</span></div>';
   }).join("");
+  bindLay2();
 }
-function lay3AdjHtml() {
-  var c = lay3Cfg();
-  return '<div class="l3sec"><div class="l3t">尺寸（只改样式，不重排）</div>' +
-    '<div class="l3row"><span class="l3lab">字号</span><input type="range" id="l3-size" min="18" max="96" step="2" value="' + c.size + '"><span class="mono" id="l3-size-v">' + c.size + 'px</span></div>' +
-    '<div class="l3row"><span class="l3lab">按钮高度</span><input type="range" id="l3-h" min="36" max="140" step="2" value="' + c.h + '"><span class="mono" id="l3-h-v">' + c.h + 'px</span></div>' +
-    '<div class="l3row"><button class="chip" id="l3-reset">恢复当前场景默认</button></div></div>';
-}
-function renderLay3() {
-  var box = $("#lay3");
-  if (!box) return;
-  box.innerHTML =
-    '<div class="l3sec"><div class="l3t">一级：屏幕方向</div><div class="chips">' + lay3Chips(LAY3_O, laySel.o, "o") + '</div></div>' +
-    '<div class="l3sec"><div class="l3t">二级：手型</div><div class="chips">' + lay3Chips(LAY3_H, laySel.h, "h") + '</div></div>' +
-    '<div class="l3sec"><div class="l3t">三级：场景</div><div class="chips l3modes">' + lay3Chips(LAY3_M, laySel.m, "m") + '</div></div>' +
-    '<div id="l3adjbox">' + lay3AdjHtml() + '</div>';
-  bindLay3();
-}
-function bindLay3() {
-  var box = $("#lay3");
-  if (!box) return;
+function bindLay2() {
+  var box = $("#lay3"); if (!box || box.__l2) return; box.__l2 = true;
   box.addEventListener("click", function (ev) {
-    var t = ev.target.closest ? ev.target.closest("[data-l3],#l3-reset") : null;
+    var t = ev.target.closest ? ev.target.closest("[data-l2]") : null;
     if (!t) return;
-    if (t.id === "l3-reset") {
-      var d0 = lay3Def(laySel.m);
-      lay3Save({ size: d0.size, w: d0.w, h: d0.h, vert: false });
-      applyLay3(); renderLay3(); return;
-    }
-    var k = t.getAttribute("data-l3"), v = t.getAttribute("data-v");
-    if (!k) return;
-    laySel[k] = v;
-    if (k === "h") {
-      var hand = (v === "L") ? "left" : (v === "R" ? "right" : "both");
-      S.settings.layFlash = hand; S.settings.layRecall = hand;
-      S.settings.layWord = hand; S.settings.layMeaning = hand;
-      saveNow(); applyWideSwap();
-    }
-    applyLay3(); renderLay3();
+    lay2Set(t.getAttribute("data-l2"), t.getAttribute("data-v"));
   });
-  function bindSlider(id, field, def, unit) {
-    var el = $("#" + id);
-    if (!el) return;
-    el.addEventListener("input", function () {
-      var v = num(el.value, def), lab = $("#" + id + "-v");
-      if (lab) lab.textContent = v + unit;
-      if (field === "size") document.documentElement.style.setProperty("--lay-wsize", v + "px");
-      if (field === "h") document.documentElement.style.setProperty("--lay-opth", v + "px");
-    });
-    el.addEventListener("change", function () {
-      var p = {}; p[field] = num(el.value, def);
-      lay3Save(p); applyLay3();
-    });
-  }
-  bindSlider("l3-size", "size", 44, "px");
-  bindSlider("l3-h", "h", 56, "px");
 }
+window.__layTest = {
+  set: function (lay) {
+    var o = {};
+    LAY2_MODES.forEach(function (m) { o[m[0]] = lay; });
+    S.settings.layout2 = o; saveNow(); applyLay2();
+    return JSON.stringify(o);
+  },
+  get: function () { return JSON.stringify(S.settings.layout2 || {}); }
+};
+function renderLay3() { renderLay2(); }
+function applyLay3() { applyLay2(); }
 function layoutNow() {
   var st = S.settings || {};
   if (curScreen === "test" && typeof T !== "undefined" && T && T.items && T.items[T.idx]) {
@@ -3370,25 +3479,7 @@ function layoutNow() {
   if (curScreen === "game") return (st.mode === "learn") ? (st.layRecall || "both") : (st.layFlash || "both");
   return "both";
 }
-function applyWideSwap() {
-  var lay = layoutNow();
-  var st = S.settings;
-  var root = document.documentElement;
-  if (root && root.style && root.style.setProperty) {
-    try {
-      root.style.setProperty("--app-btn-height", clamp(num(st.btnHeight, 56), 44, 120) + "px");
-      root.style.setProperty("--app-word-size", clamp(num(st.wordSize, 44), 32, 80) + "px");
-      root.style.setProperty("--app-btn-margin", clamp(num(st.btnMargin, 24), 0, 100) + "px");
-    } catch (e) {}
-  }
-  document.body.classList.toggle("pos-left", lay === "left");
-  document.body.classList.toggle("pos-right", lay === "right");
-  document.body.classList.toggle("pos-bottom", lay === "both");
-  document.body.classList.toggle("ops-single", lay !== "both");
-  document.body.classList.toggle("hand-left", lay === "left");
-  layoutOps();
-  if (typeof pinBars === "function") setTimeout(pinBars, 0);
-}
+function applyWideSwap() { applyLay2(); }
 
 function layoutOps() {
   try { applyLay3(); } catch (e) {}
@@ -3402,6 +3493,7 @@ function layoutOps() {
 
 var TAB_SCREENS = ["home", "lib", "stats", "me"];
 function show(name, opts) {
+  try { if (S && S.settings && S.settings.immersive && name !== "game" && name !== "rogue") { S.settings.immersive = false; applyImmersive(); } } catch (e) {}
   opts = opts || {};
   if (!opts.noPush && curScreen && curScreen !== name) {
     navStack.push(curScreen);
@@ -3415,6 +3507,7 @@ function show(name, opts) {
   if (tabs) tabs.classList.toggle("on", isTab);
   document.body.classList.toggle("has-tabs", isTab);
   document.body.classList.toggle("in-game", name === "game");
+  try { applyWideSwap(); } catch (e) {} // v32
   if (isTab) {
     $$("#tabs .tab").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-tab") === name); });
   }
@@ -3783,8 +3876,46 @@ function timelineHtml(r) {
 var statsTab = "today";
 var chartGran = "day";
 var chartMode = "load";   /* load=学习量  cog=认知 */
-var STATS_TABS = [["today","今日"],["chart","学习情况"],["ebbing","遗忘曲线"],["time","时段"],["heat","热力图"],["forecast","到期预测"]];
+var STATS_TABS = [["today","今日"],["chart","学习情况"],["ebbing","遗忘曲线"],["time","时段"],["heat","热力图"],["rogue","👾 肉鸽战报"],["forecast","到期预测"]];
 
+function rogueReportHtml() {
+  var r = S.rogue || {};
+  var st = r.stats || {};
+  var hist = Array.isArray(r.history) ? r.history : [];
+  var runs = num(st.runs, 0), wins = num(st.wins, 0);
+  var killed = num(st.words, 0), coins = num(st.coins, 0);
+  var bestFloor = num(st.bestFloor, 0), bestCombo = num(st.bestCombo, 0);
+  var rk = num(st.reviewKilled, 0), bounced = num(st.bounced, 0), grad = num(st.demotedGrad, 0);
+  var html = '<div class="card"><div class="charthead"><b>肉鸽总览</b><span class="tiny muted">共 ' + runs + ' 局 · 通关 ' + wins + '</span></div>' +
+    '<div class="statbig" style="margin-top:8px">' +
+    '<div class="cell"><div class="n">' + killed + '</div><div class="l">累计击杀</div></div>' +
+    '<div class="cell"><div class="n">' + (bestFloor ? bestFloor + " 层" : "—") + '</div><div class="l">最高层数</div></div>' +
+    '<div class="cell"><div class="n">' + coins + '</div><div class="l">累计金币</div></div>' +
+    '</div><div class="statbig" style="margin-top:8px">' +
+    '<div class="cell"><div class="n">' + bestCombo + '</div><div class="l">最高连击</div></div>' +
+    '<div class="cell"><div class="n">' + rk + '</div><div class="l">实战消灭</div></div>' +
+    '<div class="cell"><div class="n">' + bounced + '</div><div class="l">打回生词本</div></div>' +
+    '</div>' +
+    (grad ? '<div class="tiny muted" style="margin-top:8px">其中 ' + grad + ' 个是毕业词被降级</div>' : '') +
+    '</div>';
+  if (!hist.length) {
+    html += '<div class="card"><div class="empty" style="padding:26px 0;text-align:center"><div class="tiny muted">还没有肉鸽记录，去打一局吧</div></div></div>';
+    return html;
+  }
+  html += '<div class="card"><div class="charthead"><b>最近战绩</b><span class="tiny muted">最近 ' + hist.length + ' 局</span></div><div class="rvlist">';
+  hist.forEach(function (x) {
+    var modeTxt = x.mode === "tower" ? ("爬塔 · 第 " + num(x.floor, 1) + " 层") : "单局";
+    var srcTxt = x.src === "battle" ? " · 实战" : "";
+    var dt = x.t ? String(x.t).slice(5, 10) : "";
+    var items = Array.isArray(x.items) ? x.items.slice(0, 3) : [];
+    html += '<div class="rvrow"><div class="rvh"><b>' + dt + '</b><span class="tiny muted">' + modeTxt + srcTxt + '</span></div>' +
+      '<div class="rvm"><span>击杀 <b>' + num(x.killed, 0) + '</b></span><span>金币 +' + num(x.coins, 0) + '</span></div>' +
+      (items.length ? '<div class="rvi">' + items.map(function (y) { return '<em>' + (y.w || y) + '</em>'; }).join("") + '</div>' : '') +
+      '</div>';
+  });
+  html += '</div></div>';
+  return html;
+}
 function statsTabsHtml() {
   return STATS_TABS.map(function (x) {
     return '<button class="sttab' + (statsTab === x[0] ? " on" : "") + '" data-st="' + x[0] + '">' + x[1] + '</button>';
@@ -4230,6 +4361,7 @@ function renderStats() {
   else if (statsTab === "ebbing") html = ebbingHtml();
   else if (statsTab === "time") html = timeHtml();
   else if (statsTab === "heat") html = heatHtml2();
+  else if (statsTab === "rogue") html = rogueReportHtml();
   else html = forecastHtml();
   body.innerHTML = html;
   var sc = $("#chart-scroll");
@@ -4361,10 +4493,93 @@ function pvApply() {
     } catch (e) {}
   }
 }
+function examSheetPick(sys) {
+  var box = $("#w-" + sys);
+  if (box && typeof box.__sel === "number") return box.__sel;
+  return 0;
+}
+function examSheetLabel(sys) {
+  var box = $("#w-" + sys);
+  if (!box || !box.__items) return "";
+  var i = examSheetPick(sys);
+  return box.__items[i] || "";
+}
+function examSheetPaint() {
+  var p = $("#exam-preview");
+  if (!p) return;
+  var y = examSheetLabel("y"), m2 = examSheetLabel("m"), d = examSheetLabel("d");
+  if (!y || !m2 || !d) { p.textContent = "—"; return; }
+  p.textContent = y + "-" + ("0" + m2).slice(-2) + "-" + ("0" + d).slice(-2);
+}
+function examSheetBuild(sys, arr, selIdx) {
+  var box = $("#w-" + sys);
+  if (!box) return;
+  box.__items = arr;
+  box.__sel = Math.max(0, Math.min(arr.length - 1, selIdx));
+  box.innerHTML = arr.map(function (v, i) {
+    return '<div class="witem' + (i === box.__sel ? " on" : "") + '" data-v="' + v + '" data-i="' + i + '">' + v + "</div>";
+  }).join("");
+  var H = 38;
+  box.scrollTop = box.__sel * H;
+  if (!box.__bd) {
+    box.__bd = 1;
+    var t = 0;
+    box.addEventListener("scroll", function () {
+      clearTimeout(t);
+      t = setTimeout(function () {
+        var i = Math.round(box.scrollTop / 38);
+        i = Math.max(0, Math.min(box.__items.length - 1, i));
+        box.__sel = i;
+        var items = box.querySelectorAll(".witem");
+        for (var k = 0; k < items.length; k++) items[k].classList.toggle("on", k === i);
+        examSheetPaint();
+      }, 60);
+    });
+    box.addEventListener("click", function (ev) {
+      var it = ev.target && ev.target.closest ? ev.target.closest(".witem") : null;
+      if (!it) return;
+      var i = num(it.getAttribute("data-i"), 0);
+      box.__sel = i;
+      box.scrollTop = i * 38;
+      var items = box.querySelectorAll(".witem");
+      for (var k = 0; k < items.length; k++) items[k].classList.toggle("on", k === i);
+      examSheetPaint();
+    });
+  }
+  examSheetPaint();
+}
+function examSheetOpen() {
+  var mask = $("#exam-mask");
+  if (!mask) return;
+  var cur = S.settings.examDate || "";
+  var nowY = new Date().getFullYear();
+  var defY = cur ? num(cur.slice(0, 4), nowY) : nowY;
+  var defM = cur ? num(cur.slice(5, 7), 12) : 12;
+  var defD = cur ? num(cur.slice(8, 10), 19) : 19;
+  var years = [], months = [], days = [];
+  for (var y = nowY - 1; y <= nowY + 6; y++) years.push(String(y));
+  for (var m2 = 1; m2 <= 12; m2++) months.push(String(m2));
+  for (var d2 = 1; d2 <= 31; d2++) days.push(String(d2));
+  examSheetBuild("y", years, years.indexOf(String(defY)));
+  examSheetBuild("m", months, Math.max(0, defM - 1));
+  examSheetBuild("d", days, Math.max(0, defD - 1));
+  examSheetPaint();
+  mask.classList.add("on");
+}
+function examSheetClose() { var m = $("#exam-mask"); if (m) m.classList.remove("on"); }
+function examSheetOk() {
+  var y = examSheetLabel("y"), m2 = examSheetLabel("m"), d = examSheetLabel("d");
+  if (!y || !m2 || !d) return;
+  S.settings.examDate = y + "-" + ("0" + m2).slice(-2) + "-" + ("0" + d).slice(-2);
+  saveNow(); examSheetClose();
+  try { renderSetup(); } catch (e) {}
+  try { renderHome(); } catch (e) {}
+  try { toast("考研日期已更新"); } catch (e) {}
+}
 function moodSettingsHtml() {
   var s = S.settings;
   return '<div class="card"><div class="bt">考研与情绪</div>' +
-    '<div class="row"><span>考研日期</span><input type="date" id="set-exam" value="' + (s.examDate || "") + '"></div>' +
+    '<div class="row"><span>考研日期</span><button class="chip" id="btn-exam">' + (s.examDate || "点此选择") + '</button></div>' +
     '<div class="row"><span>开启游戏音效</span><button class="chip' + (s.soundOn ? " on" : "") + '" id="btn-sound">' + (s.soundOn ? "已开启" : "已关闭") + '</button></div>' +
     '<div class="row"><span>金币 / 小卖部</span><button class="chip" id="btn-shop4">打开</button></div>' +
     '<div class="row"><span>音效音量</span><input type="range" id="set-sfxvol" min="0" max="100" step="10" value="' + (S.settings.sfxVol == null ? 80 : S.settings.sfxVol) + '" style="width:45%"><b id="set-sfxvol-v">' + (S.settings.sfxVol == null ? 80 : S.settings.sfxVol) + '%</b></div>' +
@@ -4385,8 +4600,8 @@ function renderSetup(deckId) {
     '<button class="chip' + (st.mode !== "learn" ? " on" : "") + '" id="set-mode-flash">闪过</button>' +
     '<button class="chip' + (st.mode === "learn" ? " on" : "") + '" id="set-mode-learn">背记</button>' +
     '</div></div>';
-  html += '<div class="l3wrap"><div class="lab">布局（三级联动 · 各自独立保存）</div>' +
-    '<div class="sub">选屏幕方向 → 手型 → 具体场景；同一场景不同方向/手型互不影响。下方预览框里点单词或选项可单独微调。</div>' +
+  html += '<div class="l3wrap"><div class="lab">横屏布局（6 个场景各自独立保存）</div>' +
+    '<div class="sub">选好每个场景的按钮位置：左手靠左、右手靠右、双手全宽。竖屏一律上中下，这里只影响横屏。</div>' +
     '<div id="lay3"></div></div>';
 
   html += '<div class="field"><div><div class="lab">屏幕方向</div><div class="sub">强制横屏可避免竖屏按钮拥挤</div></div>' +
@@ -5669,6 +5884,7 @@ function rogueRender() {
       }).join("");
     } else { optsEl.style.display = "none"; optsEl.innerHTML = ""; optsEl.classList.remove("show"); }
   }
+  try { rogueCheckHide(); } catch (e) {}
   var rb = $("#scr-rogue .rbtns");
   if (rb) rb.style.display = isPick ? "none" : "";
   if (rb) { var sp=$("#btn-rogue-skip"); if(sp) sp.style.display = isPick?"none":""; var ud=$("#btn-rogue-undo"); if(ud) ud.style.display = isPick?"none":""; }
@@ -5781,18 +5997,10 @@ function rogueEnsureType(run, it) {
 }
 function rogueBuildOpts(it, qt) {
   var pool = roguePool();
-  var same = pool.filter(function (x) { return x.pos === it.pos && x.w !== it.w; });
-  var others = same.length >= 3 ? same : pool.filter(function (x) { return x.w !== it.w; });
-  var picks = [], used = {};
-  while (picks.length < 3 && others.length) {
-    var k = Math.floor(Math.random() * others.length);
-    var cand = others.splice(k, 1)[0];
-    if (!cand || used[cand.w]) continue;
-    used[cand.w] = 1;
-    picks.push(qt === "mean" ? cand.m : cand.w);
-  }
-  var right = qt === "mean" ? it.m : it.w;
-  var arr = picks.concat([right]);
+  var qt2 = (qt === "mean") ? "meaning" : "word";
+  var dis = pickDistractors({ w: it.w, m: it.m, g: it.g }, qt2, pool, 3);
+  var right = qt2 === "meaning" ? it.m : it.w;
+  var arr = dis.map(function (d) { return d.t; }).concat([right]);
   for (var i = arr.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = arr[i]; arr[i] = arr[j]; arr[j] = t; }
   return arr.map(function (txt, idx) { return { k: idx, t: txt, ok: txt === right }; });
 }
@@ -5802,7 +6010,7 @@ function roguePick(it, idx) {
   var o = (it.opts || []).filter(function (x) { return x.k === idx; })[0];
   if (!o) return;
   run.confirmPass = true;
-  if (o.ok) { sfx("ok", run.combo + 1); rogueAnswer("know"); }
+  if (o.ok) { run.pickDelay = true; sfx("ok", run.combo + 1); rogueAnswer("know"); }
   else {
     run.lastPick = o.t;
     sfx("no"); vib("no");
@@ -6384,6 +6592,12 @@ function rogueReviewDone(dead) {
 function rogueAdvance() {
   var r = rogueS(), run = r.run;
   if (!run || run.status !== "playing") return;
+  if (run.pickDelay) {
+    run.pickDelay = false;
+    try { rogueStopTimer(); } catch (e) {}
+    setTimeout(function () { try { rogueAdvance(); } catch (e) {} }, 700);
+    return;
+  }
   if (run.mode === "tower") { rogueTowerAdvance(); return; }
   run.undo = null;
   run.idx++;
@@ -6632,12 +6846,75 @@ function rogueSettingsHtml() {
     '<button class="btn ghost small" id="btn-rogue-clean" style="margin-top:10px">纯净模式（全部关闭）</button>' +
     '</div>';
 }
+function immScreenOk() {
+  var s = document.querySelector(".screen.on");
+  return !!s && (s.id === "scr-game" || s.id === "scr-rogue");
+}
 function applyImmersive() {
-  var on = !!(S.settings && S.settings.immersive);
-  document.body.classList.toggle("immersive", on);
+  var want = !!(S.settings && S.settings.immersive);
+  if (want && !immScreenOk()) { S.settings.immersive = false; want = false; try { saveNow(); } catch (e) {} }
+  document.body.classList.toggle("immersive", want);
+  try { var e2 = $("#imm-exit"); if (e2) e2.style.display = want ? "block" : "none"; } catch (e) {}
 }
 function rogueBind() {
   if (rogueBound) return; rogueBound = true;
+
+  // 事件委托：即使按钮被重渲染/被遮挡，点击与长按也一定生效
+  if (!window.__examDeleg) {
+    window.__examDeleg = true;
+    document.addEventListener("click", function (ev) {
+      var t = ev.target;
+      if (!t || !t.closest) return;
+      if (t.closest("#btn-exam")) { ev.preventDefault(); try { examSheetOpen(); } catch (e) {} return; }
+      if (t.closest("#btn-exam-ok")) { ev.preventDefault(); try { examSheetOk(); } catch (e) {} return; }
+      if (t.closest("#btn-exam-cancel")) { ev.preventDefault(); try { examSheetClose(); } catch (e) {} }
+    }, true);
+  }
+  if (!window.__rogueNoDelegate) {
+    window.__rogueNoDelegate = true;
+    var noHold = 0, noTimer = 0, noEl = null;
+    function noCancel() {
+      if (noTimer) { clearTimeout(noTimer); noTimer = 0; }
+      if (noEl) noEl.classList.remove("holding");
+      try { if (holdingRogueNo) rogueArmTimer(); } catch (e) {}
+      holdingRogueNo = false;
+    }
+    var holdingRogueNo = false;
+    document.addEventListener("pointerdown", function (ev) {
+      var t = ev.target && ev.target.closest ? ev.target.closest("#btn-rogue-no") : null;
+      if (!t) return;
+      var st = (S.rogue && S.rogue.settings) || {};
+      if (!st.noMistap) return;
+      ev.preventDefault();
+      noEl = t; noEl.classList.add("holding"); holdingRogueNo = true;
+      try { rogueStopTimer(); } catch (e) {}
+      noTimer = setTimeout(function () {
+        noTimer = 0; holdingRogueNo = false;
+        if (noEl) noEl.classList.remove("holding");
+        try { rogueAnswer("no"); } catch (e) {}
+      }, 300);
+    }, true);
+    ["pointerup", "pointercancel", "pointerleave"].forEach(function (t) {
+      document.addEventListener(t, function (ev) {
+        if (!holdingRogueNo) return;
+        var hit = ev.target && ev.target.closest ? ev.target.closest("#btn-rogue-no") : null;
+        noCancel();
+        if (t !== "pointerleave" && hit) { try { toast("防手滑：长按 300ms 才生效"); } catch (e) {} }
+      }, true);
+    });
+    document.addEventListener("click", function (ev) {
+      var no = ev.target && ev.target.closest ? ev.target.closest("#btn-rogue-no") : null;
+      if (no) {
+        var st = (S.rogue && S.rogue.settings) || {};
+        if (st.noMistap) return; // 长按模式交给上面的逻辑
+        ev.preventDefault();
+        try { rogueAnswer("no"); } catch (e) {}
+        return;
+      }
+      var yes = ev.target && ev.target.closest ? ev.target.closest("#btn-rogue-know") : null;
+      if (yes) { ev.preventDefault(); try { rogueAnswer("know"); } catch (e) {} }
+    }, true);
+  }
   ["#rogue-cfg", "#rogue-loot"].forEach(function (id) {
     var el = $(id);
     if (el && el.parentNode !== document.body) document.body.appendChild(el);
@@ -6701,9 +6978,14 @@ function rogueBind() {
     if (ev.target === shopM) shopM.classList.remove("on");
   });
   click("#btn-immersive", function () {
+    if (!S.settings.immersive && !immScreenOk()) { toast("先进入答题界面再开沉浸模式"); return; }
     S.settings.immersive = !S.settings.immersive;
     applyImmersive(); saveNow(); sfx("coin");
-    toast(S.settings.immersive ? "沉浸模式：双击顶部中央退出" : "已退出沉浸模式");
+    toast(S.settings.immersive ? "沉浸模式：右上角 ✕ / Esc 退出" : "已退出沉浸模式");
+  });
+  var ix = $("#imm-exit");
+  if (ix) ix.addEventListener("click", function () {
+    S.settings.immersive = false; applyImmersive(); saveNow(); toast("已退出沉浸模式");
   });
   var iz = $("#imm-zone");
   if (iz) iz.addEventListener("dblclick", function () {
@@ -6734,6 +7016,7 @@ function rogueBind() {
         if (!holding) return;
         clearHold();
         try { rogueArmTimer(); } catch (e) {}
+        if (t !== "pointerleave") { try { toast("防手滑：长按 300ms 才生效"); } catch (e) {} }
       });
     });
   })();
@@ -6775,8 +7058,14 @@ function rogueBind() {
   });
   rogueBindSetup();
   (function () {
-    var ex = $("#set-exam");
-    if (ex) ex.addEventListener("change", function () { S.settings.examDate = ex.value || ""; saveNow(); renderHome(); });
+    document.addEventListener("change", function (ev) {
+      var t = ev.target;
+      if (!t || t.id !== "set-exam") return;
+      S.settings.examDate = t.value || "";
+      saveNow();
+      try { renderHome(); } catch (e) {}
+      try { toast("考研日期已更新"); } catch (e) {}
+    });
     var vbs = document.querySelectorAll("[data-vib]");
     for (var vi = 0; vi < vbs.length; vi++) {
       vbs[vi].addEventListener("click", function () {
@@ -6804,6 +7093,10 @@ function rogueBind() {
       saveNow(); renderSetup(); toast(S.settings.soundOn ? "音效已开启" : "音效已关闭");
     });
     var sp = $("#btn-shop4"); if (sp) sp.addEventListener("click", shopOpen);
+    var bx = $("#btn-exam"); if (bx) bx.addEventListener("click", examSheetOpen);
+    var bo = $("#btn-exam-ok"); if (bo) bo.addEventListener("click", examSheetOk);
+    var bc = $("#btn-exam-cancel"); if (bc) bc.addEventListener("click", examSheetClose);
+    var bm = $("#exam-mask"); if (bm) bm.addEventListener("click", function (ev) { if (ev.target && ev.target.id === "exam-mask") examSheetClose(); });
   var sd = $("#btn-sfx-demo");
   if (sd) sd.addEventListener("click", function () {
     var old = S.settings.soundOn;
@@ -8117,41 +8410,153 @@ function renderTestSheet() {
 }
 
 
-/* 词性 / 选干扰项：同词性 → 长度接近 → 逐级放宽 */
+/* 干扰项生成 v2：T0 同词根 → T1 同 Unit 同词性 → T2 形近/字数近 → T3 同词性 → T4 减选项（绝不跨词性） */
 function posOfWord(m) {
   var t = String(m || "").trim();
   var mm = t.match(/^((?:n|v|vt|vi|adj|adv|prep|conj|pron|num|art|aux|int|abbr|phr)\.)/i);
   return mm ? mm[1].toLowerCase() : "";
 }
+function cnCoreLen(m) {
+  var t = String(m || "").replace(/^((?:n|v|vt|vi|adj|adv|prep|conj|pron|num|art|aux|int|abbr|phr)\.)/i, "");
+  t = t.replace(/[，。；、,.;:：\s]/g, "");
+  return t.length;
+}
+function buildLexIndex(universe) {
+  if (universe && universe.__lex) return universe.__lex;
+  var byPos = {}, byUnit = {}, rootOf = {}, fam = (typeof ROGUE_FAM !== "undefined" && ROGUE_FAM) ? ROGUE_FAM : {};
+  ["high", "medium"].forEach(function (tier) {
+    var g = fam[tier] || {};
+    Object.keys(g).forEach(function (root) {
+      (g[root] || []).forEach(function (w) { rootOf[w] = root; });
+    });
+  });
+  for (var i = 0; i < universe.length; i++) {
+    var it = universe[i];
+    if (!it || !it.w) continue;
+    var p = posOfWord(it.m) || "?";
+    (byPos[p] = byPos[p] || []).push(it);
+    var u = it.g || "";
+    if (u) (byUnit[u] = byUnit[u] || []).push(it);
+    if (!it.w && it.word) it.w = it.word;
+  }
+  var lex = { byPos: byPos, byUnit: byUnit, rootOf: rootOf, all: universe };
+  try { Object.defineProperty(universe, "__lex", { value: lex, configurable: true, enumerable: false }); } catch (e) {}
+  return lex;
+}
 function pickDistractors(word, qt, universe, need) {
-  var pos = posOfWord(word.m) || "", len = String(word.w).length;
-  var tiers = [
-    function (c) { return posOfWord(c.m) === pos && Math.abs(String(c.w).length - len) <= 3; },
-    function (c) { return posOfWord(c.m) === pos; },
-    function (c) { return true; }
-  ];
-  var out = [], used = {};
-  used[(qt === "meaning") ? word.m : word.w] = 1;
-  for (var ti = 0; ti < tiers.length && out.length < need; ti++) {
-    var pool = [];
+  var lex = buildLexIndex(universe);
+  var pos = posOfWord(word.m);
+  var isMean = (qt === "meaning");
+  var correct = isMean ? word.m : word.w;
+  var len = String(word.w || "").length, cCore = cnCoreLen(word.m);
+  var first = String(word.w || "").charAt(0).toLowerCase();
+  var myRoot = lex.rootOf[word.w] || "";
+  var myUnit = word.g || "";
+  var out = [], used = {}, usedWord = {};
+  used[correct] = 1; usedWord[word.w] = 1;
+
+  function candidates() {
+    var res = [];
     for (var i = 0; i < universe.length; i++) {
       var c = universe[i];
-      if (!c || c === word) continue;
-      var text = (qt === "meaning") ? c.m : c.w;
-      if (!text || used[text]) continue;
-      if (!tiers[ti](c)) continue;
-      pool.push(text);
+      if (!c || !c.w || c.w === word.w) continue;
+      if (posOfWord(c.m) !== pos) continue;      // 死底线：词性必须一致
+      var text = isMean ? c.m : c.w;
+      if (!text || used[text] || usedWord[c.w]) continue;
+      res.push({ c: c, text: text });
     }
-    pool = shuffle(pool);
-    for (var j = 0; j < pool.length && out.length < need; j++) {
-      if (used[pool[j]]) continue;
-      used[pool[j]] = 1;
-      out.push({ t: pool[j], ok: false });
+    return res;
+  }
+  var pool = candidates();
+  pool = shuffle(pool);
+
+  function hit(pred) {
+    for (var i = 0; i < pool.length && out.length < need; i++) {
+      var x = pool[i];
+      if (used[x.text] || usedWord[x.c.w]) continue;
+      if (!pred(x.c)) continue;
+      used[x.text] = 1; usedWord[x.c.w] = 1;
+      out.push({ t: x.text, ok: false });
     }
   }
+  // T0 同词根
+  if (myRoot) hit(function (c) { return lex.rootOf[c.w] === myRoot; });
+  // T1 同 Unit（同词性已在 candidates 里保证）
+  if (myUnit) hit(function (c) { return c.g === myUnit; });
+  // T1.5 同前缀（形近强化：confer/confirm）
+  hit(function (c) {
+    var A = String(word.w).toLowerCase(), B = String(c.w).toLowerCase(), n = 0;
+    while (n < A.length && n < B.length && A.charAt(n) === B.charAt(n)) n++;
+    return n >= 4 && Math.abs(A.length - B.length) <= 3;
+  });
+  // T2 形近 / 中文字数相近
+  hit(function (c) {
+    var l = String(c.w).length;
+    var form = (String(c.w).charAt(0).toLowerCase() === first) || (Math.abs(l - len) <= 3);
+    if (!form) return false;
+    return isMean ? (Math.abs(cnCoreLen(c.m) - cCore) <= 4) : true;
+  });
+  // T3 同词性兜底
+  hit(function () { return true; });
+  // T4 不足就少给选项，绝不跨词性
   return out;
 }
-
+window.__dist = {
+  gen: function (w, qt) {
+    var deck = S.decks[0]; if (!deck) return "no deck";
+    var uni = allTestableWords(deck.id);
+    var it = null;
+    for (var i = 0; i < uni.length; i++) { if (uni[i].w === w) { it = uni[i]; break; } }
+    if (!it) return "not found";
+    var d = pickDistractors(it, qt || "meaning", uni, 3);
+    return JSON.stringify({ w: it.w, pos: posOfWord(it.m), m: it.m, opts: d.map(function (x) { return x.t; }) });
+  },
+  fam: function () {
+    var deck = S.decks[0]; if (!deck) return "no deck";
+    var uni = allTestableWords(deck.id); var lex = buildLexIndex(uni);
+    var out = {};
+    ["confer", "confirm", "prefer", "refer", "transfer", "infer"].forEach(function (w) {
+      var it = null; for (var i = 0; i < uni.length; i++) if (uni[i].w === w) { it = uni[i]; break; }
+      out[w] = it ? (lex.rootOf[w] || "") : "absent";
+    });
+    return JSON.stringify(out);
+  },
+  stats: function (n) {
+    var deck = S.decks[0]; if (!deck) return "no deck";
+    var uni = allTestableWords(deck.id);
+    var lex = buildLexIndex(uni);
+    var map = {}; uni.forEach(function (x) { map[x.w] = x; });
+    n = n || 500;
+    var idxs = [];
+    for (var i = 0; i < uni.length; i++) idxs.push(i);
+    idxs = shuffle(idxs).slice(0, n);
+    var posOK = 0, famHit = 0, unitHit = 0, lenSum = 0, cnt = 0, short = 0;
+    idxs.forEach(function (ii) {
+      var it = uni[ii];
+      var pos = posOfWord(it.m), root = lex.rootOf[it.w] || "", unit = it.g || "";
+      var ds = pickDistractors(it, "meaning", uni, 3);
+      if (ds.length < 3) short++;
+      ds.forEach(function (d) {
+        var c = map[d.t.split("\n")[0]]; // 文本→词（释义唯一）
+        var cw = null;
+        for (var k in map) { if (map[k].m === d.t) { cw = map[k]; break; } }
+        if (!cw) return;
+        cnt++;
+        if (posOfWord(cw.m) === pos) posOK++;
+        if (root && lex.rootOf[cw.w] === root) famHit++;
+        if (unit && cw.g === unit) unitHit++;
+        lenSum += Math.abs(String(cw.w).length - String(it.w).length);
+      });
+    });
+    return JSON.stringify({
+      n: idxs.length, opts: cnt, shortOpts: short,
+      posOKRate: Math.round(posOK / Math.max(1, cnt) * 1000) / 10,
+      famRate: Math.round(famHit / Math.max(1, cnt) * 1000) / 10,
+      unitRate: Math.round(unitHit / Math.max(1, cnt) * 1000) / 10,
+      avgLenDiff: Math.round(lenSum / Math.max(1, cnt) * 100) / 100
+    });
+  }
+};
 function startTest() {
   var deck = S.decks[0];
   if (!deck) return;
@@ -8163,6 +8568,12 @@ function startTest() {
   var want = (testCfg.count === "all") ? TEST_MAX : num(testCfg.count, 20);
   var cnt = Math.min(want, TEST_MAX, pool.length);
   pool = shuffle(pool.slice());
+  if (window.__testSeed && window.__testSeed.length) {
+    var seedW = window.__testSeed.slice();
+    pool = pool.filter(function (x) { return seedW.indexOf(x.w.w) >= 0; });
+    if (!pool.length) { pool = []; seedW.forEach(function (ww) { var f = allTestableWords(deck.id).filter(function (q) { return q.w === ww; })[0]; if (f) pool.push({ k: normKey(f.w), w: f }); }); }
+    cnt = Math.min(seedW.length, TEST_MAX);
+  }
   var universe = allTestableWords(deck.id);
   var items = [];
   for (var i = 0; i < cnt; i++) {
