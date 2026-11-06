@@ -1216,6 +1216,418 @@ body.landscape-test #scr-test .tocol{gap:14px !important}
 body.landscape-test #scr-test .tocol{overflow:hidden !important}
 body.landscape-test #scr-test .topt{overflow:hidden !important;min-height:0 !important}
 body.landscape-test #scr-test .opt{flex:1 1 0 !important;min-height:0 !important;font-size:13px !important;padding:8px 12px !important;line-height:1.35 !important;overflow:auto !important}
+/* ================= 肉鸽挑战 ================= */
+.rbar{padding:12px 14px}
+.rrow{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#6b7280}
+.rhp{display:flex;align-items:center;gap:6px}
+.rhp b{font-size:20px;color:#e57373;font-variant-numeric:tabular-nums}
+.rmeta{display:flex;gap:12px;font-variant-numeric:tabular-nums}
+.rprog{position:relative;height:10px;background:#eef1f5;border-radius:999px;margin:10px 0 6px;overflow:hidden}
+.rprogfill{height:100%;width:0;background:linear-gradient(90deg,#5aa9ff,#2f7cf6);border-radius:999px;transition:width .18s}
+.rprogtxt{position:absolute;right:8px;top:-3px;font-size:10px;color:#9aa0a8}
+.rtags{display:flex;gap:8px;font-size:12px;color:#8a9099;min-height:16px}
+.rfam{color:#2f7cf6}
+.rcard{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:210px;margin-top:12px}
+.rw{font-size:40px;font-weight:800;letter-spacing:.5px;text-align:center;word-break:break-word;line-height:1.15}
+.rp{color:#8a9099;margin-top:8px;font-size:14px}
+.rtimer{height:8px;background:#eef1f5;border-radius:999px;width:100%;margin-top:20px;overflow:hidden}
+#rogue-tbar{height:100%;width:100%;background:#2f7cf6;border-radius:999px;transition:width .1s linear}
+.rbtns{display:flex;gap:10px;margin-top:14px}
+.rbtns .btn{flex:1;height:54px;font-size:17px}
+.rsub{display:flex;gap:10px;justify-content:center;margin-top:10px}
+.rsw{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #f0f2f5;font-size:14px}
+.rsw:last-of-type{border-bottom:0}
+.rsw input{width:18px;height:18px;accent-color:#2f7cf6}
+@media (prefers-color-scheme: dark){
+  .rprog,.rtimer{background:#262a31}
+  .rrow{color:#9aa0a8}
+  .rsw{border-bottom-color:#242830}
+  #rogue-over .sheet{background:#1a1d22;color:#e6e8ec}
+}
+
+@media (orientation: landscape){
+  #scr-rogue .spread{margin:2px 2px 8px}
+  #scr-rogue .h1{font-size:18px}
+  .rbar{padding:8px 12px}
+  .rhp b{font-size:17px}
+  .rprog{margin:6px 0 4px;height:8px}
+  .rcard{min-height:118px;margin-top:8px;padding:10px}
+  .rw{font-size:30px}
+  .rp{font-size:12px;margin-top:4px}
+  .rtimer{margin-top:10px;height:6px}
+  .rbtns{margin-top:8px}
+  .rbtns .btn{height:46px;font-size:15px}
+  .rsub{margin-top:6px}
+  #rogue-hint{display:none}
+  .rtags{font-size:11px}
+}
+
+/* 肉鸽：结算遮罩默认隐藏（.mask 本身是 display:flex，必须单独控） */
+#rogue-over{display:none}
+#rogue-over.on{display:flex}
+#rogue-over .sheet{width:min(520px,calc(100vw - 32px))}
+/* 肉鸽：次要按钮补边框，避免像纯文字 */
+#scr-rogue .btn.ghost{border:1px solid #dfe3e8;background:#fff}
+@media (prefers-color-scheme: dark){
+  #scr-rogue .btn.ghost{border-color:#2c313a;background:#1a1d22}
+}
+@media (orientation: landscape){
+  #scr-rogue{padding:2px 12px 6px}
+  #scr-rogue .spread{margin:0 0 6px}
+  #scr-rogue .h1{font-size:17px}
+  #scr-rogue .rbar{padding:6px 10px}
+  #scr-rogue .rcard{min-height:96px;margin-top:6px;padding:8px 10px}
+  #scr-rogue .rw{font-size:26px}
+  #scr-rogue .rp{font-size:11px;margin-top:2px}
+  #scr-rogue .rtimer{margin-top:8px;height:5px}
+  #scr-rogue .rbtns{margin-top:6px;gap:10px}
+  #scr-rogue .rbtns .btn{height:42px;font-size:14px}
+  #scr-rogue .rsub{margin-top:4px;font-size:10.5px}
+}
+
+/* P2：进度条平滑增长 */
+.rprogfill{transition:width .45s cubic-bezier(.22,.61,.36,1)}
+/* P2：词根共鸣居中大提示 */
+.rflash{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%) scale(.9);z-index:70;
+  padding:14px 22px;border-radius:16px;background:rgba(24,26,32,.92);color:#fff;font-weight:700;
+  font-size:17px;letter-spacing:.5px;box-shadow:0 8px 30px rgba(0,0,0,.35);opacity:0;pointer-events:none;
+  transition:opacity .18s ease,transform .18s ease;text-align:center;line-height:1.5}
+.rflash.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.rflash{width:max-content;max-width:92vw;white-space:nowrap;font-size:16px}
+@media (max-width:400px){.rflash{font-size:14.5px;padding:12px 16px}}
+.rflash em{display:block;font-style:normal;font-weight:500;font-size:12.5px;opacity:.78;margin-top:4px}
+/* 次要操作：纯文字按钮，避免抢戏 */
+#btn-rogue-skip,#btn-rogue-undo{border:0 !important;background:transparent !important;color:#9aa0a8 !important;
+  font-size:12.5px !important;min-height:0 !important;height:auto !important;padding:8px 10px !important;
+  box-shadow:none !important;text-decoration:underline;text-underline-offset:3px}
+#btn-rogue-skip:active,#btn-rogue-undo:active{color:#6b7280 !important}
+/* 规则提示文字加深，暗光可读 */
+#rogue-hint{color:#666 !important;font-size:11.5px !important}
+@media (prefers-color-scheme: dark){
+  #rogue-hint{color:#b6bcc6 !important}
+  #btn-rogue-skip,#btn-rogue-undo{color:#8f959e !important}
+  .rflash{background:rgba(240,242,246,.95);color:#14161a}
+}
+
+/* 0.8s 真伪校验层 */
+.rcheck{display:none;margin:10px 2px 0;padding:12px 14px;border:1px solid #f0c9c9;background:#fff6f6;border-radius:14px}
+.rcheck.on{display:block}
+.rck-h{font-size:11.5px;color:#c0392b;margin-bottom:6px;letter-spacing:.3px}
+.rck-m{font-size:15px;font-weight:600;color:#23262b;line-height:1.5}
+.rck-e{font-size:12.5px;color:#9aa0a8;margin-top:5px}
+#btn-rogue-flip{margin-top:10px;width:100%;height:44px;border-radius:12px;border:1px solid #f2b3b3;
+  background:#ffecec;color:#d0342c;font-weight:700;font-size:14px;transition:opacity .15s}
+#btn-rogue-flip.off{opacity:.42;filter:grayscale(.6)}
+@media (prefers-color-scheme: dark){
+  .rcheck{background:#241a1a;border-color:#4a2b2b}
+  .rck-m{color:#f0f2f6}
+  .rck-h{color:#f0a6a0}
+  #btn-rogue-flip{background:#3a2020;border-color:#5a2f2f;color:#ff9b93}
+}
+/* 假认识红色居中提示 */
+.rflash.bad{background:rgba(208,52,44,.95);color:#fff}
+@media (prefers-color-scheme: dark){.rflash.bad{background:rgba(208,52,44,.95);color:#fff}}
+/* ===== 肉鸽结算战报 ===== */
+#rogue-over .sheet{max-height:88vh;display:flex;flex-direction:column}
+.rrep{width:100%}
+.rrepsec{margin-bottom:10px}
+.rreph{font-size:11.5px;color:#8f959e;letter-spacing:.4px;margin-bottom:6px}
+.rgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.rgrid>div{background:#f6f7f9;border-radius:12px;padding:8px 10px}
+.rgrid span{display:block;font-size:11px;color:#8f959e}
+.rgrid b{font-size:17px;font-weight:700;color:#23262b}
+.rbon{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:6px 2px;border-bottom:1px dashed #eceef2}
+.rbon:last-child{border-bottom:0}
+.rbon span{color:#5d6470}
+.rbon b{font-weight:700;color:#23262b}
+.rover-list{width:100%;flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;margin:8px 0 12px;border:1px solid #eef0f3;border-radius:14px}
+.rlist{display:block}
+.rrow{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;
+  padding:10px 12px;background:transparent;border:0;border-bottom:1px solid #f2f4f7;cursor:pointer}
+.rrow:last-child{border-bottom:0}
+.rrow:active{background:#f7f8fa}
+.rwk{min-width:0;display:flex;flex-direction:column}
+.rwk b{font-size:15px;font-weight:700;color:#23262b}
+.rwk em{font-style:normal;font-size:11.5px;color:#9aa0a8;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rtag{flex:0 0 auto;font-size:11.5px;font-weight:600;padding:4px 9px;border-radius:999px;white-space:nowrap}
+.rtag.ok{background:#e8f6ec;color:#2f9e5b}
+.rtag.no{background:#fdeaea;color:#d0342c}
+.rtag.to{background:#fff3e2;color:#c47f22}
+.rtag.fake{background:#fdeeee;color:#c0392b}
+.rtag.skip{background:#eef0f3;color:#7b828c}
+.rlistemp{padding:16px;text-align:center;font-size:12.5px;color:#9aa0a8}
+.btn.purple{background:#7c5cff;color:#fff;border-color:#7c5cff}
+#btn-rogue-retry{margin-bottom:8px}
+@media (prefers-color-scheme: dark){
+  .rgrid>div{background:#1f242b}
+  .rgrid b,.rbon b,.rwk b{color:#e6e8ec}
+  .rbon{border-bottom-color:#262b33}
+  .rover-list{border-color:#262b33}
+  .rrow{border-bottom-color:#22262d}
+  .rrow:active{background:#1c2027}
+  .rtag.ok{background:#16301f;color:#6fd39a}
+  .rtag.no,.rtag.fake{background:#33191a;color:#ff8f88}
+  .rtag.to{background:#332612;color:#f0b458}
+  .rtag.skip{background:#22262d;color:#98a0aa}
+}
+
+.rover-list{max-height:36vh}
+.rrepsec:first-child .rreph{margin-top:2px}
+#rogue-over-sub{margin-bottom:10px}
+.rtag .rn{font-style:normal;opacity:.7;font-weight:600;margin-left:2px}
+@media (min-height:760px){.rover-list{max-height:42vh}}
+
+/* ===== 答错/超时真相复盘卡 ===== */
+.rvwrap{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;
+  background:rgba(16,18,22,.42);padding:20px}
+.rvwrap.on{display:flex}
+.rvcard{width:min(460px,100%);background:#fff;border:1px solid #f3c4c4;border-radius:20px;
+  padding:18px 18px 16px;box-shadow:0 18px 50px rgba(0,0,0,.18);animation:rvIn .18s ease-out}
+@keyframes rvIn{from{transform:scale(.96);opacity:.6}to{transform:scale(1);opacity:1}}
+.rvh{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+#rogue-rv-pen{background:#fde8e8;color:#d0342c;font-weight:700;font-size:13px;
+  padding:5px 12px;border-radius:999px}
+.rvx{border:0;background:#f2f4f7;color:#8f959e;width:28px;height:28px;border-radius:50%;
+  font-size:14px;line-height:1;cursor:pointer}
+.rvw{font-size:26px;font-weight:800;color:#1c1f24;letter-spacing:.2px}
+.rvp{font-size:12.5px;color:#9aa0a8;margin-top:2px}
+.rvm{font-size:16px;font-weight:600;color:#23262b;margin-top:12px;line-height:1.55}
+.rve{font-size:13px;color:#7d848e;margin-top:8px;line-height:1.55}
+@media (prefers-color-scheme: dark){
+  .rvcard{background:#1a1d22;border-color:#4a2b2b}
+  .rvw{color:#f0f2f6}
+  .rvm{color:#e6e8ec}
+  .rve{color:#9aa0a8}
+  .rvx{background:#262a31;color:#98a0aa}
+}
+
+/* ===== 肉鸽爬塔 ===== */
+#rogue-cfg,#rogue-loot{display:none}
+#rogue-cfg.on,#rogue-loot.on{display:flex}
+.rcfgsheet{max-height:90vh;overflow-y:auto}
+.rchips{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 12px}
+.rchips .chip{font-size:12.5px;padding:8px 12px}
+.rchips .chip.on{background:#2f7cf6;color:#fff;border-color:#2f7cf6}
+.rfloor{background:#eef3ff;color:#2f7cf6;font-weight:700;font-size:11.5px;
+  padding:4px 9px;border-radius:999px;margin-right:8px;white-space:nowrap}
+.rloot{font-size:13.5px}
+.rfloorh{font-size:11.5px;color:#8f959e;background:#f6f7f9;padding:6px 12px;
+  border-bottom:1px solid #eef0f3;letter-spacing:.3px}
+@media (prefers-color-scheme: dark){
+  .rfloor{background:#1d2a44;color:#8fb4ff}
+  .rfloorh{background:#1f242b;color:#98a0aa;border-bottom-color:#262b33}
+  .rchips .chip.on{background:#2f7cf6;color:#fff;border-color:#2f7cf6}
+}
+
+/* ===== 肉鸽：血量裂纹压迫感（纯 CSS，pointer-events:none，中心留空不挡字） ===== */
+.rhurt{position:fixed;inset:0;z-index:2;pointer-events:none;overflow:hidden}
+.rhurt .hv{position:absolute;inset:0;opacity:0;transition:opacity .35s ease;
+  background:radial-gradient(ellipse 74% 58% at 50% 46%, rgba(0,0,0,0) 58%, rgba(150,14,14,.46) 92%, rgba(90,0,0,.62) 100%)}
+.rhurt .hc{position:absolute;inset:0;opacity:0;transition:opacity .35s ease;transform:scale(.72);
+  background:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0MDAgODAwIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIj48ZyBmaWxsPSJub25lIiBzdHJva2U9InJnYmEoMjU1LDI1NSwyNTUsLjUpIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIj48cGF0aCBkPSJNMjAwIDM2OEwzNzYgMzk1TTM3NiAzOTVMNDUyIDQ0OU00NTIgNDQ5TDQ5MSA0NzdNNDUyIDQ0OUw0ODIgNDc5TTM3NiAzOTVMNDU3IDQxMk00NTcgNDEyTDQ5MiA0MzZNNDU3IDQxMkw0OTMgNDI0TTIwMCAzNjhMMzEyIDQ2N00zMTIgNDY3TDM0NyA1MzZNMzQ3IDUzNkwzNjQgNTczTTM0NyA1MzZMMzcwIDU2NE0zMTIgNDY3TDM3OCA0ODdNMzc4IDQ4N0w0MDMgNTEzTTM3OCA0ODdMNDA5IDQ5MU0yMDAgMzY4TDI0MCA1MDlNMjQwIDUwOUwyNTMgNTg0TTI1MyA1ODRMMjU1IDYyNE0yNTMgNTg0TDI2NiA2MTdNMjQwIDUwOUwyNTYgNTc1TTI1NiA1NzVMMjUwIDYwOU0yNTYgNTc1TDI1OCA2MDZNMjAwIDM2OEwxNDUgNTUwTTE0NSA1NTBMMTM4IDY0OU0xMzggNjQ5TDEzNCA3MDBNMTM4IDY0OUwxMzkgNjk0TTE0NSA1NTBMMTM1IDYzN00xMzUgNjM3TDEyMCA2ODBNMTM1IDYzN0wxNDIgNjc3TTIwMCAzNjhMNTggNDg5TTU4IDQ4OUwtMTggNTQ4TS0xOCA1NDhMLTY3IDU2ME0tMTggNTQ4TC01OCA1NjdNNTggNDg5TC0xNiA1MzBNLTE2IDUzMEwtNTcgNTQ5TS0xNiA1MzBMLTM5IDU2Mk0yMDAgMzY4TDc0IDM4NU03NCAzODVMOSAzNzBNOSAzNzBMLTIxIDM1M005IDM3MEwtMjEgMzc1TTc0IDM4NUwxNiAzOTZNMTYgMzk2TC0xNCAzOTFNMTYgMzk2TC03IDQxME0yMDAgMzY4TDQyIDI5NE00MiAyOTRMLTI2IDIzNU0tMjYgMjM1TC02MiAyMDRNLTI2IDIzNUwtNjYgMjI0TTQyIDI5NEwtMzggMjg5TS0zOCAyODlMLTc1IDI3ME0tMzggMjg5TC03NCAyOTZNMjAwIDM2OEwxMTMgMjMxTTExMyAyMzFMOTUgMTQ4TTk1IDE0OEw4NCAxMDVNOTUgMTQ4TDkwIDEwOU0xMTMgMjMxTDY0IDE3NE02NCAxNzRMMzYgMTQ3TTY0IDE3NEw0MCAxNDlNMjAwIDM2OEwyMDEgMjAyTTIwMSAyMDJMMjQwIDEyNU0yNDAgMTI1TDI2MyA4N00yNDAgMTI1TDI2MSA5Mk0yMDEgMjAyTDE3OSAxMjlNMTc5IDEyOUwxODEgOTBNMTc5IDEyOUwxNTUgMTA0TTIwMCAzNjhMMjY3IDI2NU0yNjcgMjY1TDMxOCAyMjVNMzE4IDIyNUwzNDEgMjAyTTMxOCAyMjVMMzQwIDIwNk0yNjcgMjY1TDI3NyAyMDlNMjc3IDIwOUwyODIgMTgwTTI3NyAyMDlMMjg2IDE4NU0yMDAgMzY4TDM0NyAzMDJNMzQ3IDMwMkw0MzEgMzAyTTQzMSAzMDJMNDc0IDMxMU00MzEgMzAyTDQ2OSAzMTBNMzQ3IDMwMkw0MjAgMjg1TTQyMCAyODVMNDU3IDI3Nk00MjAgMjg1TDQ0NCAyNjFNMTk0IDU0M0wxNzEgNDkzTTE3MSA0OTNMMTU1IDQ2OU0xNzEgNDkzTDE1NSA0NzNNMTk0IDU0M0wxMjEgNTYzTTEyMSA1NjNMODUgNTgwTTEyMSA1NjNMOTQgNTg2TTE5NCA1NDNMMjAxIDQ4Mk0yMDEgNDgyTDIwMCA0NTBNMjAxIDQ4MkwxOTMgNDU1TTI0NCA0NTFMMjEzIDQwN00yMTMgNDA3TDIwNSAzODBNMjEzIDQwN0wxOTUgMzkwTTI0NCA0NTFMMTc3IDQyNE0xNzcgNDI0TDEzOSA0MTZNMTc3IDQyNEwxNDUgNDEyTTI0NCA0NTFMMjExIDQwNE0yMTEgNDA0TDE5MyAzODBNMjExIDQwNEwxOTYgMzgyTTE1NiA1NzZMMTU2IDYxNE0xNTYgNjE0TDE1OSA2MzNNMTU2IDYxNEwxNjQgNjI5TTE1NiA1NzZMMjE2IDU0ME0yMTYgNTQwTDI1MiA1MzZNMjE2IDU0MEwyNDIgNTIxTTE1NiA1NzZMMTI2IDYxNE0xMjYgNjE0TDEwMyA2MjNNMTI2IDYxNEwxMDkgNjI4TTMwNSA5TDI2MCA1ME0yNjAgNTBMMjI5IDU4TTI2MCA1MEwyNDYgNzVNMzA1IDlMMjgzIDQ1TTI4MyA0NUwyNjkgNjJNMjgzIDQ1TDI3MyA2MU0zMDUgOUwzNDEgMzJNMzQxIDMyTDM1MiA1ME0zNDEgMzJMMzU2IDQ0TTI5IDQ3OEw0NyA0MThNNDcgNDE4TDY3IDM5Mk00NyA0MThMNTMgMzg5TTI5IDQ3OEwtMzAgNTIwTS0zMCA1MjBMLTYyIDUzOU0tMzAgNTIwTC01MSA1NDVNMjkgNDc4TDYgNTE1TTYgNTE1TC0xMiA1MjdNNiA1MTVMLTEgNTMzIi8+PC9nPjwvc3ZnPg==") center/cover no-repeat;
+  -webkit-mask-image:radial-gradient(ellipse 52% 40% at 50% 42%, transparent 46%, #000 76%);
+  mask-image:radial-gradient(ellipse 52% 40% at 50% 42%, transparent 46%, #000 76%)}
+.rhurt.lv1 .hv{opacity:.16}
+.rhurt.lv1 .hc{opacity:.2;transform:scale(.76)}
+.rhurt.lv2 .hv{opacity:.3}
+.rhurt.lv2 .hc{opacity:.36;transform:scale(1)}
+.rhurt.lv3 .hv{opacity:.44}
+.rhurt.lv3 .hc{opacity:.52;transform:scale(1.14)}
+.rhurt.hurt .hv{opacity:1}
+.rhurt.hurt .hc{opacity:1}
+.rhurt.lv3.beat .hv{animation:rgbeat 1.15s ease-in-out infinite}
+@keyframes rgbeat{0%,100%{opacity:.26}50%{opacity:.44}}
+@keyframes rgshake{0%{transform:translate(0,0)}20%{transform:translate(-3px,2px)}40%{transform:translate(3px,-2px)}60%{transform:translate(-2px,-1px)}80%{transform:translate(2px,1px)}100%{transform:translate(0,0)}}
+#scr-rogue.shake .rcard,#scr-rogue.shake .rhurt{animation:rgshake .34s ease-in-out}
+#scr-rogue .rbtns,#scr-rogue .rbar{position:relative;z-index:6}
+#scr-rogue .rcard{position:relative;z-index:5}
+@media (prefers-reduced-motion: reduce){
+  .rhurt .hv,.rhurt .hc{transition:none}
+  .rhurt.lv3.beat .hv{animation:none}
+  #scr-rogue.shake .rcard,#scr-rogue.shake .rhurt{animation:none}
+}
+@media (prefers-color-scheme: dark){
+  .rhurt .hv{background:radial-gradient(ellipse 62% 48% at 50% 45%, rgba(90,0,0,0) 42%, rgba(190,20,20,.5) 86%, rgba(150,0,0,.7) 100%)}
+}
+
+.rhurt.hurt .hv{opacity:.55}
+.rhurt.hurt .hc{opacity:.7}
+@media (prefers-color-scheme: dark){
+  .rhurt .hc{filter:brightness(2.6) saturate(.6)}
+}
+
+/* ===== D-Day ===== */
+.dday{margin:2px 0 8px;font-size:15px;font-weight:700;color:#5b6270;letter-spacing:.2px}
+.dday.hot{color:#d0342c}
+/* ===== 毒鸡汤 ===== */
+.rmood{margin:6px 0 10px;font-size:13px;line-height:1.5;color:#8a5a00;background:#fff8e6;border-radius:10px;padding:8px 10px}
+@media (prefers-color-scheme: dark){.rmood{background:#2a2113;color:#e8b968}}
+/* ===== 小卖部 ===== */
+.shopcoin{font-size:14px;margin-bottom:10px}
+.shoprow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid #f0f2f5}
+.shoprow .si{flex:1;min-width:0}
+.shoprow .sn{font-size:14px;font-weight:600}
+.shoprow .owned{font-size:11px;color:#8a9099;font-weight:400}
+.shoprow .sd{font-size:11.5px;color:#8a9099;margin-top:2px;line-height:1.4}
+#shop-mask{display:none}#shop-mask.on{display:flex}
+/* ===== 沉浸模式（OLED 纯黑） ===== */
+body.immersive{background:#000 !important}
+body.immersive #app{background:#000 !important}
+body.immersive #scr-game{background:#000 !important}
+body.immersive .gbar,body.immersive nav.tabs,body.immersive #timerbar,body.immersive #timer2,
+body.immersive .hint,body.immersive #opslot .rsub,body.immersive .wordcard .tag,
+body.immersive #btn-speak,body.immersive #btn-swap,body.immersive #btn-lock{display:none !important}
+body.immersive .word,body.immersive .rw,body.immersive #rogue-word{color:#eef3fa !important}
+body.immersive #scr-home,body.immersive .rbar .rhp,body.immersive .rtags{color:#c9d1dc !important}
+body.immersive #scr-home{display:none !important}
+body.immersive #scr-rogue .rbtns .btn{background:#111419 !important;color:#eef3fa !important;border:1px solid #262b34 !important}
+body.immersive #scr-rogue .rsub,body.immersive #rogue-hint,body.immersive .rck-h{color:#6f7885 !important}
+body.immersive .phonetic{color:#7d848f !important}
+body.immersive .meaning,body.immersive .ex{color:#c8ced8 !important}
+body.immersive .wordcard,body.immersive .card{background:transparent !important;border:0 !important;box-shadow:none !important}
+body.immersive .btns .big{background:#15171c !important;color:#e8ecf2 !important;border:1px solid #262a33 !important}
+body.immersive .progressline,body.immersive .pill{opacity:.25}
+.immzone{display:none;position:fixed;top:0;left:50%;transform:translateX(-50%);width:60vw;height:44px;z-index:70}
+body.immersive .immzone{display:block}
+
+
+/* D-Day 在蓝色 hero 内，需白字 */
+.hero .dday{color:rgba(255,255,255,.92) !important;font-size:13px;font-weight:600;letter-spacing:.2px;margin:2px 0 10px}
+.hero .dday.hot{color:#ffe1a8 !important}
+/* 我的页小卖部入口 */
+#btn-shop3{margin-top:10px}
+
+.rcard{position:relative}
+/* ===== 高压迷雾 SAN ===== */
+.san{position:fixed;inset:0;z-index:3;pointer-events:none;opacity:0;
+  transition:opacity .2s ease-out;
+  background:
+    radial-gradient(ellipse 68% 56% at 50% 46%, rgba(120,0,0,0) 42%, rgba(110,4,4,.55) 74%, rgba(70,0,0,.86) 100%),
+    radial-gradient(ellipse 100% 40% at 50% 0%, rgba(90,0,0,.35), rgba(0,0,0,0) 70%),
+    radial-gradient(ellipse 100% 40% at 50% 100%, rgba(90,0,0,.4), rgba(0,0,0,0) 70%);}
+.san.on{backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+.san.glitch{animation:sanGlitch .22s steps(2,end) 1}
+@keyframes sanGlitch{
+  0%{transform:translate(0,0);background-color:rgba(255,0,0,.06)}
+  25%{transform:translate(-2px,1px);background-color:rgba(0,255,255,.05)}
+  50%{transform:translate(2px,-1px);background-color:rgba(255,0,0,.05)}
+  75%{transform:translate(-1px,0)}
+  100%{transform:translate(0,0)}}
+#scr-rogue.shake{animation:rgshake .2s linear 1}
+/* 驱散瞬间 */
+.disperse{position:fixed;left:50%;top:45%;transform:translate(-50%,-50%) scale(.9);
+  z-index:6;pointer-events:none;opacity:0;
+  font-size:20px;font-weight:800;color:#1fae62;
+  text-shadow:0 0 18px rgba(31,174,98,.55);
+  transition:opacity .25s, transform .25s}
+.disperse.on{opacity:1;transform:translate(-50%,-50%) scale(1.05)}
+/* 伪装者 */
+.rrare{display:none;position:absolute;top:10px;left:50%;transform:translateX(-50%);
+  z-index:5;align-items:center;gap:4px;
+  padding:4px 10px;border-radius:999px;
+  background:#f3e8ff;color:#7c3aed;border:1px solid #d8b4fe;
+  font-size:12px;font-weight:700;letter-spacing:.4px}
+@media (prefers-color-scheme: dark){.rrare{background:#2a1b3d;border-color:#5b3d8a;color:#c4a6ff}}
+.rflash.rare{background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff}
+
+/* ===== 横屏优先：弹层限高滚动 / 答题页卡进 384 / 迷雾不糊脸 ===== */
+@media (orientation: landscape){
+  .sheet{max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  #rogue-cfg .sheet,#shop-mask .sheet{padding:12px 14px 14px}
+  .barhd{margin-bottom:6px}
+  #scr-rogue{padding-top:2px}
+  #scr-rogue .rbar{padding:8px 12px}
+  #scr-rogue .rcard{min-height:92px;padding:6px 8px}
+  #scr-rogue .rw{font-size:24px}
+  #scr-rogue .rbtns .btn{height:44px}
+  #scr-rogue .rsub{margin-top:2px}
+  .san.on{backdrop-filter:none !important;-webkit-backdrop-filter:none !important}
+  #rogue-hint,#btn-rogue-skip,#btn-rogue-undo,#rogue-tag,#rogue-fam{position:relative;z-index:4}
+  /* 三题型：横屏选项两列 */
+  #rogue-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  #rogue-opts .ropt{height:48px;font-size:14px;padding:0 10px}
+}
+@media (orientation: landscape){
+  #scr-rogue{padding:0 10px 2px !important}
+  #scr-rogue .rbar{padding:6px 10px !important;margin-bottom:6px !important}
+  #scr-rogue .rcard{min-height:84px !important;margin-bottom:6px !important}
+  #scr-rogue .rbtns{margin-top:0 !important}
+  #scr-rogue .rsub{display:none !important}
+  #scr-rogue #rogue-hint{display:none !important}
+}
+@media (orientation: landscape){
+  #rogue-cfg .sheet,#shop-mask .sheet{padding:10px 12px !important;max-height:96vh !important}
+  #rogue-cfg .rchips .chip,#shop-mask .chip{height:32px !important;padding:0 10px !important;font-size:12.5px !important}
+  #rogue-cfg .rcfg-l{margin:4px 0 2px !important}
+  #rogue-cfg .sheet .barhd{margin-bottom:2px !important;font-size:15px}
+  #rogue-cfg #rogue-cfg-hint{margin:2px 0 4px !important;font-size:11px !important}
+  #rogue-cfg .btn{height:44px !important;font-size:15px !important}
+}
+
+/* ===== 三题型 ===== */
+.rqt{font-size:11.5px;color:#8a9099;font-weight:600}
+body.immersive .rqt{color:#8fa0b6}
+.ropts{display:none;position:relative;z-index:5;margin-top:8px;width:100%;gap:8px}
+.ropts .ropt{display:flex;align-items:center;justify-content:center;width:100%;min-height:52px;
+  padding:8px 12px;border-radius:12px;border:1px solid #e3e7ec;background:#fff;
+  font-size:15px;line-height:1.35;color:#23262b;text-align:center;white-space:normal;word-break:break-word}
+.ropts .ropt:active{background:#eef4ff;border-color:#9cc0ff}
+@media (prefers-color-scheme: dark){.ropts .ropt{background:#171a1f;border-color:#2a2f38;color:#e6e8ec}}
+body.immersive .ropts .ropt{background:#111419;border-color:#262b34;color:#eef3fa}
+
+
+/* 选择题时单词卡加高上限，横屏两列选项不溢出 */
+@media (orientation: landscape){
+  #scr-rogue .ropts{margin-top:4px;gap:6px}
+  #scr-rogue .ropts .ropt{height:44px;min-height:44px;font-size:13.5px}
+}
+
+
+/* v29: 横屏结算列表/校验层/选项/飘字/主页 D-Day */
+#rogue-over .rover-list{flex:1 1 120px;min-height:120px;max-height:none !important}
+#rogue-opts.show{display:grid !important;grid-template-columns:1fr 1fr;gap:8px}
+@media (orientation: portrait){
+  #rogue-opts.show{display:flex !important;flex-direction:column}
+  .toast{top:60px !important}
+}
+@media (orientation: landscape){
+  #rogue-over .sheet{max-height:96vh !important}
+  #rogue-over .rsheet-top{flex-direction:row;align-items:center;gap:10px}
+  .rcheck{position:fixed !important;left:50%;bottom:8px;transform:translateX(-50%);
+    width:min(760px,94vw);max-height:46vh;overflow:auto;margin:0 !important;z-index:9}
+  #rogue-hurt{z-index:2}
+  .toast{top:52px !important}
+  .hero .dday{flex-basis:100% !important}
+  .hero{align-content:flex-start}
+}
+
+
+/* v29: 题型彩色胶囊标签 */
+#rogue-qt{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700}
+#rogue-qt.pill{background:#eef1f6;color:#3a4351;border-radius:999px;padding:4px 10px}
+#rogue-qt.pill.q-mean{background:#efe9ff;color:#5b3fd6}
+#rogue-qt.pill.q-word{background:#e6f0ff;color:#1f66d0}
+#rogue-qt.pill.q-flash{background:#eef1f6;color:#495264}
+@media (prefers-color-scheme: dark){
+  #rogue-qt.pill.q-mean{background:#2a2340;color:#b9a6ff}
+  #rogue-qt.pill.q-word{background:#16243a;color:#8fbcff}
+  #rogue-qt.pill.q-flash{background:#22262e;color:#c7cedb}
+}
+
+/* v30a 可访问性：关闭特效（由 body class 驱动） */
+body.no-san .san{display:none !important}
+body.no-shake #scr-rogue.shake,body.no-shake #scr-rogue .shake{animation:none !important}
+body.low-fx .rhurt .hc,body.low-fx .rhurt .hv,body.low-fx .rflash,body.low-fx .disperse{animation:none !important;transition:none !important}
+body.low-fx *{backdrop-filter:none !important;-webkit-backdrop-filter:none !important}
+body.low-fx .san{display:none !important}
+
+
+/* 防手滑：长按进度圈 */
+#btn-rogue-no{position:relative;overflow:hidden}
+#btn-rogue-no.holding::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:100%;
+  background:#3b82f6;transform-origin:left;animation:mistap .3s linear forwards}
+@keyframes mistap{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+
 </style>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
@@ -1248,6 +1660,7 @@ body.landscape-test #scr-test .opt{flex:1 1 0 !important;min-height:0 !important
 
     <div class="hero">
       <div class="k" id="home-kicker">今天还没开始</div>
+      <div class="dday" id="home-dday"></div>
       <div class="herobig">
         <div class="hb"><b id="hb-new">0</b><span>新学待办</span></div>
         <div class="hb"><b id="hb-rev">0</b><span>复习待办</span></div>
@@ -1263,6 +1676,14 @@ body.landscape-test #scr-test .opt{flex:1 1 0 !important;min-height:0 !important
       </div>
     </div>
     <div class="tipline" id="home-tip" style="display:none"></div>
+
+    <button class="entry" id="btn-home-rogue">
+      <div>
+        <div class="et">肉鸽挑战 <span class="badge" id="home-rogue-n">20题</span></div>
+        <div class="es" id="home-rogue-es">答对推进度、连击暴击、词根共鸣；不影响学习排期</div>
+      </div>
+      <span class="arrow">›</span>
+    </button>
 
     <button class="entry" id="btn-home-book">
       <div>
@@ -1322,6 +1743,125 @@ body.landscape-test #scr-test .opt{flex:1 1 0 !important;min-height:0 !important
     <input type="file" id="file-import" accept=".json" hidden>
   </section>
 
+  <!-- ============ 肉鸽挑战 ============ -->
+  <section id="scr-rogue" class="screen">
+    <div class="spread" style="margin:6px 2px 12px">
+      <div class="h1">肉鸽挑战</div>
+      <span class="gbar-r">
+        <button class="btn ghost small" id="btn-rogue-pause">暂停</button>
+        <button class="btn ghost small" id="btn-rogue-quit">退出</button>
+      </span>
+    </div>
+
+    <div class="card rbar">
+      <div class="rrow"><span class="rqt" id="rogue-qt"></span>
+        <span class="rfloor" id="rogue-floor" style="display:none"></span>
+        <span class="rhp">HP <b id="rogue-hp">100</b></span>
+        <span class="rmeta"><span id="rogue-idx">1 / 20</span><span id="rogue-combo">连击 0</span></span>
+      </div>
+      <div class="rprog"><div class="rprogfill" id="rogue-progfill"></div><span class="rprogtxt" id="rogue-progtxt">0%</span></div>
+      <div class="rtags"><span id="rogue-tag"></span><span id="rogue-fam" class="rfam"></span></div>
+    </div>
+
+    <div class="card rcard">
+    <div class="rrare" id="rogue-rare">❗ 伪装者</div>
+      <div class="rw" id="rogue-word">—</div>
+      <div class="rp" id="rogue-ph"></div>
+      <div class="ropts" id="rogue-opts"></div>
+      <div class="rtimer"><div id="rogue-tbar"></div></div>
+    </div>
+
+    <div class="rflash" id="rogue-flash"></div>
+    <div class="rvwrap" id="rogue-review">
+      <div class="rvcard">
+        <div class="rvh"><span id="rogue-rv-pen">❌ 扣血 20</span><button class="rvx" id="btn-rogue-rvx" aria-label="关闭">✕</button></div>
+        <div class="rvw" id="rogue-rv-w"></div>
+        <div class="rvp" id="rogue-rv-p"></div>
+        <div class="rvm" id="rogue-rv-m"></div>
+        <div class="rve" id="rogue-rv-ex"></div>
+        <button class="btn primary block" id="btn-rogue-rv" style="margin-top:12px">记住了，继续</button>
+      </div>
+    </div>
+
+    <div class="rvwrap" id="rogue-review">
+      <div class="rvcard">
+        <div class="rvh"><span id="rogue-rv-pen">❌ 扣血 20</span><button class="rvx" id="btn-rogue-rvx" aria-label="关闭">✕</button></div>
+        <div class="rvw" id="rogue-rv-w"></div>
+        <div class="rvp" id="rogue-rv-p"></div>
+        <div class="rvm" id="rogue-rv-m"></div>
+        <div class="rve" id="rogue-rv-ex"></div>
+        <button class="btn primary block" id="btn-rogue-rv" style="margin-top:12px">记住了，继续</button>
+      </div>
+    </div>
+    <div class="san" id="rogue-san"></div>
+  <div class="disperse" id="rogue-disperse">✨ 迷雾驱散</div>
+  <div class="rhurt" id="rogue-hurt"><i class="hv"></i><i class="hc"></i></div>
+    <div class="rcheck" id="rogue-check">
+      <div class="rck-h">真认识吗？0.8 秒内可改判</div>
+      <div class="rck-m" id="rogue-mean"></div>
+      <div class="rck-e" id="rogue-ex"></div>
+      <button class="btn danger" id="btn-rogue-flip">🚨 其实不认识（改判）</button>
+    </div>
+    <div class="rbtns">
+      <button class="btn primary" id="btn-rogue-know">认识</button>
+      <button class="btn ghost" id="btn-rogue-no">不认识</button>
+    </div>
+    <div class="rsub">
+      <button class="btn ghost small" id="btn-rogue-skip">跳过（过滤网）</button>
+      <button class="btn ghost small" id="btn-rogue-undo" disabled>撤销（1.5s）</button>
+    </div>
+    <div class="tiny muted" id="rogue-hint" style="text-align:center;margin-top:10px"></div>
+
+    <div class="mask" id="rogue-cfg">
+      <div class="sheet rcfgsheet">
+        <div class="h2">肉鸽挑战</div>
+        <div class="rreph">词汇来源</div>
+        <div class="rchips" id="rcfg-src">
+          <button class="chip" data-src="pool">全词库</button>
+          <button class="chip" data-src="today">今日学习</button>
+          <button class="chip" data-src="weak">生词本</button>
+          <button class="chip" data-src="wrong">今日错词</button>
+        </div>
+        <div class="rreph">难度</div>
+        <div class="rchips" id="rcfg-diff">
+          <button class="chip" data-diff="easy">简单 150HP</button>
+          <button class="chip" data-diff="normal">普通 100HP</button>
+          <button class="chip" data-diff="hard">困难 50HP</button>
+        </div>
+        <div class="rreph">模式</div>
+        <div class="rchips" id="rcfg-mode">
+          <button class="chip" data-mode="single">单局挑战 20 题</button>
+          <button class="chip" data-mode="tower">无尽爬塔</button>
+          <button class="chip" data-mode="battle">🏰 实战爬塔</button>
+        </div>
+        <div class="tiny muted" id="rogue-cfg-hint" style="margin:8px 2px 0"></div>
+        <button class="btn primary block" id="btn-rogue-go" style="margin-top:12px">开始挑战</button>
+        <button class="btn ghost block" id="btn-rogue-cfgx" style="margin-top:8px">取消</button>
+      </div>
+    </div>
+
+    <div class="mask" id="rogue-loot">
+      <div class="sheet">
+        <div class="h2" id="rogue-loot-title">层末战利品</div>
+        <div class="tiny muted" style="margin:4px 0 12px">三选一，整局不能重复选</div>
+        <div id="rogue-loot-opts"></div>
+      </div>
+    </div>
+
+    <div class="mask" id="rogue-over">
+      <div class="sheet">
+        <div class="h2" id="rogue-over-title">本局结束</div>
+        <div class="tiny muted" id="rogue-over-sub"></div>
+        <div class="rrep" id="rogue-over-stats"></div>
+        <div class="rmood" id="rogue-mood"></div>
+            <div class="rover-list" id="rogue-over-list"></div>
+        <button class="btn purple block" id="btn-rogue-retry" style="display:none">🎯 立刻重刷本局错词</button>
+        <button class="btn primary block" id="btn-rogue-again">再来一局</button>
+        <button class="btn ghost block" id="btn-rogue-back" style="margin-top:8px">回首页</button>
+      </div>
+    </div>
+  </section>
+
   <!-- ============ 组设置 ============ -->
   <section id="scr-setup" class="screen">
     <div class="spread" style="margin:6px 2px 14px">
@@ -1333,12 +1873,14 @@ body.landscape-test #scr-test .opt{flex:1 1 0 !important;min-height:0 !important
 
   <!-- ============ 游戏屏 ============ -->
   <section id="scr-game" class="screen">
+  <div class="immzone" id="imm-zone" title="双击退出沉浸模式"></div>
     <div id="game-wrap" class="game">
       <div class="gbar">
         <span id="gstat" class="mono"></span>
         <span class="gbar-r">
           <button class="btn ghost small" id="btn-swap" title="左右换边">⇄</button>
           <button class="btn ghost small" id="btn-lock" title="锁定横屏">⤢</button>
+          <button class="btn ghost small" id="btn-immersive" title="沉浸模式">🌙</button>
           <button class="btn ghost small" id="btn-pause">暂停</button><button class="btn ghost small" id="btn-prev" title="回到上一个词">上一词</button>
           <button class="btn ghost small" id="btn-quit">结束本轮</button>
         </span>
@@ -1573,6 +2115,10 @@ window.WORD_DATA={"id":"hongbaoshu","name":"红宝书考研词汇","words":[{"w"
 var pad = function (n) { return String(n).padStart(2, "0"); };
 var $ = function (s, r) { return (r || document).querySelector(s); };
 var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+
+/* 肉鸽：词根家族数据（由 _dev/rogue/rogue-family.json 生成，勿手改） */
+var ROGUE_FAM = {"high":{"stat":["state","statement","statesman","station","stationary","stationery","statistics","statistical","statistically","statistician","status","statute","stable","stability","stabilize","establish","constant","constantly","instance","instant","instantly","substance","substantial","substantially","substantiate","distant","distance","obstacle"],"ced":["precede","precedent","preceding","proceed","proceeding","succeed","success","successful","successfully","succession","successive","successor","exceed","excess","excessive","recede","recession","access","accessibility","process","procession","processor","procedure"],"pos":["compose","composition","composer","expose","exposure","impose","oppose","opposition","propose","proposal","proposition","suppose","deposit","dispose","disposal","position","positive","postpone","component","compound"],"cept":["accept","acceptance","except","exception","exceptional","concept","conception","reception","recipient","conceive","deceive","perceive","perception","perceptive","perceptual","anticipate","participate","participant","principal","principle"],"plic":["complicate","complicated","complex","complexity","duplicate","duplication","explicit","explicitly","implicit","imply","application","apply","appliance","applicable","reply","multiply","multiple","supply"],"spect":["inspect","inspection","spectator","spectacle","spectacular","respect","respective","suspect","suspicion","suspicious","expect","expectation","unexpected","aspect","perspective","prospect","prospective","retrospect"],"tend":["tend","tendency","extend","extension","extensive","extent","intend","intention","intentionally","attend","attention","attendant","contend","contention","pretend","tentative","tension","tense"],"sist":["consist","consistent","insist","insistence","persist","persistence","persistent","persistently","resist","resistance","resistant","assist","assistance","assistant","exist","existence","coexistence"],"mit":["submit","submission","transmit","transmission","admit","admission","commit","commitment","committee","permit","permission","omit","emit","dismiss","compromise","promise","promising"],"duc":["produce","product","production","productive","productivity","producer","reduce","reduction","introduce","introduction","conduct","conductor","deduce","induce","educate","education"],"fer":["transfer","refer","reference","prefer","preference","preferable","differ","difference","different","differentiate","offer","suffer","infer","inference","conference","fertile"],"lect":["collect","collection","collective","select","selection","elect","election","neglect","negligence","intellect","intellectual","lecture","eligible","elegant","legend"],"sign":["sign","signal","signature","signify","significance","significant","significantly","design","designate","designer","assign","assignment","resign","resignation","insignificant"],"form":["form","formation","formal","informal","format","formula","inform","information","reform","conform","uniform","perform","performance","transform"],"ject":["reject","inject","project","projection","projector","subject","subjective","object","objective","objection","objectionable","objectivity","eject","adjective"],"vent":["convene","convention","invent","invention","inventor","prevent","prevention","intervene","intervention","event","eventually","avenue","adventure","ventilate"],"log":["logic","logical","biology","biological","biologist","psychology","psychological","technological","geology","ecology","apology","analogy","ideology","methodology"],"press":["press","pressure","compress","impress","impression","impressive","depress","oppress","oppression","express","expression","suppress","repression"],"pend":["depend","dependent","dependency","independent","independence","suspend","expend","expenditure","expense","expensive","compensate","pension","indispensable"],"serv":["serve","service","servant","reserve","reservation","preserve","observe","observation","observer","observable","deserve","conservation","conservative"],"gress":["progress","progressive","progression","congress","congressional","aggressive","graduate","gradual","upgrade","degrade","degree","undergraduate"],"nat":["native","nation","national","nationality","nationally","nationwide","nature","natural","naturally","naturalist","innate","international"],"quir":["require","requirement","acquire","acquisition","inquire","questionnaire","quest","request","conquer","conquest","exquisite","prerequisite"],"dict":["predict","prediction","predictable","predictably","contradict","dictate","dictation","verdict","dictionary","addict","jurisdiction"],"port":["export","import","transport","portable","support","supportive","supporter","report","reporter","portfolio","porter"],"fuse":["confuse","confusion","refuse","refusal","diffuse","refund","fund","fundamental","fundamentally","foundation","profound"],"leg":["legislation","legislative","legislature","legitimate","legitimacy","legal","legally","illegal","privilege","college","legacy"],"sequ":["sequence","consequence","consequently","subsequent","subsequently","consecutive","prosecute","prosecutor","persecute","execute","executive"],"tract":["attract","attraction","attractive","contract","distract","extract","extraction","abstract","subtract","tractor"],"struct":["construct","structure","structural","instruct","instruction","obstruct","obstruction","destruction","destructive","infrastructure"],"tain":["retain","retention","contain","maintain","maintenance","sustain","sustainable","sustainability","detain","tenant"],"popul":["popular","population","public","publicity","publish","publication","publisher","republic","republican","publicize"],"strict":["strict","strictly","restrict","restriction","restrictive","district","constrain","constraint","restrain","restraint"],"pel":["expel","compel","repel","impel","impulse","impulsive","compulsory","propel","pulse"],"miss":["missile","mission","missionary","dismiss","submission","transmission","admission","commission","permission"],"volv":["involve","involvement","evolve","evolution","evolutionary","revolve","revolution","revolutionary","revolt"],"rupt":["interrupt","erupt","corrupt","corruption","abrupt","bankrupt","disrupt","disruptive","route"],"simil":["similar","similarity","similarly","simulate","simulation","simultaneous","simultaneously","assimilate","assimilation"],"spir":["spirit","spiritual","inspire","inspiration","aspire","aspiration","conspire","conspiracy","expire"],"voc":["vocal","voice","vocabulary","vocation","advocate","provoke","provocative","invoke","evoke"],"scrib":["describe","description","prescribe","prescription","subscribe","subscriber","script","manuscript"],"manu":["manual","manufacture","manuscript","manipulate","manage","management","manager","manifest"],"nom":["nominal","nominate","anonymous","economy","economic","economics","astronomy","autonomy"],"prob":["probable","probably","probability","improbable","prove","proof","approve","approval"],"viv":["survive","survival","vivid","revive","revival","vital","vitality","vitamin"],"script":["script","manuscript","prescription","description","subscribe","prescribe","describe"],"clud":["include","inclusive","exclude","exclusive","conclude","conclusion","preclude"],"flu":["influence","influential","fluent","fluid","affluent","superfluous","flush"],"sci":["science","scientific","scientist","conscious","conscience","conscientious","subconscious"],"text":["textual","texture","textile","context","contextual","pretext","textbook"],"trib":["contribute","contribution","contributory","distribute","distribution","attribute","tribute"],"grat":["grateful","gratitude","gratification","grace","graceful","gracious"],"nov":["novel","novelty","innovation","innovative","innovator","renovate"],"polit":["politics","political","politician","policy","polite","metropolitan"],"psych":["psychology","psychological","psychologist","psychiatry","psychiatrist","psychoactive"],"tact":["contact","tactic","intact","tangible","intangible","contagious"],"test":["test","testify","testimony","protest","contest","untested"],"cred":["credit","credible","incredible","credibility","credentials"],"grad":["grade","gradual","graduate","upgrade","degrade"],"hibit":["prohibit","prohibition","exhibit","exhibition","inhibit"],"memor":["memory","memorize","memorial","commemorate","remember"],"norm":["norm","normal","normally","abnormal","enormous"],"prov":["prove","proof","approve","approval","improve"],"sect":["section","sector","intersection","segment","insect"],"string":["string","constrain","constraint","restrain","restraint"],"pon":["component","compound","postpone","opponent"],"prim":["primary","primarily","prime","primitive"],"priv":["private","privacy","privilege","deprive"],"tempor":["temporary","contemporary","temporal","tempo"],"term":["term","terminal","terminate","determine"],"tort":["torture","distort","retort","tort"],"turb":["disturb","disturbance","turbulent","turbulence"],"vac":["vacant","vacation","evacuate","vacuum"],"gest":["suggest","suggestion","digest","gesture"],"vinc":["convince","convincingly","victory"],"duct":["conduct","conductor","deduct"],"mort":["mortal","mortality","mortgage"],"ped":["pedestrian","pedal","expedition"],"phon":["phone","microphone","symphony"],"punct":["punctual","punctuation","punch"],"therm":["thermal","thermometer","thermostat"],"urb":["urban","suburban","suburb"],"lumin":["illuminate","lucrative"]},"medium":{"par":["compare","comparable","comparative","comparison","comparatively","prepare","preparation","repair","impart","impartial","part","partial","participate","participant","particle","particular","partner","depart","departure","department","compartment","apart","parcel","partly"],"part":["part","partial","participate","participant","particle","particular","partner","depart","departure","department","compartment","apart","partly","impartial","impart","party"],"vid":["video","evident","evidence","provide","provider","provision","supervise","revise","revision","advise","advisory","divide","division","individual"],"pass":["passage","passenger","passion","passive","compassion","compatible","incompatible","patient","patience","sympathy","sympathetic","pathological","pathetic","anticipate"],"val":["value","valuable","invaluable","evaluate","valid","validity","invalid","invalidate","equivalent","prevalent","prevail","available","availability"],"vis":["visual","visualize","vision","visible","invisible","visionary","supervise","revise","revision","advisable","advisory"],"cur":["occur","occurrence","recur","current","currently","currency","curriculum","excursion","incur","discourse","concurrent"],"mod":["mode","model","modify","modification","moderate","modest","modesty","modestly","accommodate","commodity","modern"],"min":["minimum","minimal","miniature","minor","minority","diminish","administer","administration"],"sol":["solve","solution","soluble","dissolve","solid","solidarity","consolidate"],"terr2":["terrify","terrific","terror","terrorism","terrorist","terrible","terribly"],"cap":["capture","captive","capacity","capable","capital"],"soli":["solo","soloist","solitude","solitary"],"vol":["voluntary","volunteer","benevolent"],"terr":["territory","terrain"],"ver":["verify","verdict"]}}
+
 var ENT = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
 var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return ENT[c]; }); };
 function fmtDate(d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
@@ -1688,6 +2234,7 @@ function defaultSettings() {
     countValue: 20,
     scoreFast: 3, scoreSlow: 1, scoreFuzzy: 0, scoreNo: -2, scoreTimeout: -3, scoreReviewSlow: -1,
     newPerDay: 20, reviewPerDay: 100,
+  soundOn: false, examDate: "", immersive: false, rogueMood: true,
     randomPick: true,
     fastUndo: true, fastUndoMs: 1200,
     // 熟词回放：本轮判「认识」的词，隔几道题再回来确认一次（答错就按不认识处理）
@@ -1894,6 +2441,8 @@ function loadState() {
             logs: Array.isArray(o.stats.logs) ? o.stats.logs.slice(-500) : []
           };
         }
+        // 肉鸽：独立状态（不参与学习排期），迁移时原样带回
+        if (o.rogue && typeof o.rogue === "object") st.rogue = o.rogue;
         st.updatedAt = o.updatedAt || 0;
         st.lastExportAt = o.lastExportAt || null;
         // 修复历史误设：每组题数 < 5 视为无效，回到默认 20（旧版输入框下限是 1，可能被误触成 1）
@@ -2004,10 +2553,10 @@ function saveNow() {
 }
 
 function doExport(slim) {
-  var data;
+  var copy = JSON.parse(JSON.stringify(S));
+  if (copy.rogue) { copy.rogue.logs = []; copy.rogue.history = []; }
+  copy.lastExportAt = Date.now();
   if (slim) {
-    var copy = JSON.parse(JSON.stringify(S));
-    copy.lastExportAt = Date.now();
     copy.stats = { days: copy.stats ? copy.stats.days : {}, hours: copy.stats ? copy.stats.hours : {}, logs: [] };
     var recs = copy.records || {};
     for (var dk in recs) {
@@ -2015,19 +2564,17 @@ function doExport(slim) {
       if (!m || typeof m !== "object") continue;
       for (var wk in m) { if (m[wk]) m[wk].hist = []; }
     }
-    data = JSON.stringify(copy, null, 1);
-  } else {
-    S.lastExportAt = Date.now();
-    data = JSON.stringify(S, null, 1);
   }
+  var data = JSON.stringify(copy, null, 1);
   var blob = new Blob([data], { type: "application/json" });
   var a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
   a.download = "单词闪过-备份-" + today().replace(/-/g, "") + (slim ? "-精简" : "") + ".json";
   a.click();
   setTimeout(function () { URL.revokeObjectURL(a.href); }, 2000);
+  S.lastExportAt = copy.lastExportAt;
   saveNow();
-  toast(slim ? "已导出精简备份（不含判定历史）" : "已导出备份");
+  toast(slim ? "已导出精简备份（不含判定历史与肉鸽埋点）" : "已导出备份（不含肉鸽埋点）");
 }
 
 /* ---------- 合并导入：同词取"更熟"的一条，不覆盖本机其它数据 ---------- */
@@ -2247,7 +2794,8 @@ function planRound(deckId) {
   var st = S.settings, t = today();
   var d = daily(deckId);
   var N = Math.min(countN(), Math.max(1, wordsOf(deckId).length) || 1);
-  var reviewLeft = Math.max(0, num(st.reviewPerDay, 100) - d.reviewDone);
+  var teaAdd = (S.rogue && S.rogue.teaDay === today()) ? 50 : 0;
+  var reviewLeft = Math.max(0, num(st.reviewPerDay, 100) + teaAdd - d.reviewDone);
   var newLeft = Math.max(0, num(st.newPerDay, 20) - d.newDone);
   var dl = dueList(deckId), fl = freshList(deckId);
   var reviewTake = Math.min(dl.length, reviewLeft, N);
@@ -2408,6 +2956,53 @@ function pushHist(key, kind, ms) {
 }
 
 /* 作答：kind = fast（认识·快）| slow（认识·慢）| know（认识·背记）| fuzzy（模糊）| no（不认识）| timeout（超时） */
+/* 复习判分：唯一 SM-2 入口。日常复习与「实战爬塔」共用，kind = fast|slow|know|fuzzy|no|timeout */
+function applyReviewGrade(deckId, key, kind, ms) {
+  var st = S.settings, t = today();
+  var r = ensureRec(deckId, key);
+  var prevL = num(r.L, 0), prevStage = num(r.stage, 0);
+  var isKnown = (kind === "fast" || kind === "slow" || kind === "know");
+  var isFuzzy = (kind === "fuzzy");
+  var c0 = num(r.reviewCount, 0);
+  r.reviewCount = c0 + 1; r.lastSeen = t; r.lastMs = ms; r.lastMode = st.mode;
+  if (st.mode !== "learn") r.avgMs = c0 ? (r.avgMs * c0 + ms) / (c0 + 1) : ms;
+  pushHist(key, kind, ms);
+  r.provisional = false;
+  if (isKnown) {
+    r.stage = Math.min(num(r.stage, 0) + 1, 5);
+    if (r.lastLevelUp !== t) { r.L = Math.min(num(r.L, 0) + 1, 5); r.lastLevelUp = t; }
+    r.correctStreak = num(r.correctStreak, 0) + 1;
+    if (r.L >= 5 && r.stage >= num(st.gradStage, 3)) { r.graduated = true; r.leech = false; }
+    if (!r.graduated && (r.weak || num(r.L, 0) <= 2) && num(r.correctStreak, 0) >= 2) {
+      r.L = 5; r.stage = Math.max(num(r.stage, 0), 3); r.graduated = true;
+      r.weak = false; r.leech = false; r.correctStreak = 0;
+    }
+    r.due = nextDue(t, intervalOf(st, r.stage, r.L));
+    r.rightCount = num(r.rightCount, 0) + 1;
+  } else if (isFuzzy) {
+    r.L = Math.max(0, num(r.L, 0) - 1);
+    r.stage = Math.max(0, num(r.stage, 0) - 1);
+    r.due = addDays(t, 1);
+    r.fuzzyCount = num(r.fuzzyCount, 0) + 1;
+    r.revisit = true;
+    if (S.session) schedule("revisit", key, num(st.slowRevisitGap, 5));
+  } else if (S.rogue && S.rogue.teaDay === today()) {
+    /* 护肝茶：只不推进度，不降级 */
+    r.due = addDays(t, 1);
+    r.wrongCount = num(r.wrongCount, 0) + 1;
+  } else {
+    r.correctStreak = 0;
+    r.L = 0; r.stage = 0; r.due = addDays(t, 1);
+    r.lapses = num(r.lapses, 0) + 1; r.wrongCount = num(r.wrongCount, 0) + 1;
+    if (S.session) enterRelearn(key);
+  }
+  var d = daily(deckId);
+  d.review = num(d.review, 0) + 1;
+  d.reviewTot = num(d.reviewTot, 0) + 1;
+  if (isKnown) d.reviewOk = num(d.reviewOk, 0) + 1;
+  d.count = num(d.count, 0) + 1;
+  return { prevL: prevL, prevStage: prevStage, L: num(r.L, 0), stage: num(r.stage, 0), due: r.due, graduated: !!r.graduated };
+}
 function submitAnswer(kind, ms) {
   var sess = S.session;
   if (!sess || !sess.cur) return null;
@@ -2477,44 +3072,14 @@ function submitAnswer(kind, ms) {
     sess.results.push({ k: key, mode: mode, kind: kind, ms: ms, score: sc, prevL: out.prevL, prevStage: out.prevStage, L: r.L, stage: r.stage, due: r.due });
 
   } else if (mode === "review") {
-    var rr = ensureRec(sess.deckId, key);
-    out.prevL = rr.L; out.prevStage = rr.stage;
-    var c0 = rr.reviewCount;
     var sc2 = scoreFor(kind);
     sess.score += sc2; bump(kind);
-    rr.reviewCount++; rr.lastSeen = t; rr.lastMs = ms; rr.lastMode = st.mode;
-    if (st.mode !== "learn") rr.avgMs = c0 ? (rr.avgMs * c0 + ms) / (c0 + 1) : ms;
-    pushHist(key, kind, ms);
-    rr.provisional = false;
-    if (isKnown) {
-      rr.stage = Math.min(rr.stage + 1, 5);
-      if (rr.lastLevelUp !== t) { rr.L = Math.min(rr.L + 1, 5); rr.lastLevelUp = t; }
-      rr.correctStreak = num(rr.correctStreak, 0) + 1;
-      if (rr.L >= 5 && rr.stage >= num(st.gradStage, 3)) { rr.graduated = true; rr.leech = false; }
-      if (!rr.graduated && (rr.weak || num(rr.L, 0) <= 2) && num(rr.correctStreak, 0) >= 2) {
-        rr.L = 5; rr.stage = Math.max(num(rr.stage, 0), 3); rr.graduated = true;
-        rr.weak = false; rr.leech = false; rr.correctStreak = 0;
-      }
-      rr.due = nextDue(t, intervalOf(st, rr.stage, rr.L));
-      rr.rightCount++;
-    } else if (isFuzzy) {
-      // 复习时模糊：降一级 + 明天再见 + 当天回看一次（不再像以前那样直接打成 L0）
-      rr.L = Math.max(0, rr.L - 1);
-      rr.stage = Math.max(0, rr.stage - 1);
-      rr.due = addDays(t, 1);
-      rr.fuzzyCount++;
-      rr.revisit = true;
-      schedule("revisit", key, num(st.slowRevisitGap, 5));
-    } else {
-      // 复习答错：不再「明天见」就完事，当天也进滚动，直到连续答对为止
-      rr.correctStreak = 0;
-      rr.L = 0; rr.stage = 0; rr.due = addDays(t, 1); rr.lapses++; rr.wrongCount++;
-      enterRelearn(key);
-    }
+    var g = applyReviewGrade(sess.deckId, key, kind, ms);
+    out.prevL = g.prevL; out.prevStage = g.prevStage;
     if (sess.mode === "normal") daily(sess.deckId).reviewDone++;
     else if (sess.mode === "drill" && isKnown) daily(sess.deckId).reviewDone++;
-    out.score = sc2; out.L = rr.L; out.stage = rr.stage; out.due = rr.due; out.graduated = !!rr.graduated;
-    sess.results.push({ k: key, mode: mode, kind: kind, ms: ms, score: sc2, prevL: out.prevL, prevStage: out.prevStage, L: rr.L, stage: rr.stage, due: rr.due });
+    out.score = sc2; out.L = g.L; out.stage = g.stage; out.due = g.due; out.graduated = !!g.graduated;
+    sess.results.push({ k: key, mode: mode, kind: kind, ms: ms, score: sc2, prevL: out.prevL, prevStage: out.prevStage, L: g.L, stage: g.stage, due: g.due });
 
   } else if (mode === "revisit") {
     var rv = ensureRec(sess.deckId, key);
@@ -2933,6 +3498,46 @@ function doInstall() {
   if (window.alert) window.alert(msg);
 }
 
+var ROGUE_TIPS = [
+  "就这正确率，你想明年再来一年吗？",
+  "错词不过夜，考研不二战。",
+  "你现在的每一次手滑，都是考场上丢掉的 2 分。",
+  "别骗自己了，刚才那词你根本没想起来。",
+  "这个水平上考场，作文都救不了你。",
+  "再错下去，明年的今天你还在背 abandon。",
+  "真题不会因为你今天累了就变简单。",
+  "你漏掉的不是单词，是排名。",
+  "现在多错一个，考场上少一个人超过你。",
+  "别急着点「认识」，考场上没人给你提示。",
+  "这局打得像个调剂选手。",
+  "稳住，你能把这一页翻过去。",
+  "今天的手感，够你在考场上多拿几分。",
+  "记住这个词，它可能会救你一道阅读。"
+];
+function examLeftDays() {
+  var s = S.settings;
+  var t = s.examDate || "";
+  if (!t) {
+    var y = new Date().getFullYear();
+    t = y + "-12-19";
+    var d0 = new Date(t + "T00:00:00");
+    if (isNaN(d0.getTime())) t = y + "-12-21";
+  }
+  var d = new Date(t + "T00:00:00");
+  if (isNaN(d.getTime())) return null;
+  var now = new Date();
+  now.setHours(0, 0, 0, 0);
+  return Math.round((d - now) / 86400000);
+}
+function rogueMoodLine(score) {
+  if (!S.settings.rogueMood) return "";
+  var left = examLeftDays();
+  var urgent = left !== null && left <= 30;
+  var pool = ROGUE_TIPS.slice();
+  if (!urgent && score >= 80) pool = pool.slice(11);
+  else if (!urgent) pool = pool.slice(0, 11).concat(pool.slice(11, 12));
+  return pool[Math.floor(Math.random() * pool.length)];
+}
 function renderHome() {
   var d = daily(S.decks.length ? S.decks[0].id : "");
   var deck = S.decks[0];
@@ -2945,6 +3550,16 @@ function renderHome() {
   }
   var s = deckStats(deck);
   var plan = planRound(deck.id);     // 与真正出题共用同一份计算
+  var dd = $("#home-dday");
+  if (dd) {
+    var lf = examLeftDays();
+    if (lf === null) dd.style.display = "none";
+    else {
+      dd.style.display = "";
+      dd.textContent = lf > 0 ? ("距离考研还有 " + lf + " 天") : (lf === 0 ? "今天就是考试日，稳住" : "考试已结束，休息一下");
+      dd.className = "dday" + (lf >= 0 && lf <= 30 ? " hot" : "");
+    }
+  }
   $("#home-kicker").textContent = "今天还没开始";
   $("#home-today").textContent = "0 词";
   var revTake = plan.reviewTake;
@@ -2957,6 +3572,7 @@ function renderHome() {
   var newLeftReal = Math.max(newReal - num(d.newDone, 0), 0);
   $("#home-today").textContent = (revTake + newTake) + " 题";
   var bO = $("#btn-orient"); if (bO) bO.textContent = isWideNow() ? "竖屏" : "横屏";
+  try { rogueSyncHome(); } catch (e) {}
   $("#hb-new").textContent = newLeftReal;
   $("#hb-rev").textContent = revLeftReal;
   $("#home-heroline").textContent = "今日合计待办 " + (revLeftReal + newLeftReal) + " 个";
@@ -3745,6 +4361,17 @@ function pvApply() {
     } catch (e) {}
   }
 }
+function moodSettingsHtml() {
+  var s = S.settings;
+  return '<div class="card"><div class="bt">考研与情绪</div>' +
+    '<div class="row"><span>考研日期</span><input type="date" id="set-exam" value="' + (s.examDate || "") + '"></div>' +
+    '<div class="row"><span>开启游戏音效</span><button class="chip' + (s.soundOn ? " on" : "") + '" id="btn-sound">' + (s.soundOn ? "已开启" : "已关闭") + '</button></div>' +
+    '<div class="row"><span>金币 / 小卖部</span><button class="chip" id="btn-shop4">打开</button></div>' +
+    '<div class="row"><span>音效音量</span><input type="range" id="set-sfxvol" min="0" max="100" step="10" value="' + (S.settings.sfxVol == null ? 80 : S.settings.sfxVol) + '" style="width:45%"><b id="set-sfxvol-v">' + (S.settings.sfxVol == null ? 80 : S.settings.sfxVol) + '%</b></div>' +
+    '<div class="row"><span>震动反馈</span>' + ['关闭','仅答错','都震动'].map(function(t,i){return '<button class="chip' + ((S.settings.vibMode==null?0:S.settings.vibMode)===i?' on':'') + '" data-vib="' + i + '">' + t + '</button>';}).join('') + '</div>' + '<div class="row"><span>音效试听</span><button class="chip" id="btn-sfx-demo">🔊 试听</button></div>' +
+    '<div class="row"><span>肉鸽破防文案</span><button class="chip' + (s.rogueMood ? " on" : "") + '" id="btn-mood">' + (s.rogueMood ? "已开启" : "已关闭") + '</button></div>' +
+    '<div class="tiny muted">音效由 Web Audio 实时合成，无外部文件；iPhone 需关闭静音键。</div></div>';
+}
 function renderSetup(deckId) {
   setupDeckId = deckId;
   var dk = deckById(deckId);
@@ -3869,7 +4496,10 @@ function renderSetup(deckId) {
     '<button class="btn" id="btn-export-slim" type="button">导出（精简）</button></div></div>';
   html += '<div class="tiny muted" style="margin-top:16px">规则：快认 +3 起步 L5，10 天后复习；认识 +1 起步 L3，4 天后复习；模糊 0 分起步 L2，3 天后复习、当天回看一次；不认识/超时 −2/−3 起步 L0，当天滚动（连续答对 4 次才过，不放走），明天再复习。复习时答对升一级，答错掉回 L0 并当天滚动。</div>';
   $("#setup-title").textContent = dk.name + " · 设置";
+  html += moodSettingsHtml();
+  html += rogueSettingsHtml();
   $("#setup-body").innerHTML = html;
+  try { rogueBindSetup(); } catch (e) {}
   renderLay3();
   pvApply();
   /* 额度行需要实时数字（到期/未学） */
@@ -4722,6 +5352,1515 @@ function startSingle(deckId, key) {
 
 /* ---------------- 事件绑定 ---------------- */
 function on(sel, ev, fn) { var el = $(sel); if (el) el.addEventListener(ev, fn); }
+
+/* ============================================================
+   肉鸽挑战（Rogue）
+   规则：独立 State.rogue.run；绝不写 records / stats / 学习排期
+   ============================================================ */
+var RQ = {
+  total: 20, hpMax: 100, dmgWrong: 20, dmgTimeout: 15,
+  base: 5, comboStep: 0.25, comboCap: 5, critMult: 1.5,
+  stageStep: 5, stageAdd: 5, stageMax: 4,
+  echoAdd: 15, echoMax: 2,
+  healEvery: 3, healMax: 2, healAdd: 1,
+  timeAdd: 1500, timeAddCap: 10000, buffAdd: 5000,
+  qTime: 9000, undoMs: 1500, bgMs: 60000, logMax: 200,
+  bossN: 3, bossAdd: 10,
+  towerN: 10, towerDmgStep: 2, towerDmgCap: 35, towerHeal: 10,
+  floorTimeStep: 1000, minQTime: 3000, lenBonusPer3: 200, bossEvery: 5
+};
+var rogueTimer = 0, rogueTick = 0, rogueBound = false, rogueHiddenAt = 0, rogueAdvanceTimer = 0, rogueFlashTimer = 0, rogueCheckTimer = 0, rogueLateTimer = 0, rogueReviewTimer = 0;
+
+function applyAccess(s) {
+  s = s || {};
+  var b = document.body;
+  if (!b) return;
+  b.classList.toggle("no-san", !!s.noSan);
+  b.classList.toggle("no-shake", !!s.noShake);
+  b.classList.toggle("low-fx", !!s.lowFx);
+  if (b.classList.contains("low-fx")) b.classList.add("no-san");
+}
+function rogueDefaults() { return { posBond: true, famBond: true, boss: true, lowFx: false, noSan: false, noShake: false, noMistap: false, colorblind: false }; }
+var ROGUE_DIFF = {
+  easy: { hp: 150, wrong: 15, timeout: 12, timeScale: 1 },
+  normal: { hp: 100, wrong: 20, timeout: 15, timeScale: 1 },
+  hard: { hp: 50, wrong: 25, timeout: 20, timeScale: 0.8 }
+};
+function rogueDiff(id) { return ROGUE_DIFF[id] || ROGUE_DIFF.normal; }
+function rogueCfg() {
+  var r = rogueS();
+  if (!r.cfg) r.cfg = { src: "pool", diff: "normal", mode: "single" };
+  return r.cfg;
+}
+/* 词源池：复用测试页的口径（今日学习 / 生词本 / 今日错词） */
+function rogueSrcPool(src) {
+  var deck = S.decks[0];
+  if (!deck) return [];
+  var base = roguePool();
+  if (!src || src === "pool") return base;
+  var t = today(), recs = S.records[deck.id] || {}, s = ensureStats();
+  var keys = {};
+  if (src === "wrong") keys = todayWrongKeys();
+  else if (src === "today") {
+    for (var j = s.logs.length - 1; j >= 0; j--) {
+      var l = s.logs[j];
+      if (l.d !== t) break;
+      if (l.w) keys[l.w] = 1;
+    }
+    if (S.session && S.session.touched) {
+      for (var kk in S.session.touched) if (S.session.touched[kk]) keys[kk] = 1;
+    }
+  } else if (src === "weak") {
+    Object.keys(recs).forEach(function (k) {
+      var r = recs[k];
+      if (r && !r.graduated && num(r.L, 0) <= 2) keys[k] = 1;
+    });
+  }
+  var out = base.filter(function (x) { return keys[normKey(x.w)]; });
+  return out;
+}
+function rogueS() {
+  if (!S.rogue || typeof S.rogue !== "object") S.rogue = { settings: rogueDefaults(), run: null, logs: [], stats: { runs: 0, wins: 0, best: 0 } };
+  var r = S.rogue;
+  var d = rogueDefaults();
+  r.settings = r.settings || {};
+  for (var k in d) if (typeof r.settings[k] !== "boolean") r.settings[k] = d[k];
+  if (!Array.isArray(r.logs)) r.logs = [];
+  if (!r.stats) r.stats = { runs: 0, wins: 0, best: 0 };
+  return r;
+}
+function rogueLog(ev) {
+  var r = rogueS();
+  var run = r.run;
+  var o = { t: Date.now(), ev: ev };
+  if (run) { o.id = run.id; o.hp = run.hp; o.prog = run.prog; o.combo = run.combo; o.idx = run.idx; }
+  r.logs.push(o);
+  if (r.logs.length > RQ.logMax) r.logs = r.logs.slice(-RQ.logMax);
+}
+function rogueSave() { try { saveNow(); } catch (e) {} }
+
+/* ---- 词池与家族索引 ---- */
+var roguePoolCache = null, rogueFamCache = null;
+function roguePos(w) {
+  var p = posOfWord(w.m).replace(".", "");
+  if (p === "vt" || p === "vi") p = "v";
+  return p;
+}
+function roguePool() {
+  if (roguePoolCache) return roguePoolCache;
+  var deck = S.decks[0] || null;
+  var ws = deck ? wordsOf(deck.id) : [];
+  var out = [];
+  for (var i = 0; i < ws.length; i++) {
+    var w = ws[i];
+    if (!w || !w.w || !w.m) continue;
+    var p = roguePos(w);
+    if (p === "prep" || p === "conj" || p === "pron" || p === "num" || p === "art" || p === "aux" || p === "int") continue;
+    if (!p) continue;
+    out.push({ w: w.w, m: w.m, ph: w.ph || w.p || "", pos: p });
+  }
+  roguePoolCache = out;
+  return out;
+}
+function rogueFam() {
+  if (rogueFamCache) return rogueFamCache;
+  var hi = {}, me = {}, byWord = {};
+  var pool = roguePool(), have = {};
+  pool.forEach(function (x) { have[x.w] = x; });
+  function add(dst, root, arr, tier) {
+    var mem = [];
+    for (var i = 0; i < arr.length; i++) if (have[arr[i]]) mem.push(arr[i]);
+    if (mem.length >= 2) { dst[root] = mem; mem.forEach(function (w) { if (!byWord[w]) byWord[w] = { root: root, tier: tier }; }); }
+  }
+  var F = typeof ROGUE_FAM === "object" && ROGUE_FAM ? ROGUE_FAM : { high: {}, medium: {} };
+  for (var r in (F.high || {})) add(hi, r, F.high[r], "high");
+  for (var r2 in (F.medium || {})) add(me, r2, F.medium[r2], "medium");
+  rogueFamCache = { high: hi, medium: me, byWord: byWord };
+  return rogueFamCache;
+}
+
+/* ---- 抽题：20 词不重复 + 强制注入 1~2 组 high 家族 ---- */
+function rogueShuffle(arr) {
+  var a2 = arr.slice();
+  for (var i = a2.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = a2[i]; a2[i] = a2[j]; a2[j] = t; }
+  return a2;
+}
+function rogueHasRareSense(it) {
+  var m = String(it.m || "");
+  return (m.match(/[;；]/g) || []).length >= 1 && m.replace(/[;；]/g, "").length >= 8;
+}
+function rogueMarkRare(queue) {
+  var cands = queue.filter(rogueHasRareSense);
+  if (!cands.length) return queue;
+  var pick = cands[Math.floor(Math.random() * cands.length)];
+  if (Math.random() < 0.85) return queue;   /* 约 15% 命中伪装者 */
+  pick.rare = true;
+  return queue;
+}
+function roguePrepare(opt) {
+  opt = opt || {};
+  var cfg = opt.settings || rogueS().settings;
+  var n = opt.n || RQ.total;
+  var pool = opt.pool || rogueSrcPool(opt.src || "pool");
+  if (pool.length < n) n = pool.length;
+  var picked = [], used = {}, injRoot = {};
+  var fam = rogueFam();
+  if (cfg.famBond && !opt.noFam) {
+    var roots = rogueShuffle(Object.keys(fam.high));
+    var wantGroups = opt.groups != null ? opt.groups : (Math.random() < 0.5 ? 1 : 2);
+    for (var g = 0; g < roots.length && wantGroups > 0; g++) {
+      var root = roots[g];
+      var mem = rogueShuffle(fam.high[root]).filter(function (w) { return !used[w]; });
+      if (mem.length < 2) continue;
+      var take = mem.slice(0, 2);
+      take.forEach(function (w) { used[w] = 1; picked.push(w); injRoot[w] = root; });
+      wantGroups--;
+    }
+  }
+  var rest = rogueShuffle(pool.map(function (x) { return x.w; })).filter(function (w) { return !used[w]; });
+  for (var i = 0; i < rest.length && picked.length < n; i++) { if (!used[rest[i]]) { used[rest[i]] = 1; picked.push(rest[i]); } }
+  picked = picked.slice(0, n);
+  var byWord = {};
+  pool.forEach(function (x) { byWord[x.w] = x; });
+  return picked.map(function (w) {
+    var x = byWord[w] || { w: w, m: "", pos: "" };
+    if (injRoot[w]) return { k: x.k, w: x.w, m: x.m, ph: x.ph, pos: x.pos, root: injRoot[w], tier: "high" };
+    var f = fam.byWord[w] || null;
+    return { k: x.k, w: x.w, m: x.m, ph: x.ph, pos: x.pos, root: f ? f.root : "", tier: f ? f.tier : "" };
+  });
+}
+
+/* ---- 计分（纯函数，便于自测） ---- */
+function rogueGain(o) {
+  o = o || {};
+  var posBond = o.posBond !== false, famBond = o.famBond !== false;
+  var combo = Math.max(0, Math.min(num(o.combo, 0), 20));
+  var g = RQ.base, d = { base: RQ.base, combo: 0, crit: 0, stage: 0, echo: 0 };
+  if (posBond) { d.combo = Math.min(combo * RQ.comboStep, RQ.comboCap); g += d.combo; }
+  if (posBond && num(o.samePos, 0) >= 3) { d.crit = g * (RQ.critMult - 1); g *= RQ.critMult; }
+  if (posBond && combo > 0 && combo % RQ.stageStep === 0 && num(o.stageUsed, 0) < RQ.stageMax) { d.stage = RQ.stageAdd; g += RQ.stageAdd; }
+  if (famBond && o.echoNow && num(o.echoUsed, 0) < RQ.echoMax) { d.echo = RQ.echoAdd; g += RQ.echoAdd; }
+  d.total = Math.round(g * 100) / 100;
+  return d;
+}
+
+/* ---- 渲染 ---- */
+function rogueCur() {
+  var r = rogueS(); var run = r.run;
+  if (!run) return null;
+  if (run.phase === "boss") return (run.bossList && run.bossList[run.bossIdx]) || null;
+  if (!run.queue || !run.queue[run.idx]) return null;
+  return run.queue[run.idx];
+}
+function rogueEnterBoss(run) {
+  var seen = [], has = {};
+  for (var i = 0; i < run.answered.length; i++) {
+    var w = run.answered[i] && run.answered[i].w;
+    if (!w || has[w]) continue;
+    has[w] = 1;
+    var q = null;
+    for (var j = 0; j < run.queue.length; j++) { if (run.queue[j].w === w) { q = run.queue[j]; break; } }
+    if (q) seen.push({ w: q.w, m: q.m, ph: q.ph, pos: q.pos, root: q.root, tier: q.tier });
+  }
+  if (!seen.length && run.queue[run.idx]) {
+    var c = run.queue[run.idx];
+    seen.push({ w: c.w, m: c.m, ph: c.ph, pos: c.pos, root: c.root, tier: c.tier });
+  }
+  if (!seen.length) return false;
+  run.phase = "boss"; run.bossList = seen; run.bossIdx = 0; run.undo = null;
+  rogueLog("boss");
+  return true;
+}
+function rogueCfgPaint() {
+  var c = rogueCfg();
+  function mark(box, attr, val) {
+    var els = $$("#" + box + " button[data-" + attr + "]");
+    for (var i = 0; i < els.length; i++) {
+      els[i].classList.toggle("on", els[i].getAttribute("data-" + attr) === val);
+    }
+  }
+  mark("rcfg-src", "src", c.src);
+  mark("rcfg-diff", "diff", c.diff);
+  mark("rcfg-mode", "mode", c.mode);
+  var hint = $("#rogue-cfg-hint");
+  var dueN = 0;
+  try { dueN = rogueBattlePool().length; } catch (e) {}
+  var bb = $$("#rcfg-mode button[data-mode='battle']")[0];
+  if (bb) { bb.disabled = !dueN; bb.style.opacity = dueN ? "" : ".45"; }
+  if (hint) {
+    var n = c.mode === "battle" ? dueN : rogueSrcPool(c.src).length;
+    hint.textContent = c.mode === "battle"
+      ? (dueN ? "今日到期 " + dueN + " 词；答错会被降级并打回生词本" : "今天没有到期要复习的词")
+      : ("该词源可用 " + n + " 词" + (c.mode === "tower" ? "；爬塔每层 " + Math.min(RQ.towerN, n || RQ.towerN) + " 题" : "；单局 " + Math.min(RQ.total, n || RQ.total) + " 题"));
+  }
+}
+function rogueOpenCfg() {
+  rogueCfgPaint();
+  var m = $("#rogue-cfg"); if (m) m.classList.add("on");
+}
+function rogueSyncHome() {
+  var btn = $("#btn-home-rogue"); if (!btn) return;
+  var r = rogueS(); var run = r.run;
+  var es = $("#home-rogue-es"), bn = $("#home-rogue-n");
+  if (run && run.mode === "tower" && (run.status === "playing" || run.status === "paused")) {
+    if (es) es.textContent = "继续爬塔：第 " + run.floor + " 层 · HP " + run.hp + " · 本层 " + run.floorOk + "/" + run.floorN;
+    if (bn) bn.textContent = "爬塔中";
+    return;
+  }
+  if (run && (run.status === "playing" || run.status === "paused") && run.idx < run.queue.length) {
+    if (es) es.textContent = "继续：第 " + (run.idx + 1) + " / " + run.queue.length + " 题 · HP " + run.hp + " · 进度 " + Math.min(100, Math.round(run.prog)) + "%";
+    if (bn) bn.textContent = "未完成";
+  } else if (run && run.status === "paused") {
+    if (es) es.textContent = "已中断保存，点进去继续这一局";
+    if (bn) bn.textContent = "中断";
+  }
+}
+function rogueRender() {
+  (function () {
+    var _s = rogueS(), _r = _s.run;
+    if (_r && _r.status === "playing") {
+      var tag = _r.idx + ":" + (_r.phase || "normal");
+      if (_r.qStartFor !== tag) { _r.qStart = Date.now(); _r.qStartFor = tag; }
+    }
+  })();
+  var r = rogueS(), run = r.run;
+  if (!run) return;
+  var it = rogueCur();
+  var hp = $("#rogue-hp"), idx = $("#rogue-idx"), cb = $("#rogue-combo");
+  if (hp) hp.textContent = run.hp;
+  if (idx) idx.textContent = run.phase === "boss"
+    ? ("Boss " + (run.bossIdx + 1) + " / " + (run.bossList ? run.bossList.length : 0))
+    : (run.mode === "tower"
+      ? ((Math.min(run.idx + 1, run.queue.length)) + " / " + run.queue.length)
+      : ((Math.min(run.idx + 1, run.queue.length)) + " / " + run.queue.length));
+  var fl = $("#rogue-floor");
+  if (fl) {
+    if (run.mode === "tower") { fl.style.display = ""; fl.textContent = "🏢 第 " + run.floor + " 层"; }
+    else fl.style.display = "none";
+  }
+  if (cb) cb.textContent = "连击 " + run.combo + (run.critStreak >= 3 ? " · 暴击" : "");
+  var pf = $("#rogue-progfill"), pt = $("#rogue-progtxt");
+  var pct = run.mode === "tower"
+    ? (run.floorN ? (run.floorOk / run.floorN) * 100 : 0)
+    : Math.max(0, Math.min(100, run.prog));
+  if (pf) pf.style.width = pct + "%";
+  if (pt) pt.textContent = Math.round(pct) + "%";
+  var tg = $("#rogue-tag"), fm = $("#rogue-fam");
+  if (tg) tg.textContent = it ? (it.pos === "v" ? "动词" : it.pos === "n" ? "名词" : it.pos === "adj" ? "形容词" : it.pos === "adv" ? "副词" : "") : "";
+  if (fm) {
+    var showFam = it && it.root && ((it.tier === "high") || (it.tier === "medium" && r.settings.famBond));
+    fm.textContent = showFam ? "🔗 " + it.root + (it.tier === "medium" ? "（弱）" : "") : "";
+    fm.className = "rfam" + (r.settings.colorblind ? " cb" : "");
+  }
+  var wEl = $("#rogue-word"), phEl = $("#rogue-ph");
+  var qtEl = $("#rogue-qt");
+  if (qtEl) {
+    var nm = it && it.qt === "mean" ? "选义" : it && it.qt === "word" ? "选词" : "闪过";
+    qtEl.textContent = "第 " + (num(run.idx, 0) + 1) + " 题 · " + nm;
+  }
+  var optsEl = $("#rogue-opts");
+  var isPick = !!(it && (it.qt === "mean" || it.qt === "word") && it.opts && it.opts.length === 4);
+  if (optsEl) {
+    optsEl.classList.add("show");
+    if (isPick) {
+      optsEl.style.display = "";
+      optsEl.innerHTML = it.opts.map(function (o) {
+        return '<button class="ropt" data-k="' + o.k + '">' + o.t + "</button>";
+      }).join("");
+    } else { optsEl.style.display = "none"; optsEl.innerHTML = ""; optsEl.classList.remove("show"); }
+  }
+  var rb = $("#scr-rogue .rbtns");
+  if (rb) rb.style.display = isPick ? "none" : "";
+  if (rb) { var sp=$("#btn-rogue-skip"); if(sp) sp.style.display = isPick?"none":""; var ud=$("#btn-rogue-undo"); if(ud) ud.style.display = isPick?"none":""; }
+  var rareEl = $("#rogue-rare");
+  var rareEl = $("#rogue-rare");
+  if (rareEl) rareEl.style.display = (it && it.rare) ? "inline-flex" : "none";
+  var QT_VIEW = { flash: { stem: "w", ph: 1 }, mean: { stem: "w", ph: 1 }, word: { stem: "m", ph: 0 } };
+  var qtv = QT_VIEW[(it && it.qt) || "flash"] || QT_VIEW.flash;
+  if (wEl) {
+    wEl.textContent = it ? (qtv.stem === "m" ? it.m : it.w) : "—";
+    wEl.style.fontSize = qtv.stem === "m" ? "26px" : "";
+    wEl.style.lineHeight = qtv.stem === "m" ? "1.5" : "";
+  }
+  if (phEl) phEl.style.display = (it && qtv.ph) ? "" : "none";
+  if (phEl) phEl.textContent = it ? it.ph : "";
+  var hint = $("#rogue-hint");
+  if (hint) hint.textContent = "认识 = 答对，不认识 = 扣 " + (run.dmgWrong || RQ.dmgWrong) + " 血；超时扣 " + (run.dmgTimeout || RQ.dmgTimeout) + " 血";
+  var ub = $("#btn-rogue-undo");
+  if (ub) ub.disabled = run.phase === "boss" || !(run.status === "playing" && run.undo && Date.now() <= run.undo.until);
+  var sb = $("#btn-rogue-skip");
+  var hideSub = run.phase === "boss";
+  if (sb) sb.style.display = hideSub ? "none" : "";
+  if (ub) ub.style.display = hideSub ? "none" : "";
+  var hEl = $("#rogue-hint");
+  if (hEl && run.phase === "boss") hEl.textContent = "Boss 战：答对全部 Boss 词即通关，答错扣 " + RQ.dmgWrong + " 血";
+  rogueHurt(run);
+  rogueSyncHome();
+}
+function rogueSanOn(run) {
+  if (!run) return false;
+  return run.diff === "hard" || (run.mode === "tower" && num(run.floor, 1) >= 3);
+}
+function rogueSanUpdate(run, opts) {
+  var el = $("#rogue-san"); if (!el) return;
+  opts = opts || {};
+  if (!rogueSanOn(run) || run.sanOff) { el.style.opacity = "0"; el.classList.remove("glitch"); return; }
+  var w = num(run.sanWrong, 0);
+  var t = (typeof run.lastLeft === "number") ? run.lastLeft : 99999;
+  var wide = window.innerWidth > window.innerHeight;
+  var lv = Math.min(1, Math.max(w * 0.22, t < 3000 ? 0.35 : 0, t < 1500 ? 0.2 : 0));
+  if (wide) lv = Math.min(lv, 0.7);
+  if (opts.boom) lv = 1;
+  el.style.opacity = String(lv);
+  el.classList.toggle("on", lv > 0.02);
+  if (opts.glitch) {
+    el.classList.add("glitch");
+    var sc = document.getElementById("scr-rogue");
+    if (sc) { sc.classList.add("shake"); window.__rgShakeT = setTimeout(function(){ sc.classList.remove("shake"); }, 220); }
+    setTimeout(function () { el.classList.remove("glitch"); }, 240);
+  }
+}
+function rogueSanClear(run) {
+  var el = $("#rogue-san"); if (!el) return;
+  run.sanWrong = 0; run.sanOff = true;
+  el.style.opacity = "0";
+  setTimeout(function () { run.sanOff = false; }, 400);
+  var d = $("#rogue-disperse");
+  if (d) { d.classList.add("on"); setTimeout(function () { d.classList.remove("on"); }, 700); }
+}
+var QT_RATIO = { single: ["flash","flash","flash","flash","flash","mean","mean","mean","word","word"],
+                 tower: ["flash","flash","flash","flash","flash","flash","mean","mean","word","word"],
+                 battle: ["flash","flash","flash","flash","flash","flash","flash","mean","word"] };
+function wtQuota(w, total) {
+  var keys = ["flash", "mean", "word"];
+  var sum = 0, i;
+  for (i = 0; i < keys.length; i++) sum += Math.max(0, Number(w[keys[i]]) || 0);
+  if (sum <= 0) sum = 1;
+  var raw = [], got = 0, frac = [];
+  for (i = 0; i < keys.length; i++) {
+    var v = (Math.max(0, Number(w[keys[i]]) || 0) / sum) * total;
+    raw[i] = Math.floor(v);
+    got += raw[i];
+    frac.push({ i: i, f: v - Math.floor(v) });
+  }
+  frac.sort(function (x, y) { return y.f - x.f; });
+  var p = 0;
+  while (got < total && frac.length) { raw[frac[p % frac.length].i]++; got++; p++; }
+  var out = [];
+  for (i = 0; i < keys.length; i++) for (var k = 0; k < raw[i]; k++) out.push(keys[i]);
+  return out;
+}
+function rogueTypeDeck(run) {
+  var w = (S.rogue && S.rogue.settings && S.rogue.settings.qtW) || {};
+  var dflt = (run.src === "battle") ? { flash: 7, mean: 2, word: 1 } : { flash: 5, mean: 3, word: 2 };
+  var mix = { flash: Number(w.flash == null ? dflt.flash : w.flash), mean: Number(w.mean == null ? dflt.mean : w.mean), word: Number(w.word == null ? dflt.word : w.word) };
+  var base = wtQuota(mix, 10);
+  var need = Math.max(base.length, num(run.floorN, RQ.total) || RQ.total);
+  var out = [];
+  while (out.length < need) out = out.concat(base);
+  for (var i = out.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = out[i]; out[i] = out[j]; out[j] = t; }
+  return out;
+}
+function rogueEnsureType(run, it) {
+  if (!it) return it;
+  if (it.rare && it.qt !== "mean") it.qt = "mean";
+  if (!it.qt) {
+    if (!run.qtsDeck) { run.qtsDeck = rogueTypeDeck(run); run.qtsP = 0; }
+    var _qt = run.qtsDeck[run.qtsP % run.qtsDeck.length] || "flash";
+    run.qtsP = num(run.qtsP, 0) + 1;
+    it.qt = _qt;
+  }
+  if ((it.qt === "mean" || it.qt === "word") && !it.opts) it.opts = rogueBuildOpts(it, it.qt);
+  return it;
+  if (!run.qtsDeck) { run.qtsDeck = rogueTypeDeck(run); run.qtsP = 0; }
+  var qt = run.qtsDeck[run.qtsP % run.qtsDeck.length] || "flash";
+  run.qtsP = num(run.qtsP, 0) + 1;
+  it.qt = qt;
+  if ((qt === "mean" || qt === "word") && !it.opts) it.opts = rogueBuildOpts(it, qt);
+  return it;
+}
+function rogueBuildOpts(it, qt) {
+  var pool = roguePool();
+  var same = pool.filter(function (x) { return x.pos === it.pos && x.w !== it.w; });
+  var others = same.length >= 3 ? same : pool.filter(function (x) { return x.w !== it.w; });
+  var picks = [], used = {};
+  while (picks.length < 3 && others.length) {
+    var k = Math.floor(Math.random() * others.length);
+    var cand = others.splice(k, 1)[0];
+    if (!cand || used[cand.w]) continue;
+    used[cand.w] = 1;
+    picks.push(qt === "mean" ? cand.m : cand.w);
+  }
+  var right = qt === "mean" ? it.m : it.w;
+  var arr = picks.concat([right]);
+  for (var i = arr.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = arr[i]; arr[i] = arr[j]; arr[j] = t; }
+  return arr.map(function (txt, idx) { return { k: idx, t: txt, ok: txt === right }; });
+}
+function roguePick(it, idx) {
+  var run = rogueS().run; if (!run || run.status !== "playing") return;
+  if (run.revealing || run.pending) return;
+  var o = (it.opts || []).filter(function (x) { return x.k === idx; })[0];
+  if (!o) return;
+  run.confirmPass = true;
+  if (o.ok) { sfx("ok", run.combo + 1); rogueAnswer("know"); }
+  else {
+    run.lastPick = o.t;
+    sfx("no"); vib("no");
+    rogueAnswer("no");
+  }
+}
+function rogueHurt(run) {
+  var el = $("#rogue-hurt");
+  if (!el) return;
+  var max = num(run.maxHp, 100) || 100;
+  var pct = Math.max(0, Math.min(1, num(run.hp, 0) / max));
+  var lv = pct > 0.75 ? 0 : pct > 0.5 ? 1 : pct > 0.25 ? 2 : 3;
+  el.classList.toggle("lv1", lv === 1);
+  el.classList.toggle("lv2", lv === 2);
+  el.classList.toggle("lv3", lv === 3);
+  el.classList.toggle("beat", lv === 3);
+  if (run._hvLv !== undefined && run.hp < num(run._hvHp, run.hp)) {
+    el.classList.add("hurt");
+    var sc = $("#scr-rogue");
+    if (sc) { sc.classList.remove("shake"); void sc.offsetWidth; sc.classList.add("shake"); }
+    if (window.__rgShakeT) clearTimeout(window.__rgShakeT);
+    window.__rgShakeT = setTimeout(function () {
+      el.classList.remove("hurt");
+      if (sc) sc.classList.remove("shake");
+    }, lv >= 3 ? 620 : 420);
+  }
+  run._hvLv = lv;
+  run._hvHp = run.hp;
+}
+function rogueHurtReset() {
+  var el = $("#rogue-hurt");
+  if (el) el.className = "rhurt";
+  var sc = $("#scr-rogue");
+  if (sc) sc.classList.remove("shake");
+}
+function rogueFlash(main, sub) {
+  var el = $("#rogue-flash");
+  if (!el) return;
+  el.innerHTML = main + (sub ? "<em>" + sub + "</em>" : "");
+  el.classList.add("on");
+  if (rogueFlashTimer) clearTimeout(rogueFlashTimer);
+  rogueFlashTimer = setTimeout(function () { el.classList.remove("on"); }, 1100);
+}
+function rogueBar(p) {
+  var b = $("#rogue-tbar"); if (!b) return;
+  b.style.width = Math.max(0, Math.min(100, p * 100)) + "%";
+  b.style.background = p > 0.5 ? "#2f7cf6" : p > 0.25 ? "#f2c14e" : "#e57373";
+}
+function rogueStopTimer() {
+  if (rogueTimer) { clearInterval(rogueTimer); rogueTimer = 0; }
+  if (rogueAdvanceTimer) { clearTimeout(rogueAdvanceTimer); rogueAdvanceTimer = 0; }
+}
+function rogueArmTimer() {
+  rogueStopTimer();
+  var run = rogueS().run;
+  if (!run || run.status !== "playing") return;
+  var it0 = rogueCur() || {};
+  try { if (it0 && run) rogueEnsureType(run, it0); } catch (e) {}
+  var base = RQ.qTime * (run.timeScale || 1);
+  if (run.mode === "tower") base -= (run.floor - 1) * RQ.floorTimeStep;
+  var lenB = Math.floor(String(it0.w || "").length / 3) * RQ.lenBonusPer3;
+  var isPickQ = !!(it0 && (it0.qt === "mean" || it0.qt === "word"));
+  var total = Math.max(isPickQ ? 5000 : RQ.minQTime, base + lenB + num(run.floorTimeBonus, 0) + num(run.tBonus, 0) + (isPickQ ? 1500 : 0));
+  run.tBonus = 0;
+  run.qDeadline = Date.now() + total;
+  run.qTotal = total;
+  rogueTimer = setInterval(function () {
+    var rr = rogueS().run;
+    if (!rr || rr.status !== "playing") { rogueStopTimer(); return; }
+    var left = rr.qDeadline - Date.now();
+    rr.lastLeft = left;
+    try { rogueSanUpdate(rr, {}); } catch (e) {}
+    rogueBar(left / rr.qTotal);
+    var dying = num(rr.hp, 0) < 20 && left < 3000;
+    if (dying !== !!SFX.beating) { SFX.beating = dying; sfxHeart(dying); }
+    if (left <= 0) { rogueStopTimer(); rogueAnswer("timeout"); }
+  }, 100);
+  rogueBar(1);
+}
+
+/* ---- 开局 ---- */
+var ROGUE_LOOT = [
+  { id: "heal", t: "🧪 回复 25 HP" },
+  { id: "echo", t: "⚡ 本层下一次共鸣收益 ×2（+30）" },
+  { id: "time", t: "⏱️ 下一层每题时间 +1 秒" }
+];
+var SHOP = {
+  life: { id: "life", name: "免死金牌", price: 200, desc: "HP 归零时自动消耗，锁 1 血复活（每局一次）" },
+  tea: { id: "tea", name: "护肝茶", price: 300, desc: "今日复习上限 +50，且今天答错的词不降级" }
+};
+function rogueWallet() {
+  var r = rogueS();
+  if (!r.coins && r.coins !== 0) r.coins = 0;
+  if (!r.items) r.items = { life: 0, tea: 0 };
+  return r;
+}
+function rogueAddCoins(n) {
+  var r = rogueWallet(); r.coins = Math.max(0, num(r.coins, 0) + n);
+  rogueSave();
+  return r.coins;
+}
+function shopRender() {
+  var r = rogueWallet();
+  var box = $("#shop-body"); if (!box) return;
+  var teaOn = (S.rogue && S.rogue.teaDay === today());
+  box.innerHTML =
+    '<div class="shopcoin">🪙 金币 <b>' + num(r.coins, 0) + '</b></div>' +
+    [SHOP.life, SHOP.tea].map(function (it) {
+      var own = num(r.items[it.id], 0);
+      return '<div class="shoprow"><div class="si"><div class="sn">' + it.name + ' <span class="owned">持有 ' + own + '</span></div>' +
+        '<div class="sd">' + it.desc + '</div></div>' +
+        '<button class="btn ' + (num(r.coins, 0) >= it.price ? "" : "ghost") + '" data-buy="' + it.id + '"' +
+        (num(r.coins, 0) >= it.price ? "" : " disabled") + '>' + it.price + ' 币</button></div>';
+    }).join("") +
+    '<div class="tiny muted" style="margin-top:10px">' + (teaOn ? "今日护肝茶已生效：复习上限 +50" : "金币来源：答对 +3 / 5 连 +5 / Boss +30") + '</div>';
+}
+function shopOpen() {
+  var m = $("#shop-mask"); if (!m) return;
+  shopRender(); m.classList.add("on");
+}
+function shopBuy(id) {
+  var it = SHOP[id]; if (!it) return;
+  var r = rogueWallet();
+  if (num(r.coins, 0) < it.price) { toast("金币不够"); return; }
+  r.coins = num(r.coins, 0) - it.price;
+  r.items[id] = num(r.items[id], 0) + 1;
+  if (id === "tea") r.teaDay = today();
+  sfx("coin");
+  rogueSave(); shopRender(); toast("已购买 " + it.name);
+}
+function rogueStart(opts) {
+  opts = opts || {};
+  if (opts.mode === "battle") {
+    var bk = rogueBattlePool();
+    if (!bk.length) { toast("今天没有到期要复习的词"); return; }
+    opts = { mode: "tower", src: "battle", pool: bk, diff: opts.diff, battle: true };
+  }
+  try { rogueCheckHide(); } catch (e) {}
+  try { rogueReviewHide(); } catch (e) {}
+  opts = opts || {};
+  var r = rogueS(), cfg = rogueCfg();
+  var src = opts.src || cfg.src || "pool";
+  var diff = opts.diff || cfg.diff || "normal";
+  var mode = opts.mode || cfg.mode || "single";
+  r.cfg = { src: src, diff: diff, mode: mode };
+  var D = rogueDiff(diff);
+  var run = {
+    id: "R" + Date.now().toString(36),
+    queue: [], idx: 0,
+    hp: D.hp, maxHp: D.hp, dmgWrong: D.wrong, dmgTimeout: D.timeout, timeScale: D.timeScale,
+    src: src, diff: diff, mode: mode,
+    floor: 1, floorOk: 0, floorN: 0, floors: [], floorTimeBonus: 0,
+    loot: { used: [], echo2: false, timeBonus: 0 },
+    prog: 0, combo: 0, critStreak: 0, lastPos: "",
+    posRun: {}, stageUsed: 0, echoUsed: 0, healUsed: 0, nounOk: 0,
+    addTime: 0, buffUsed: false, tBonus: 0,
+    answered: [], skipped: 0, undo: null,
+    phase: "normal", bossList: [], bossIdx: 0,
+    status: "playing", startedAt: Date.now(), pausedAt: 0,
+    correct: 0, wrong: 0, timeout: 0
+  };
+  if (opts.battle) { run.battle = true; run.reviewKilled = 0; run.bounced = 0; run.demotedGrad = 0; run.poolOverride = opts.pool || []; }
+  if (mode === "tower") {
+    if (!rogueTowerFloor(run)) { try { toast("这个词源里没有可用的词"); } catch (e) {} return; }
+  } else {
+    run.queue = rogueMarkRare(run.queue);
+  run.queue = roguePrepare({ src: src, n: RQ.total });
+    if (!run.queue.length) { try { toast("这个词源里没有可用的词"); } catch (e) {} return; }
+  }
+  r.run = run;
+  rogueHurtReset();
+  rogueLog("start");
+  rogueSave();
+  show("rogue");
+  rogueRender();
+  rogueArmTimer();
+}
+function rogueTowerFloor(run) {
+  var pool = (run.poolOverride && run.poolOverride.length) ? run.poolOverride : rogueSrcPool(run.src);
+  if (!pool.length) return false;
+  if (run.floor > 1) run.hp = Math.min(run.maxHp, run.hp + RQ.towerHeal);
+  run.floorN = Math.min(RQ.towerN, pool.length);
+  if (run.poolOverride && run.poolOverride.length) {
+    var pv = run.poolOverride.slice();
+    for (var q = pv.length - 1; q > 0; q--) { var jj = Math.floor(Math.random() * (q + 1)); var tt = pv[q]; pv[q] = pv[jj]; pv[jj] = tt; }
+    run.queue = pv.slice(0, run.floorN).map(function (it) {
+      return { k: normKey(it.w), w: it.w, m: it.m, ph: it.ph, pos: it.pos, root: it.root, tier: it.tier };
+    });
+  } else run.queue = roguePrepare({ src: run.src, n: run.floorN, noFam: true });
+  if (!run.queue.length) return false;
+  run.idx = 0; run.floorOk = 0;
+  run.phase = "normal"; run.bossList = []; run.bossIdx = 0;
+  run.qStartFor = null; run.undo = null; run.pending = null;
+  run.floorTimeBonus = (run.loot && run.loot.timeBonus) || 0;
+  if (run.loot) run.loot.timeBonus = 0;
+  run.floors.push({ n: run.floor, answered: [], at: Date.now() });
+  return true;
+}
+function rogueLootShow(run) {
+  var box = $("#rogue-loot"); if (!box) return;
+  var used = (run.loot && run.loot.used) || [];
+  var left = ROGUE_LOOT.filter(function (x) { return used.indexOf(x.id) < 0; });
+  var title = $("#rogue-loot-title");
+  if (title) title.textContent = "第 " + run.floor + " 层通过 · 战利品三选一";
+  var opts = $("#rogue-loot-opts");
+  if (opts) {
+    if (!left.length) {
+      opts.innerHTML = '<button class="btn primary block" data-loot="none">全部拿完了 · 继续下一层</button>';
+    } else {
+      opts.innerHTML = left.map(function (x) {
+        return '<button class="btn ghost block rloot" data-loot="' + x.id + '" style="margin-bottom:8px;text-align:left;padding-left:14px">' + x.t + "</button>";
+      }).join("");
+    }
+  }
+  box.classList.add("on");
+}
+function rogueLootPick(id) {
+  var r = rogueS(), run = r.run;
+  if (!run) return;
+  if (id !== "none" && run.loot) {
+    run.loot.used.push(id);
+    if (id === "heal") run.hp = Math.min(run.maxHp, run.hp + 25);
+    if (id === "echo") run.loot.echo2 = true;
+    if (id === "time") run.loot.timeBonus = 1000;
+  }
+  var m = $("#rogue-loot"); if (m) m.classList.remove("on");
+  run.floor++;
+  if (run.settings === undefined) run.settings = {};
+  try {
+    var gs = (S.rogue && S.rogue.settings) || {};
+    if (gs.dmgWrong) run.dmgWrong = Number(gs.dmgWrong);
+    if (gs.dmgStep != null) run.dmgStep = Number(gs.dmgStep);
+  } catch (e) {}
+  applyAccess(run.settings);
+  if (!rogueTowerFloor(run)) { rogueFinish("win"); return; }
+  rogueSave();
+  rogueRender();
+  rogueArmTimer();
+}
+function rogueTowerDone(run) {
+  rogueStopTimer();
+  run.undo = null;
+  var cur = run.floors[run.floors.length - 1];
+  if (cur) cur.done = true;
+  rogueSave();
+  rogueLootShow(run);
+}
+function rogueTowerAdvance() {
+  var r = rogueS(), run = r.run;
+  if (!run || run.status !== "playing") return;
+  run.undo = null;
+  if (run.phase === "boss") {
+    run.bossIdx++;
+    if (run.bossIdx >= (run.bossList ? run.bossList.length : 0)) { rogueTowerDone(run); return; }
+    rogueSave(); rogueRender(); rogueArmTimer(); return;
+  }
+  run.idx++;
+  if (run.idx >= run.queue.length || run.floorOk >= run.floorN) {
+    if (run.floor % RQ.bossEvery === 0 && r.settings.boss && run.answered.length) {
+      var pool = run.answered.slice(-RQ.bossN).map(function (x) {
+        return { k: x.k, w: x.w, m: "", ph: "", pos: x.pos, root: x.root, tier: "high" };
+      });
+      run.bossList = pool; run.bossIdx = 0; run.phase = "boss";
+      rogueSave(); rogueRender(); rogueArmTimer(); return;
+    }
+    rogueTowerDone(run); return;
+  }
+  rogueSave(); rogueRender(); rogueArmTimer();
+}
+
+/* ---- 答题 ---- */
+function rogueSnapshot() {
+  var run = rogueS().run;
+  return JSON.parse(JSON.stringify({
+    hp: run.hp, prog: run.prog, combo: run.combo, critStreak: run.critStreak, lastPos: run.lastPos,
+    posRun: run.posRun, stageUsed: run.stageUsed, echoUsed: run.echoUsed, healUsed: run.healUsed,
+    nounOk: run.nounOk, addTime: run.addTime, buffUsed: run.buffUsed, idx: run.idx, tBonus: run.tBonus,
+    answered: run.answered, skipped: run.skipped, correct: run.correct, wrong: run.wrong, timeout: run.timeout,
+    phase: run.phase, bossIdx: run.bossIdx
+  }));
+}
+function rogueCheckShow(it) {
+  var box = $("#rogue-check");
+  if (box) box.classList.add("on");
+  var m = $("#rogue-mean"), e = $("#rogue-ex");
+  if (m) m.textContent = (it && it.m) ? it.m : "";
+  if (e) {
+    var s = (it && it.m) ? String(it.m) : "";
+    var mm = s.match(/[A-Z][^.!?]*[.!?]/);
+    e.textContent = mm ? mm[0] : "";
+  }
+  var fb = $("#btn-rogue-flip");
+  if (fb) { fb.disabled = false; fb.classList.remove("off"); }
+  var kb2 = $("#btn-rogue-know"), nb2 = $("#btn-rogue-no");
+  if (kb2) kb2.disabled = true;
+  if (nb2) nb2.disabled = true;
+}
+function rogueCheckHide() {
+  var box = $("#rogue-check");
+  if (box) box.classList.remove("on");
+  var fb = $("#btn-rogue-flip");
+  if (fb) { fb.disabled = true; fb.classList.add("off"); }
+  var kb3 = $("#btn-rogue-know"), nb3 = $("#btn-rogue-no");
+  if (kb3) kb3.disabled = false;
+  if (nb3) nb3.disabled = false;
+}
+function rogueStartCheck(r, run, it) {
+  if (!it) return;
+  rogueStopTimer();
+  run.pending = { w: it.w, m: it.m, ph: it.ph, pos: it.pos, root: it.root, tier: it.tier, at: Date.now() };
+  rogueCheckShow(it);
+  rogueLog("check");
+  rogueSave();
+  rogueCheckTimer = setTimeout(function () { rogueConfirmKnown(); }, 1500);
+  rogueLateTimer = setTimeout(function () {
+    if (run.pending) { run.pending = null; rogueCheckHide(); rogueAnswer("timeout"); }
+  }, 3000);
+}
+function rogueConfirmKnown() {
+  var r = rogueS(), run = r.run;
+  if (!run || !run.pending) return;
+  if (rogueCheckTimer) { clearTimeout(rogueCheckTimer); rogueCheckTimer = 0; }
+  if (rogueLateTimer) { clearTimeout(rogueLateTimer); rogueLateTimer = 0; }
+  run.pending = null;
+  rogueCheckHide();
+  run.confirmPass = true;
+  rogueAnswer("know");
+  run.confirmPass = false;
+  var run2 = r.run;
+  if (run2 && run2.undo) run2.undo.until = Date.now() + RQ.undoMs;
+}
+function rogueFlip() {
+  var r = rogueS(), run = r.run;
+  if (!run || !run.pending) return;
+  if (rogueCheckTimer) { clearTimeout(rogueCheckTimer); rogueCheckTimer = 0; }
+  if (rogueLateTimer) { clearTimeout(rogueLateTimer); rogueLateTimer = 0; }
+  run.pending = null;
+  run.confirmPass = true;
+  run.flipped = true;
+  rogueCheckHide();
+  rogueAnswer("no");
+  run.flipped = false;
+  run.confirmPass = false;
+  rogueFlashBad("❌ 假认识：扣除 " + RQ.dmgWrong + " 血", "已按「不认识」结算");
+}
+function rogueFlashBad(main, sub) {
+  var el = $("#rogue-flash");
+  if (!el) return;
+  el.className = "rflash on bad";
+  el.innerHTML = main + (sub ? "<em>" + sub + "</em>" : "");
+  if (rogueFlashTimer) clearTimeout(rogueFlashTimer);
+  rogueFlashTimer = setTimeout(function () { el.classList.remove("on"); el.className = "rflash"; }, 1400);
+}
+function rogueBattlePool() {
+  var deck = S.decks[0]; if (!deck) return [];
+  var t = today(), recs = S.records[deck.id] || {};
+  return roguePool().filter(function (it) {
+    var k = normKey(it.w);
+    var r = recs[k] || recs[it.w];
+    return !!(r && r.due && String(r.due) <= t);
+  });
+}
+function rogueBattleApply(run, it, kind) {
+  var deck = S.decks[0]; if (!deck) return;
+  var key = it.k, t = today();
+  var r = ensureRec(deck.id, key);
+  var prevL = num(r.L, 0);
+  applyReviewGrade(deck.id, key, kind === "timeout" ? "timeout" : (kind === "know" ? "know" : "no"), 0);
+  if (kind === "know") { run.reviewKilled = num(run.reviewKilled, 0) + 1; return; }
+  r.L = Math.max(0, prevL - 1);
+  r.stage = 0;
+  r.due = addDays(t, 1);
+  r.weak = true;
+  if (r.graduated) { r.graduated = false; run.demotedGrad = num(run.demotedGrad, 0) + 1; }
+  run.bounced = num(run.bounced, 0) + 1;
+  if (Array.isArray(run.queue)) run.queue = run.queue.filter(function (x) { return x.k !== key; });
+  rogueFlashBad("📉 记忆降级", "该词已打回生词本，明日重练");
+}
+/* ===== 8-bit 音效（Web Audio 纯合成，无外部文件） ===== */
+var SFX = { ctx: null, beatT: 0 };
+function sfxInit() {
+  if (SFX.ctx) { if (SFX.ctx.state === "suspended") try { SFX.ctx.resume(); } catch (e) {} return SFX.ctx; }
+  try {
+    var AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    SFX.ctx = new AC();
+  } catch (e) { SFX.ctx = null; }
+  return SFX.ctx;
+}
+function sfxBeep(freq, dur, type, vol, delay) {
+  var ctx = SFX.ctx; if (!ctx) return;
+  var t0 = ctx.currentTime + (delay || 0);
+  var o = ctx.createOscillator(), g = ctx.createGain();
+  o.type = type || "square";
+  o.frequency.setValueAtTime(freq, t0);
+  g.gain.setValueAtTime(0.0001, t0);
+  var volMul = (S.settings.sfxVol == null ? 0.8 : Math.max(0, Math.min(1, Number(S.settings.sfxVol) / 100)));
+  g.gain.exponentialRampToValueAtTime(Math.max(0.0002, (vol || 0.08) * volMul), t0 + 0.008);
+  g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+  o.connect(g); g.connect(ctx.destination);
+  o.start(t0); o.stop(t0 + dur + 0.02);
+}
+function vib(kind) {
+  try {
+    if (!navigator.vibrate) return;
+    var mode = Number(S.settings.vibMode == null ? 0 : S.settings.vibMode);
+    if (!mode) return;
+    if (mode === 1 && kind !== "no") return;
+    navigator.vibrate(kind === "no" ? 28 : 14);
+  } catch (e) {}
+}
+var SFX_SCALE = [523.25, 587.33, 659.25, 698.46, 783.99, 880, 987.77, 1046.5];
+function sfx(kind, n) {
+  if (!S.settings.soundOn) return;
+  if (!sfxInit()) return;
+  if (kind === "ok") {
+    var i = Math.min(SFX_SCALE.length - 1, Math.max(0, (n || 0) - 1));
+    sfxBeep(SFX_SCALE[i], 0.09, "square", 0.07);
+    sfxBeep(SFX_SCALE[i] * 1.5, 0.06, "triangle", 0.03, 0.05);
+  } else if (kind === "no") {
+    sfxBeep(96, 0.18, "sawtooth", 0.1);
+    sfxBeep(62, 0.22, "square", 0.07, 0.05);
+  } else if (kind === "echo") {
+    sfxBeep(880, 0.08, "triangle", 0.06); sfxBeep(1174.66, 0.08, "triangle", 0.06, 0.08);
+    sfxBeep(1567.98, 0.12, "triangle", 0.06, 0.16);
+  } else if (kind === "coin") {
+    sfxBeep(988, 0.06, "square", 0.05); sfxBeep(1319, 0.1, "square", 0.05, 0.06);
+  }
+}
+function sfxHeart(loop) {
+  if (!S.settings.soundOn) return;
+  if (!sfxInit()) return;
+  if (SFX.beatT) { clearInterval(SFX.beatT); SFX.beatT = 0; }
+  if (!loop) return;
+  function beat() { sfxBeep(58, 0.07, "sine", 0.11); sfxBeep(52, 0.09, "sine", 0.08, 0.22); }
+  beat();
+  SFX.beatT = setInterval(beat, 1100);
+}
+function rogueAnswer(kind) {
+  var r = rogueS(), run = r.run;
+  if (!run || run.status !== "playing") return;
+  if (run.revealing) return;
+  rogueStopTimer();
+  if (run.pending && kind !== "know") { run.pending = null; rogueCheckHide(); }
+  var it = rogueCur();
+  if (!it) { rogueFinish("over"); return; }
+  if (run.undo && Date.now() <= run.undo.until) return; // 连点防护：撤销窗口内不再记分
+
+  var isBoss = run.phase === "boss";
+  if (!isBoss && kind === "know" && !run.confirmPass) {
+    if (run.pending) return;
+    rogueStartCheck(r, run, it);
+    return;
+  }
+  if (run.battle && kind !== "skip") rogueBattleApply(run, it, kind === "timeout" ? "timeout" : kind);
+  if (!isBoss) run.undo = { snap: rogueSnapshot(), until: Date.now() + RQ.undoMs, kind: kind };
+  var cfg = r.settings;
+  if (isBoss) {
+    if (kind === "know") { run.correct++; }
+    else {
+      run.wrong++;
+      run.sanWrong = num(run.sanWrong, 0) + 1;
+      try { rogueSanUpdate(run, { glitch: run.sanWrong >= 2, boom: false }); } catch (e) {}
+      if (kind === "timeout") { run.timeout++; run.hp -= (run.dmgTimeout || RQ.dmgTimeout); } else run.hp -= (run.dmgWrong || RQ.dmgWrong);
+      sfx("no"); vib("no");
+      run.combo = 0; run.critStreak = 0; run.lastPos = "";
+    }
+    rogueLog(kind === "know" ? "boss_ok" : "boss_no");
+    run.bossIdx++;
+    if (run.hp <= 0 && rogueTryLife(run)) { run.hp = 1; rogueRender(); rogueSave(); }
+    if (run.hp <= 0 && rogueTryLife(run)) { run.hp = 1; rogueRender(); rogueSave(); }
+    if (run.hp <= 0) { rogueRender(); rogueSave(); rogueFinish("over"); return; }
+    if (run.bossIdx >= run.bossList.length) { rogueRender(); rogueSave(); rogueFinish("win"); return; }
+    rogueRender(); rogueSave();
+    return;
+  }
+  if (kind === "know") {
+    run.correct++;
+    var cAdd = it && it.rare ? 6 : 3;
+    run.coinsEarn = num(run.coinsEarn, 0) + cAdd;
+    rogueAddCoins(cAdd);
+    if (it && it.rare) { try { rogueFlash("💰 +6 金币", "伪装者 · 熟词僻义双倍", "rare"); } catch (e) {} }
+    try { rogueSanClear(run); } catch (e) {}
+    if (run.combo % 5 === 0) { run.coinsEarn += 5; rogueAddCoins(5); }
+    if (run.phase === "boss") { run.coinsEarn += 30; rogueAddCoins(30); }
+    sfx("ok", run.combo); vib("ok");
+    if (run.mode === "tower" && run.phase !== "boss") run.floorOk++;
+    run.combo++;
+    if (run.combo > num(run.peakCombo, 0)) run.peakCombo = run.combo;
+    run.critStreak = (it.pos === run.lastPos) ? (run.critStreak + 1) : 1;
+    run.lastPos = it.pos;
+    var echoNow = false;
+    if (cfg.famBond && it.root && it.tier === "high") {
+      var prev = run.answered[run.answered.length - 1];
+      if (prev && prev.root === it.root && prev.root) echoNow = true;
+    }
+    var d = rogueGain({
+      posBond: cfg.posBond, famBond: cfg.famBond, combo: run.combo,
+      samePos: run.critStreak, stageUsed: run.stageUsed, echoUsed: run.echoUsed, echoNow: echoNow
+    });
+    run.prog += d.total;
+    if (d.stage) run.stageUsed++;
+    if (d.echo) {
+      run.echoUsed++;
+      if (run.loot && run.loot.echo2) { run.prog += RQ.echoAdd; run.loot.echo2 = false; }
+      if (!run.buffUsed) { run.buffUsed = true; run.tBonus = RQ.buffAdd; }
+    }
+    if (cfg.posBond) {
+      if (it.pos === "n") { run.nounOk++; if (run.nounOk % RQ.healEvery === 0 && run.healUsed < RQ.healMax) { run.healUsed++; run.hp = Math.min(RQ.hpMax, run.hp + RQ.healAdd); } }
+      if (it.pos === "adj" || it.pos === "adv") run.addTime = Math.min(RQ.timeAddCap, run.addTime + RQ.timeAdd);
+    }
+    run.answered.push({ k: it.k, w: it.w, m: it.m, pos: it.pos, root: it.root, ok: true, at: Date.now(), ms: Date.now() - (run.qStart || Date.now()) });
+    rogueLog("answer");
+    if (d.echo) { try { sfx("echo"); } catch (e) {} }
+    if (d.echo) rogueFlash("⚡ 词根共鸣触发：" + it.root, "+" + RQ.echoAdd + " 进度 · 本局 " + run.echoUsed + "/" + RQ.echoMax);
+    if (!cfg.lowFx) {
+      var parts = ["+" + Math.round(d.total * 10) / 10];
+      if (d.echo) parts.push("词根共鸣");
+      if (run.critStreak >= 3 && cfg.posBond) parts.push("动词暴击 ×1.5");
+      if (cfg.posBond && (it.pos === "adj" || it.pos === "adv")) parts.push("时间 +" + (RQ.timeAdd / 1000) + "s");
+      if (cfg.posBond && it.pos === "n" && run.healUsed) parts.push("血量 +" + RQ.healAdd);
+      try { toast(parts.join(" · ")); } catch (e) {}
+    }
+  } else {
+    run.wrong++;
+    if (kind === "timeout") { run.timeout++; run.hp -= (run.dmgTimeout || RQ.dmgTimeout); }
+    else run.hp -= (run.dmgWrong || RQ.dmgWrong);
+    run.combo = 0; run.critStreak = 0; run.lastPos = "";
+    run.answered.push({ k: it.k, w: it.w, m: it.m, pos: it.pos, root: it.root, ok: false, kind: kind, flip: !!run.flipped, at: Date.now(), ms: Date.now() - (run.qStart || Date.now()) });
+    rogueLog("wrong");
+    rogueRender();
+    rogueSave();
+    rogueReviewShow(it, kind, run.hp <= 0);
+    return;
+  }
+  rogueRender();
+  rogueSave();
+  if (run.hp <= 0) { rogueFinish("over"); return; }
+  // 提前通关（≤15 题）→ 进 Boss；否则按题数/进度结算
+  if (run.prog >= 100 && run.mode !== "tower") {
+    if (cfg.boss && run.answered.length <= 15 && rogueEnterBoss(run)) { rogueRender(); rogueSave(); return; }
+    rogueFinish("win"); return;
+  }
+  rogueAdvanceTimer = setTimeout(function () { rogueAdvance(); }, RQ.undoMs);
+}
+function rogueReviewHide() {
+  var box = $("#rogue-review"); if (box) box.classList.remove("on");
+}
+function rogueReviewShow(it, kind, dead) {
+  var r = rogueS(), run = r.run;
+  clearTimeout(rogueReviewTimer);
+  var box = $("#rogue-review"); if (!box) { if (dead) rogueFinish("over"); else rogueAdvance(); return; }
+  var pen = kind === "timeout" ? RQ.dmgTimeout : RQ.dmgWrong;
+  var w = $("#rogue-rv-w"), p = $("#rogue-rv-p"), mm = $("#rogue-rv-m"), ex = $("#rogue-rv-ex"), pn = $("#rogue-rv-pen");
+  if (w) w.textContent = it.w || "";
+  if (p) p.textContent = it.ph || "";
+  if (mm) mm.textContent = it.m || "（无释义）";
+  if (ex) {
+    var e = (it.e || "").split("\n")[0] || "";
+    ex.textContent = e;
+    ex.style.display = e ? "" : "none";
+  }
+  if (pn) pn.textContent = (kind === "timeout" ? "⏱ 超时 · 扣血 " : "❌ 扣血 ") + pen;
+  box.classList.add("on");
+  if (run) run.revealing = true;
+  var done = function () { rogueReviewDone(dead); };
+  rogueReviewTimer = setTimeout(done, 2000);
+  var btn = $("#btn-rogue-rv"); if (btn) btn.onclick = done;
+  var x = $("#btn-rogue-rvx"); if (x) x.onclick = done;
+}
+function rogueReviewDone(dead) {
+  clearTimeout(rogueReviewTimer); rogueReviewTimer = null;
+  rogueReviewHide();
+  var r = rogueS(), run = r.run;
+  if (run) { run.revealing = false; run.undo = null; }
+  if (dead) { rogueFinish("over"); return; }
+  rogueAdvance();
+}
+function rogueAdvance() {
+  var r = rogueS(), run = r.run;
+  if (!run || run.status !== "playing") return;
+  if (run.mode === "tower") { rogueTowerAdvance(); return; }
+  run.undo = null;
+  run.idx++;
+  if (run.prog >= 100 && run.phase === "normal") {
+    if (r.settings.boss && run.answered.length) {
+      run.phase = "boss";
+      var pool = run.answered.slice(-RQ.bossN).map(function (x) {
+        return { w: x.w, m: "", ph: "", pos: x.pos, root: x.root, tier: "high" };
+      });
+      run.bossList = pool;
+      run.bossBase = run.queue.length;
+      run.queue = run.queue.concat(pool);
+    } else { rogueFinish("win"); return; }
+  }
+  if (run.idx >= run.queue.length) { rogueFinish(run.prog >= 100 ? "win" : "over"); return; }
+  rogueSave();
+  rogueRender();
+  rogueArmTimer();
+}
+function rogueUndo() {
+  var r = rogueS(), run = r.run;
+  if (!run || !run.undo || Date.now() > run.undo.until) return;
+  var s = run.undo.snap;
+  for (var k in s) run[k] = s[k];
+  run.undo = null;
+  rogueStopTimer();
+  rogueSave(); rogueRender(); rogueArmTimer();
+  try { toast("已撤销，计时重置"); } catch (e) {}
+  rogueLog("undo");
+}
+function rogueSkip() {
+  var r = rogueS(), run = r.run;
+  if (!run || run.status !== "playing") return;
+  var it = rogueCur(); if (!it) return;
+  var used = {}; run.queue.forEach(function (x) { used[x.w] = 1; });
+  var pool = roguePool().filter(function (x) { return !used[x.w]; });
+  if (!pool.length) { try { toast("没有可换的词了"); } catch (e) {} return; }
+  var nx = pool[Math.floor(Math.random() * pool.length)];
+  run.queue[run.idx] = { k: nx.k, w: nx.w, m: nx.m, ph: nx.ph, pos: nx.pos, root: "", tier: "" };
+  run.answered.push({ k: nx.k, w: nx.w, m: nx.m, pos: nx.pos, root: "", ok: true, skip: true, ms: 0 });
+  run.skipped++; run.undo = null;
+  rogueLog("skip");
+  rogueSave(); rogueRender(); rogueArmTimer();
+  try { toast("已跳过（不占题数、不加进度）"); } catch (e) {}
+}
+function rogueStatsHtml(run) {
+  var critN = run.stageUsed || 0, echoN = run.echoUsed || 0;
+  var bonds = "";
+  if (critN) bonds += '<div class="rbon"><span>💥 动词暴击</span><b>' + critN + ' 次</b></div>';
+  if (echoN) bonds += '<div class="rbon"><span>⚡ 词根共鸣</span><b>' + echoN + ' / ' + RQ.echoMax + '</b></div>';
+  return '<div class="rrep">' +
+    '<div class="rrepsec"><div class="rreph">战局结果</div>' +
+    '<div class="rgrid">' +
+    '<div><span>总进度</span><b>' + Math.round(run.prog) + '%</b></div>' +
+    '<div><span>剩余 HP</span><b>' + Math.max(0, run.hp) + '</b></div>' +
+    '<div><span>最高连击</span><b>' + (run.peakCombo || run.combo || 0) + '</b></div>' +
+    '</div></div>' +
+    (bonds ? '<div class="rrepsec"><div class="rreph">羁绊反馈</div>' + bonds + '</div>' : '') +
+    '</div>';
+}
+function rogueTagOf(x) {
+  if (x.skip) return ['skip', '⏭ 跳过'];
+  if (x.ok) return ['ok', '✅ 认识' + (x.ms ? ' (' + (x.ms / 1000).toFixed(1) + 's)' : '')];
+  if (x.flip) return ['fake', '🚨 假认识'];
+  if (x.kind === 'timeout') return ['to', '⏱ 超时'];
+  return ['no', '❌ 不认识'];
+}
+function rogueListHtml(run) {
+  var arr = run.answered || [];
+  if (!arr.length) return '<div class="rlistemp">本局没有作答记录</div>';
+  var order = [], map = {};
+  arr.forEach(function (x) {
+    if (!map[x.w]) { map[x.w] = { x: x, n: 1 }; order.push(x.w); }
+    else { map[x.w].x = x; map[x.w].n++; }
+  });
+  var html = '';
+  if (run.mode === "tower" && run.floors && run.floors.length > 1) {
+    run.floors.forEach(function (f, fi) {
+      var items = f.answered || [];
+      if (!items.length) return;
+      html += '<div class="rfloorh">第 ' + f.n + ' 层 · ' + items.filter(function (x) { return x.ok && !x.skip; }).length + ' 对 / ' + items.length + ' 题</div>';
+      var seen2 = {};
+      items.forEach(function (x) {
+        if (seen2[x.w]) return; seen2[x.w] = 1;
+        var t2 = rogueTagOf(x);
+        html += '<button class="rrow" data-k="' + esc(normKey(x.w)) + '">' +
+          '<span class="rwk"><b>' + esc(x.w) + '</b><em>' + esc(x.m || '') + '</em></span>' +
+          '<span class="rtag ' + t2[0] + '">' + t2[1] + '</span></button>';
+      });
+    });
+    return '<div class="rlist">' + html + '</div>';
+  }
+  var rows = order.map(function (w) {
+    var e = map[w], x = e.x, t = rogueTagOf(x);
+    var mean = (x.m || '');
+    var cnt = e.n > 1 ? ' <i class="rn">×' + e.n + '</i>' : '';
+    return '<button class="rrow" data-k="' + esc(normKey(x.w)) + '">' +
+      '<span class="rwk"><b>' + esc(x.w) + '</b><em>' + esc(mean) + '</em></span>' +
+      '<span class="rtag ' + t[0] + '">' + t[1] + cnt + '</span></button>';
+  }).join('');
+  return '<div class="rlist">' + rows + '</div>';
+}
+function rogueRetry() {
+  var r = rogueS(), last = r.last;
+  if (!last || !last.items) return;
+  var byWord = {};
+  roguePool().forEach(function (x) { byWord[x.w] = x; });
+  var seen = {}, q = [];
+  last.items.forEach(function (x) {
+    if (x.ok || seen[x.w]) return;
+    seen[x.w] = 1;
+    var p = byWord[x.w] || { k: normKey(x.w), w: x.w, m: x.m, ph: '', pos: x.pos };
+    q.push({ k: normKey(p.w), w: p.w, m: p.m, ph: p.ph, pos: p.pos, root: '', tier: '' });
+  });
+  if (!q.length) { try { toast('本局没有错词'); } catch (e) {} return; }
+  var m = $("#rogue-over"); if (m) m.classList.remove("on");
+  rogueStart();
+  var run = r.run;
+  if (!run) return;
+  run.queue = q;
+  run.idx = 0; run.prog = 0; run.hp = RQ.hpMax;
+  run.correct = 0; run.wrong = 0; run.timeout = 0; run.skipped = 0;
+  run.combo = 0; run.peakCombo = 0; run.answered = [];
+  run.echoUsed = 0; run.healUsed = 0; run.stageUsed = 0;
+  run.phase = 'normal'; run.bossList = []; run.bossIdx = 0;
+  run.qStartFor = null; run.undo = null; run.pending = null; run.flipped = false;
+  rogueSave(); show('rogue'); rogueRender(); rogueArmTimer();
+  try { toast('只刷本局错词：' + q.length + ' 个'); } catch (e) {}
+}
+function rogueTryLife(run) {
+  if (run.lifeUsed) return false;
+  var r = rogueWallet();
+  if (num(r.items.life, 0) <= 0) return false;
+  r.items.life = num(r.items.life, 0) - 1;
+  run.lifeUsed = true;
+  rogueFlash("🛡 免死金牌生效", "锁 1 血复活 · 本局已用");
+  rogueLog("life");
+  rogueSave();
+  return true;
+}
+function rogueFinish(status) {
+  try { rogueCheckHide(); } catch (e) {}
+  try { rogueReviewHide(); clearTimeout(rogueReviewTimer); } catch (e) {}
+  var _fr = rogueS().run; if (_fr) _fr.revealing = false;
+  var r = rogueS(), run = r.run;
+  if (!run) return;
+  rogueStopTimer();
+  run.status = status === "win" ? "win" : "over";
+  run.endedAt = Date.now();
+  run.undo = null;
+  r.stats.runs++;
+  if (run.status === "win") r.stats.wins++;
+  r.stats.best = Math.max(num(r.stats.best, 0), Math.round(run.prog));
+  r.stats.words = num(r.stats.words, 0) + num(run.correct, 0);
+  r.stats.coins = num(r.stats.coins, 0) + num(run.coins, 0);
+  r.stats.bestFloor = Math.max(num(r.stats.bestFloor, 0), num(run.floor, 0) || 1);
+  r.stats.bestCombo = Math.max(num(r.stats.bestCombo, 0), num(run.peakCombo, 0) || num(run.combo, 0));
+  try {
+    var bads = (run.answered || []).filter(function (x) { return !x.ok; }).slice(0, 8).map(function (x) { return x.w; });
+    r.history = (r.history || []).slice(0, 19);
+    r.history.unshift({ t: Date.now(), mode: run.mode, src: run.src, floor: run.floor || 1, killed: num(run.correct, 0), coins: num(run.coins, 0), items: bads });
+  } catch (e) {}
+  rogueLog(run.status === "win" ? "win" : "over");
+  rogueSave();
+  var mask = $("#rogue-over");
+  var title = $("#rogue-over-title"), sub = $("#rogue-over-sub"), box = $("#rogue-over-stats");
+  if (title) title.textContent = run.status === "win" ? "通关！" : (run.hp <= 0 ? "Game Over" : "本局结束");
+  if (sub) {
+    var uniq = {};
+    (run.answered || []).forEach(function (x) { uniq[x.w] = 1; });
+    var beat = Object.keys(uniq).length;
+    if (num(run.coinsEarn, 0) > 0) sub.textContent = "🪙 本局 +" + num(run.coinsEarn, 0) + " 金币 · ";
+    if (run.battle) sub.textContent = "📚 本次实战消灭了 " + num(run.reviewKilled, 0) + " 个复习词，将 " + num(run.bounced, 0) + " 个词打回了生词本" + (num(run.demotedGrad, 0) ? "（其中 " + num(run.demotedGrad, 0) + " 个是毕业词）" : "");
+    else if (run.mode === "tower"
+      ? ("到达第 " + run.floor + " 层 · 击败 " + beat + " 个单词 · HP " + Math.max(0, run.hp))
+      : ("进度 " + Math.round(run.prog) + "% · 答对 " + run.correct + " · 答错 " + run.wrong + " · 超时 " + run.timeout + " · 跳过 " + run.skipped));
+  }
+  if (box) box.innerHTML = rogueStatsHtml(run);
+  var listEl = $("#rogue-over-list");
+  if (listEl) listEl.innerHTML = rogueListHtml(run);
+  var retry = $("#btn-rogue-retry");
+  var wrongN = run.answered.filter(function (x) { return !x.ok; }).length;
+  if (retry) retry.style.display = wrongN > 0 ? "" : "none";
+  r.last = {
+    at: Date.now(), status: run.status, prog: Math.round(run.prog), hp: Math.max(0, run.hp),
+    peak: run.peakCombo || run.combo || 0, echo: run.echoUsed || 0, crit: run.stageUsed || 0,
+    items: run.answered.slice()
+  };
+  if (listEl) {
+    listEl.onclick = function (ev) {
+      var row = ev.target && ev.target.closest ? ev.target.closest(".rrow") : null;
+      if (!row) return;
+      var k = row.getAttribute("data-k");
+      if (!k) return;
+      try {
+        renderBookDetail(S.decks[0].id, k);
+        show("word");
+      } catch (e) { try { toast("打不开详情"); } catch (e2) {} }
+    };
+  }
+  var mood = $("#rogue-mood");
+  if (mood) { var ml = rogueMoodLine(run.status === "win" ? 90 : Math.round(run.correct * 5)); mood.innerHTML = ml ? ("💬 " + ml) : ""; mood.style.display = ml ? "" : "none"; }
+  try { rogueHurtReset(); } catch (e) {}
+  if (mask) mask.classList.add("on");
+  r.run = run;
+  rogueSave();
+}
+function rogueQuit() {
+  var r = rogueS(), run = r.run;
+  if (!run) { show("home"); return; }
+  if (run.status === "playing") { run.status = "paused"; run.pausedAt = Date.now(); rogueLog("pause"); }
+  rogueStopTimer();
+  rogueSave();
+  show("home"); renderHome();
+}
+function rogueResume() {
+  var r = rogueS(), run = r.run;
+  if (!run) { rogueStart(); return; }
+  if (run.status === "paused") run.status = "playing";
+  run.undo = null;
+  show("rogue"); rogueRender(); rogueArmTimer();
+}
+function rogueSettingsHtml() {
+  var r = rogueS();
+  return '<div class="card" id="lay-rogue">' +
+    '<div class="strong">肉鸽模式</div>' +
+    '<div class="tiny muted" style="margin:4px 0 10px">只在肉鸽挑战里生效，关闭后对应机制不参与数值</div>' +
+    '<div class="tiny muted" style="margin:8px 0 4px">玩法</div>' +
+    '<label class="rsw"><input type="checkbox" data-rg="posBond"' + (r.settings.posBond ? " checked" : "") + '> <span>词性羁绊（连击 / 暴击 / 回血 / 延时）</span></label>' +
+    '<label class="rsw"><input type="checkbox" data-rg="famBond"' + (r.settings.famBond ? " checked" : "") + '> <span>家族羁绊（词根共鸣 +15）</span></label>' +
+    '<label class="rsw"><input type="checkbox" data-rg="boss"' + (r.settings.boss ? " checked" : "") + '> <span>Boss 战（提前满进度时加试本局词）</span></label>' +
+    '<div class="tiny muted" style="margin:10px 0 4px">可访问性</div>' +
+    '<label class="rsw"><input type="checkbox" data-rg="lowFx"' + (r.settings.lowFx ? " checked" : "") + '> <span>低干扰模式（隐藏提示特效）</span></label>' +
+    '<label class="rsw"><input type="checkbox" data-rg="noSan"' + (r.settings.noSan ? " checked" : "") + '> <span>关闭迷雾 / 扭曲</span></label>' +
+    '<label class="rsw"><input type="checkbox" data-rg="noMistap"' + (r.settings.noMistap ? " checked" : "") + '> <span>防手滑（不认识需长按 300ms）</span></label>' +
+    '<label class="rsw"><input type="checkbox" data-rg="noShake"' + (r.settings.noShake ? " checked" : "") + '> <span>关闭屏幕震动</span></label>' +
+    '<label class="rsw"><input type="checkbox" data-rg="colorblind"' + (r.settings.colorblind ? " checked" : "") + '> <span>色盲模式（用文字标签）</span></label>' +
+    '<div class="tiny muted" style="margin:10px 0 4px">数值与题型</div>' +
+    '<label class="row"><span>答错扣血</span><input type="range" data-dmg="dmgWrong" min="10" max="30" step="5" value="' + (r.settings.dmgWrong == null ? 20 : r.settings.dmgWrong) + '" style="width:40%"><b>' + (r.settings.dmgWrong == null ? 20 : r.settings.dmgWrong) + '</b></label>' +
+    '<label class="row"><span>每层扣血递增</span><input type="range" data-dmg="dmgStep" min="0" max="5" step="1" value="' + (r.settings.dmgStep == null ? 2 : r.settings.dmgStep) + '" style="width:40%"><b>' + (r.settings.dmgStep == null ? 2 : r.settings.dmgStep) + '</b></label>' +
+    '<label class="row"><span>闪过 / 选义 / 选词</span></label>' +
+    '<label class="row"><span>闪过</span><input type="range" data-qtw="flash" min="0" max="10" step="1" value="' + ((r.settings.qtW && r.settings.qtW.flash) == null ? 5 : r.settings.qtW.flash) + '" style="width:34%"><b>' + ((r.settings.qtW && r.settings.qtW.flash) == null ? 5 : r.settings.qtW.flash) + '</b></label>' +
+    '<label class="row"><span>选义</span><input type="range" data-qtw="mean" min="0" max="10" step="1" value="' + ((r.settings.qtW && r.settings.qtW.mean) == null ? 3 : r.settings.qtW.mean) + '" style="width:34%"><b>' + ((r.settings.qtW && r.settings.qtW.mean) == null ? 3 : r.settings.qtW.mean) + '</b></label>' +
+    '<label class="row"><span>选词</span><input type="range" data-qtw="word" min="0" max="10" step="1" value="' + ((r.settings.qtW && r.settings.qtW.word) == null ? 2 : r.settings.qtW.word) + '" style="width:34%"><b>' + ((r.settings.qtW && r.settings.qtW.word) == null ? 2 : r.settings.qtW.word) + '</b></label>' +
+    '<div class="tiny muted" id="rogue-num-sum">' + (function(){var g=r.settings,d=g.dmgWrong==null?20:g.dmgWrong,e=g.dmgStep==null?2:g.dmgStep,q=g.qtW||{flash:5,mean:3,word:2};return "扣血 "+d+" · 递增 "+e+" · "+q.flash+"/"+q.mean+"/"+q.word;})() + '</div>' +
+    '<button class="btn ghost small" id="btn-rogue-clean" style="margin-top:10px">纯净模式（全部关闭）</button>' +
+    '</div>';
+}
+function applyImmersive() {
+  var on = !!(S.settings && S.settings.immersive);
+  document.body.classList.toggle("immersive", on);
+}
+function rogueBind() {
+  if (rogueBound) return; rogueBound = true;
+  ["#rogue-cfg", "#rogue-loot"].forEach(function (id) {
+    var el = $(id);
+    if (el && el.parentNode !== document.body) document.body.appendChild(el);
+  });
+  var entry = $("#btn-home-rogue");
+  if (entry) entry.addEventListener("click", function () {
+    var run = rogueS().run;
+    if (run && (run.status === "playing" || run.status === "paused")) { rogueResume(); return; }
+    rogueOpenCfg();
+  });
+  var go = $("#btn-rogue-go");
+  if (go) go.addEventListener("click", function () {
+    var m = $("#rogue-cfg"); if (m) m.classList.remove("on");
+    var c = rogueCfg();
+    try { rogueStart({ src: c.src, diff: c.diff, mode: c.mode }); } catch (e) { console.error("ROGUE_START", e && e.message); }
+  });
+  var cfx = $("#btn-rogue-cfgx");
+  if (cfx) cfx.addEventListener("click", function () { var m = $("#rogue-cfg"); if (m) m.classList.remove("on"); });
+  var srcBox = $("#rcfg-src"), diffBox = $("#rcfg-diff"), modeBox = $("#rcfg-mode");
+  function pickCfg(box, key, attr) {
+    if (!box) return;
+    box.addEventListener("click", function (ev) {
+      var b = ev.target && ev.target.closest ? ev.target.closest("button[data-" + attr + "]") : null;
+      if (!b) return;
+      rogueCfg()[key] = b.getAttribute("data-" + attr);
+      rogueCfgPaint();
+    });
+  }
+  pickCfg(srcBox, "src", "src");
+  pickCfg(diffBox, "diff", "diff");
+  pickCfg(modeBox, "mode", "mode");
+  var lootBox = $("#rogue-loot-opts");
+  if (lootBox) lootBox.addEventListener("click", function (ev) {
+    var b = ev.target && ev.target.closest ? ev.target.closest("button[data-loot]") : null;
+    if (!b) return;
+    rogueLootPick(b.getAttribute("data-loot"));
+  });
+  rogueCfgPaint();
+  var again = $("#btn-rogue-again");
+  if (again) again.addEventListener("click", function () { var m = $("#rogue-over"); if (m) m.classList.remove("on"); rogueStart(); });
+  var retry = $("#btn-rogue-retry");
+  if (retry) retry.addEventListener("click", rogueRetry);
+  var back = $("#btn-rogue-back");
+  if (back) back.addEventListener("click", function () { var m = $("#rogue-over"); if (m) m.classList.remove("on"); show("home"); renderHome(); });
+  function click(id, fn) { var el = $(id); if (el) el.addEventListener("click", fn); }
+  click("#btn-rogue-know", function () { rogueAnswer("know"); });
+  var optsBox = $("#rogue-opts");
+  if (optsBox) optsBox.addEventListener("click", function (ev) {
+    var b = ev.target && ev.target.closest ? ev.target.closest(".ropt") : null;
+    if (!b) return;
+    var r = rogueS().run; if (!r) return;
+    var it = r.queue[r.idx];
+    roguePick(it, num(b.getAttribute("data-k"), 0));
+  });
+  var bs=document.querySelectorAll("#btn-shop,#btn-shop3"); for (var i=0;i<bs.length;i++) (function(el){ el.addEventListener("click", shopOpen); })(bs[i]);
+  click("#btn-shop-close", function () { var m = $("#shop-mask"); if (m) m.classList.remove("on"); });
+  var shopM = $("#shop-mask");
+  if (shopM) shopM.addEventListener("click", function (ev) {
+    var b = ev.target && ev.target.closest ? ev.target.closest("[data-buy]") : null;
+    if (b) { shopBuy(b.getAttribute("data-buy")); return; }
+    if (ev.target === shopM) shopM.classList.remove("on");
+  });
+  click("#btn-immersive", function () {
+    S.settings.immersive = !S.settings.immersive;
+    applyImmersive(); saveNow(); sfx("coin");
+    toast(S.settings.immersive ? "沉浸模式：双击顶部中央退出" : "已退出沉浸模式");
+  });
+  var iz = $("#imm-zone");
+  if (iz) iz.addEventListener("dblclick", function () {
+    if (!S.settings.immersive) return;
+    S.settings.immersive = false; applyImmersive(); saveNow();
+  });
+  document.addEventListener("keydown", function (ev) {
+    if (ev.key === "Escape" && S.settings.immersive) { S.settings.immersive = false; applyImmersive(); saveNow(); }
+  });
+  (function () {
+    var nb = $("#btn-rogue-no");
+    if (!nb) return;
+    var holdT = 0, holding = false;
+    function clearHold() { if (holdT) { clearTimeout(holdT); holdT = 0; } holding = false; nb.classList.remove("holding"); }
+    nb.addEventListener("pointerdown", function (ev) {
+      var rs = (S.rogue && S.rogue.settings) || {};
+      if (!rs.noMistap) return;
+      if (ev) ev.preventDefault();
+      holding = true; nb.classList.add("holding");
+      try { rogueStopTimer(); } catch (e) {}
+      holdT = setTimeout(function () {
+        holdT = 0; holding = false; nb.classList.remove("holding");
+        rogueAnswer("no");
+      }, 300);
+    });
+    ["pointerup", "pointercancel", "pointerleave"].forEach(function (t) {
+      nb.addEventListener(t, function () {
+        if (!holding) return;
+        clearHold();
+        try { rogueArmTimer(); } catch (e) {}
+      });
+    });
+  })();
+  click("#btn-rogue-flip", rogueFlip);
+  click("#btn-rogue-skip", rogueSkip);
+  click("#btn-rogue-undo", rogueUndo);
+  click("#btn-rogue-pause", function () {
+    var r = rogueS(), run = r.run; if (!run || run.status !== "playing") return;
+    run.status = "paused"; run.pausedAt = Date.now(); rogueStopTimer(); rogueLog("pause"); rogueSave();
+    try { toast("已暂停，进度已保存"); } catch (e) {}
+  });
+  click("#btn-rogue-quit", rogueQuit);
+  window.addEventListener("pagehide", function () { var pr = rogueS().run; if (pr && pr.status === "playing") { pr.status = "paused"; pr.pausedAt = Date.now(); rogueLog("hide"); rogueSave(); } });
+  document.addEventListener("visibilitychange", function () {
+    var r = rogueS(), run = r.run;
+    if (!run || run.status !== "playing") return;
+    if (document.hidden) { rogueHiddenAt = Date.now(); rogueStopTimer(); }
+    else if (rogueHiddenAt && Date.now() - rogueHiddenAt > RQ.bgMs) {
+      run.status = "paused"; run.pausedAt = Date.now(); rogueLog("interrupt"); rogueSave();
+      try { toast("离开超过 60 秒，已中断保存（不扣血）"); } catch (e) {}
+      rogueSyncHome();
+    } else { rogueArmTimer(); }
+    rogueHiddenAt = 0;
+  });
+  document.addEventListener("change", function (ev) {
+    var t = ev.target;
+    if (!t || !t.getAttribute || !t.getAttribute("data-rg")) return;
+    var dq = t.getAttribute("data-dmg");
+    if (dq) { var rs1 = rogueS(); rs1.settings[dq] = Number(t.value); rogueSave(); try { renderSetup(); } catch (e) {} return; }
+    var wq = t.getAttribute("data-qtw");
+    if (wq) { var rs2 = rogueS(); rs2.settings.qtW = rs2.settings.qtW || {}; rs2.settings.qtW[wq] = Number(t.value); rogueSave(); try { renderSetup(); } catch (e) {} return; }
+    var key = t.getAttribute("data-rg");
+    var r = rogueS();
+    r.settings[key] = !!t.checked;
+    rogueLog("setting");
+    rogueSave();
+    try { applyAccess(r.settings); } catch (e) {}
+    try { toast("已保存：肉鸽设置"); } catch (e) {}
+  });
+  rogueBindSetup();
+  (function () {
+    var ex = $("#set-exam");
+    if (ex) ex.addEventListener("change", function () { S.settings.examDate = ex.value || ""; saveNow(); renderHome(); });
+    var vbs = document.querySelectorAll("[data-vib]");
+    for (var vi = 0; vi < vbs.length; vi++) {
+      vbs[vi].addEventListener("click", function () {
+        S.settings.vibMode = Number(this.getAttribute("data-vib"));
+        saveNow(); try { renderSetup(); } catch (e) {} vib("ok");
+        try { toast("震动：" + ["关闭","仅答错","都震动"][S.settings.vibMode]); } catch (e) {}
+      });
+    }
+    var sv = $("#set-sfxvol");
+    if (sv) {
+      sv.addEventListener("input", function () {
+        S.settings.sfxVol = Number(sv.value);
+        var lab = $("#set-sfxvol-v"); if (lab) lab.textContent = sv.value + "%";
+      });
+      sv.addEventListener("change", function () {
+        S.settings.sfxVol = Number(sv.value);
+        saveNow();
+        try { sfx("ok", 3); } catch (e) {}
+      });
+    }
+    var snd = $("#btn-sound");
+    if (snd) snd.addEventListener("click", function () {
+      S.settings.soundOn = !S.settings.soundOn;
+      if (S.settings.soundOn) sfxInit();
+      saveNow(); renderSetup(); toast(S.settings.soundOn ? "音效已开启" : "音效已关闭");
+    });
+    var sp = $("#btn-shop4"); if (sp) sp.addEventListener("click", shopOpen);
+  var sd = $("#btn-sfx-demo");
+  if (sd) sd.addEventListener("click", function () {
+    var old = S.settings.soundOn;
+    S.settings.soundOn = true;
+    try { sfx("ok", 3); } catch (e) {}
+    setTimeout(function () { try { sfx("no"); } catch (e) {} }, 340);
+    setTimeout(function () { try { sfx("coin"); } catch (e) {} }, 720);
+    setTimeout(function () { S.settings.soundOn = old; if (!old) toast("试听完毕（音效仍为关闭）"); }, 1150);
+  });
+    var md = $("#btn-mood");
+    if (md) md.addEventListener("click", function () { S.settings.rogueMood = !S.settings.rogueMood; saveNow(); renderSetup(); });
+  })();
+}
+function rogueBindSetup() {
+  var clean = $("#btn-rogue-clean");
+  if (!clean || clean.__rgClean) return;
+  clean.__rgClean = 1;
+  clean.addEventListener("click", function () {
+    var r = rogueS();
+    Object.keys(rogueDefaults()).forEach(function (k) { r.settings[k] = false; });
+    r.settings.lowFx = true;
+    $$("[data-rg]").forEach(function (el) { el.checked = !!r.settings[el.getAttribute("data-rg")]; });
+    rogueSave();
+    try { toast("已切换到纯净模式（机制全关、特效全关）"); } catch (e) {}
+  });
+}
+  window.__rogueTest = {
+    wtQuota: wtQuota,
+    forceQT: function (qt) { var r=rogueS().run; if(!r) return 0; var it=r.queue[r.idx]; if(!it) return 0; it.qt=qt; delete it.opts; rogueEnsureType(r,it); rogueRender(); return (it.opts||[]).length; },
+    deck: function () { var r=rogueS().run; return r&&r.qtsDeck?r.qtsDeck.slice(0,10):[]; },
+    san: function (n, glitch) { var r=rogueS().run; if(!r) return; r.sanWrong=n; rogueSanUpdate(r,{glitch:!!glitch}); },
+    rare: function () { var r=rogueS().run; if(!r) return; var it=r.queue[r.idx]; if(it) it.rare=true; rogueRender(); return !!it; },
+    disperse: function () { var r=rogueS().run; if(r) rogueSanClear(r); },
+    wallet: function () { return rogueWallet(); },
+    coins: function () { return num(rogueWallet().coins, 0); },
+    addCoins: rogueAddCoins,
+    examLeft: examLeftDays,
+    shopBuy: shopBuy,
+  hp: function (n) {
+    var r = rogueS().run; if (!r) return "NO_RUN";
+    r.hp = n; r._hvHp = n + 1; rogueRender(); return r.hp;
+  },
+  mkDue: function (n) {
+    var deck = S.decks[0]; if (!deck) return 0;
+    var its = roguePool().slice(0, n || 10);
+    its.forEach(function (it) { var r = ensureRec(deck.id, normKey(it.w)); r.L = 2; r.stage = 1; r.due = today(); });
+    try { saveNow(); } catch (e) {}
+    return its.length;
+  },
+    force: function (p) { var r = rogueS(); if (r.run) { r.run.prog = num(p, 0); rogueSave(); } },
+  gain: rogueGain, prepare: roguePrepare, pool: roguePool, fam: rogueFam,
+  state: rogueS, start: rogueStart, answer: rogueAnswer, undo: rogueUndo, skip: rogueSkip,
+  advance: rogueAdvance, cfg: RQ, stop: rogueStopTimer,
+  confirm: rogueConfirmKnown, flip: rogueFlip,
+  pending: function () { var r = rogueS(); return !!(r.run && r.run.pending); }
+};
+
 function bind() {
   on("#btn-start", "click", function () {
     if (!S.decks[0]) return;
@@ -6585,7 +8724,9 @@ function boot() {
     deferredInstall = null;
     try { toast("已安装到桌面，从图标打开就是 App 模式"); } catch (err) {}
   });
+  applyImmersive();
   bind();
+  rogueBind();
   // 开机永远先进首页：不再自动跳进答题页（安卓切方向/全屏/后台回来都会重载页面，
   // 以前这里 resumeSession() 会导致「莫名其妙跳出背单词界面」）
   show("home");
@@ -6624,6 +8765,7 @@ if ("serviceWorker" in navigator && location.protocol === "https:") {
   });
 }
 </script>
+<div id="shop-mask" class="mask"><div class="sheet"><div class="barhd"><b>🛒 小卖部</b></div><div id="shop-body"></div><button class="btn ghost" id="btn-shop-close">关闭</button></div></div>
 <script>
 if ("serviceWorker" in navigator && location.protocol === "https:") {
   window.addEventListener("load", function () {
