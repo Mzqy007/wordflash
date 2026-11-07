@@ -1783,6 +1783,78 @@ body.layout-left #scr-game #opslot .btns .big,body.layout-right #scr-game #opslo
   .witem.on{color:#f0f2f6}
 }
 
+
+/* ===== v39 固定布局（不再切换） ===== */
+#home-cnt{display:none !important}
+.mask:not(.on){pointer-events:none !important}
+@media (orientation: landscape){
+  body.layout-flash #scr-game .gmain{display:flex !important;flex-direction:row !important;align-items:stretch !important}
+  body.layout-flash #scr-game .gcol{flex:1 1 50% !important;min-width:0 !important}
+  body.layout-flash #scr-game #opslot{
+    position:fixed !important;left:0 !important;bottom:0 !important;right:auto !important;top:auto !important;
+    width:50% !important;max-width:none !important;margin:0 !important;
+    padding:0 12px calc(8px + env(safe-area-inset-bottom,0px)) !important;
+    background:transparent !important;box-sizing:border-box !important;z-index:30 !important;
+  }
+  body.layout-flash #scr-game #opslot .btns{display:flex !important;gap:8px !important;width:100% !important;margin:0 !important}
+  body.layout-flash #scr-game #opslot #fixbar{width:100% !important;margin:0 !important;display:flex !important;gap:8px !important}
+  body.layout-flash #scr-game #opslot .big,
+  body.layout-flash #scr-game #opslot .fix{flex:1 1 0 !important;min-width:0 !important;min-height:56px !important;font-size:16px !important}
+
+  body.layout-obj #scr-test .tqwrap{display:flex !important;flex-direction:row !important;align-items:stretch !important;gap:12px !important;height:calc(100dvh - 132px) !important}
+  body.layout-obj #scr-test .tqcol{flex:1 1 50% !important;min-width:0 !important}
+  body.layout-obj #scr-test .tocol{
+    flex:1 1 50% !important;min-width:0 !important;display:flex !important;flex-direction:column !important;
+    justify-content:center !important;gap:8px !important;overflow-y:auto !important;
+  }
+  body.layout-obj #scr-test .tocol > *{
+    width:100% !important;height:auto !important;min-height:44px !important;
+    white-space:normal !important;word-break:break-word !important;overflow-wrap:anywhere !important;
+  }
+  body.layout-obj #scr-test .topt{white-space:normal !important;word-break:break-word !important}
+}
+
+@media (orientation: landscape){
+  body.layout-flash #scr-game #opslot .btns > .big,
+  body.layout-flash #scr-game #opslot .btns > button{
+    flex:1 1 0 !important;width:auto !important;min-width:0 !important;max-width:none !important;
+  }
+  body.layout-flash #scr-game #opslot #fixbar > *{
+    flex:1 1 0 !important;width:auto !important;min-width:0 !important;max-width:none !important;
+  }
+}
+@media (orientation: landscape){
+  body.layout-flash #scr-game #opslot .btns{
+    flex-direction:row !important;flex-wrap:nowrap !important;align-items:stretch !important;
+    justify-content:space-between !important;width:100% !important;gap:8px !important;
+  }
+  body.layout-flash #scr-game #opslot #fixbar{
+    flex-direction:row !important;flex-wrap:nowrap !important;align-items:stretch !important;width:100% !important;gap:8px !important;
+  }
+}
+@media (orientation: landscape){
+  body.layout-flash #scr-game .gmain{
+    display:grid !important;grid-template-columns:1fr 1fr !important;grid-template-rows:1fr auto !important;
+    height:calc(100dvh - 76px) !important;gap:0 !important;
+  }
+  body.layout-flash #scr-game .gmain > .gcol:nth-child(1){grid-column:1 !important;grid-row:1 !important}
+  body.layout-flash #scr-game .gmain > .gcol:nth-child(2){grid-column:2 !important;grid-row:1 !important}
+  body.layout-flash #scr-game #opslot{
+    position:static !important;grid-column:1 !important;grid-row:2 !important;
+    width:100% !important;max-width:none !important;margin:0 !important;left:auto !important;bottom:auto !important;
+    display:flex !important;flex-direction:column !important;justify-content:flex-end !important;
+    padding:0 12px 8px !important;box-sizing:border-box !important;
+  }
+}
+@media (orientation: landscape){
+  body.layout-flash #scr-game #game-wrap{position:relative !important}
+  body.layout-flash #scr-game #opslot{
+    position:absolute !important;left:0 !important;right:auto !important;bottom:0 !important;top:auto !important;
+    width:50% !important;max-width:none !important;margin:0 !important;
+    display:flex !important;flex-direction:column !important;justify-content:flex-end !important;
+    padding:0 12px 8px !important;box-sizing:border-box !important;background:transparent !important;
+  }
+}
 </style>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
@@ -1894,7 +1966,7 @@ body.layout-left #scr-game #opslot .btns .big,body.layout-right #scr-game #opslo
         <button class="chip" data-mode="flash">闪过</button>
       </div>
     </div>
-    <div class="tiny muted" style="margin-top:16px;text-align:center">单词闪过 · 纯前端 · 离线可用 · v6.2 · 2026-11-06</div>
+    <div class="tiny muted" style="margin-top:16px;text-align:center">单词闪过 · 纯前端 · 离线可用 · v6.2 · 2026-11-07</div>
     <input type="file" id="file-import" accept=".json" hidden>
   </section>
 
@@ -1919,10 +1991,10 @@ body.layout-left #scr-game #opslot .btns .big,body.layout-right #scr-game #opslo
     </div>
 
     <div class="card rcard">
-    <div class="rrare" id="rogue-rare">❗ 伪装者</div>
+    
       <div class="rw" id="rogue-word">—</div>
       <div class="rp" id="rogue-ph"></div>
-      <div class="ropts" id="rogue-opts"></div>
+      
       <div class="rtimer"><div id="rogue-tbar"></div></div>
     </div>
 
@@ -2029,14 +2101,14 @@ body.layout-left #scr-game #opslot .btns .big,body.layout-right #scr-game #opslo
   <!-- ============ 游戏屏 ============ -->
   <section id="scr-game" class="screen">
   <div class="immzone" id="imm-zone" title="双击退出沉浸模式"></div>
-<button id="imm-exit" title="退出沉浸模式">✕</button>
+
     <div id="game-wrap" class="game">
       <div class="gbar">
         <span id="gstat" class="mono"></span>
         <span class="gbar-r">
           <button class="btn ghost small" id="btn-swap" title="左右换边">⇄</button>
           <button class="btn ghost small" id="btn-lock" title="锁定横屏">⤢</button>
-          <button class="btn ghost small" id="btn-immersive" title="沉浸模式">🌙</button>
+          
           <button class="btn ghost small" id="btn-pause">暂停</button><button class="btn ghost small" id="btn-prev" title="回到上一个词">上一词</button>
           <button class="btn ghost small" id="btn-quit">结束本轮</button>
         </span>
@@ -2150,19 +2222,7 @@ body.layout-left #scr-game #opslot .btns .big,body.layout-right #scr-game #opslo
 </div>
   <div class="toast" id="toast"></div>
 
-  <div class="mask" id="exam-mask">
-    <div class="sheet exsheet">
-      <div class="barhd"><b>考研日期</b></div>
-      <div class="wheels">
-        <div class="wheel" id="w-y"></div>
-        <div class="wheel" id="w-m"></div>
-        <div class="wheel" id="w-d"></div>
-      </div>
-      <div class="wsel" id="exam-preview">—</div>
-      <button class="btn" id="btn-exam-ok">确定</button>
-      <button class="btn ghost" id="btn-exam-cancel">取消</button>
-    </div>
-  </div>
+  
 
 <!-- 测试配置面板（底部弹出） -->
 <div class="mask" id="cnt-mask" style="display:none"><div class="sheet" style="max-width:360px;margin:0 auto">
@@ -3424,29 +3484,25 @@ function lay2CurMode() {
 }
 function lay2CurLayout() { var m = lay2CurMode(); return m ? lay2Get(m) : null; }
 function applyLay2() {
-  var ops = $("#opslot");
-  if (ops && ops.style && typeof ops.style.removeProperty === "function") {
-    ["width","max-width","margin","margin-left","margin-right","left","right","position","bottom","transform"].forEach(function (p) {
-      ops.style.removeProperty(p);
-    });
-  }
   var b = document.body; if (!b) return;
-  b.classList.remove("layout-left", "layout-right", "layout-both");
-  var lay = lay2CurLayout();
-  b.classList.toggle("layout-portrait", !!(window.matchMedia && !window.matchMedia("(orientation: landscape)").matches));
-  if (!lay) return;
-  b.classList.add("layout-" + lay);
-  b.classList.toggle("in-game", curScreen === "game");
+  try {
+    var op = $("#opslot");
+    if (op && op.style) {
+      ["position","left","right","bottom","top","width","max-width","min-width","margin","margin-left","margin-right","transform"].forEach(function (p) {
+        try { op.style.removeProperty(p); } catch (e) {}
+      });
+    }
+  } catch (e) {}
+  ["layout-left", "layout-right", "layout-both", "layout-portrait"].forEach(function (c) { b.classList.remove(c); });
+  b.classList.add(curScreen === "test" ? "layout-obj" : "layout-flash");
 }
+
 function renderLay2() {
   var box = $("#lay3"); if (!box) return;
-  box.innerHTML = LAY2_MODES.map(function (m) {
-    return '<div class="l2row"><span class="l2lab">' + m[1] + '</span><span class="chips l2chips">' +
-      [["left", "左手"], ["right", "右手"], ["both", "双手"]].map(function (o) {
-        return '<button class="chip' + (lay2Get(m[0]) === o[0] ? " on" : "") + '" data-l2="' + m[0] + '" data-v="' + o[0] + '">' + o[1] + '</button>';
-      }).join("") + '</span></div>';
-  }).join("");
-  bindLay2();
+  box.innerHTML = '<div class="tiny muted" style="line-height:1.9">横屏固定布局（不再切换）：<br>' +
+    "· 学习（闪过 / 背记）：左半题目，右半答案，按钮在题目下方。<br>" +
+    "· 测试（选词 / 选义 / 背记 / 闪过）：左半题目，右半四个选项垂直排列。<br>" +
+    "· 竖屏：保持上中下。</div>";
 }
 function bindLay2() {
   var box = $("#lay3"); if (!box || box.__l2) return; box.__l2 = true;
@@ -3508,6 +3564,7 @@ function show(name, opts) {
   document.body.classList.toggle("has-tabs", isTab);
   document.body.classList.toggle("in-game", name === "game");
   try { applyWideSwap(); } catch (e) {} // v32
+  try { setTimeout(function () { try { applyLay2(); } catch (e) {} }, 0); } catch (e) {}
   if (isTab) {
     $$("#tabs .tab").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-tab") === name); });
   }
@@ -3677,7 +3734,7 @@ function renderHome() {
     $("#home-kicker").textContent = "今日任务（含上次未完成）";
     $("#hb-new").textContent = newLeftReal;
     $("#hb-rev").textContent = revLeftReal;
-    $("#home-heroline").textContent = "断点 " + liveLeft + " 题 · 已答 " + (live.firstDone || 0) + " / 共 " + (live.firstTotal || 0);
+    $("#home-heroline").textContent = "上次未完成：已答 " + (live.firstDone || 0) + " / 共 " + (live.firstTotal || 0) + " 题";
     $("#home-today").textContent = liveLeft + " 题";
     $("#btn-start").disabled = false;
     $("#btn-start").textContent = "继续今日学习";
@@ -4579,7 +4636,7 @@ function examSheetOk() {
 function moodSettingsHtml() {
   var s = S.settings;
   return '<div class="card"><div class="bt">考研与情绪</div>' +
-    '<div class="row"><span>考研日期</span><button class="chip" id="btn-exam">' + (s.examDate || "点此选择") + '</button></div>' +
+    '<div class="row"><span>考研日期</span><span class="chips"><button class="chip" data-exam="2026">27 考研</button><button class="chip" data-exam="2027">28 考研</button><button class="chip" data-exam="2028">29 考研</button></span></div>' +
     '<div class="row"><span>开启游戏音效</span><button class="chip' + (s.soundOn ? " on" : "") + '" id="btn-sound">' + (s.soundOn ? "已开启" : "已关闭") + '</button></div>' +
     '<div class="row"><span>金币 / 小卖部</span><button class="chip" id="btn-shop4">打开</button></div>' +
     '<div class="row"><span>音效音量</span><input type="range" id="set-sfxvol" min="0" max="100" step="10" value="' + (S.settings.sfxVol == null ? 80 : S.settings.sfxVol) + '" style="width:45%"><b id="set-sfxvol-v">' + (S.settings.sfxVol == null ? 80 : S.settings.sfxVol) + '%</b></div>' +
@@ -5815,20 +5872,9 @@ function rogueOpenCfg() {
 }
 function rogueSyncHome() {
   var btn = $("#btn-home-rogue"); if (!btn) return;
-  var r = rogueS(); var run = r.run;
   var es = $("#home-rogue-es"), bn = $("#home-rogue-n");
-  if (run && run.mode === "tower" && (run.status === "playing" || run.status === "paused")) {
-    if (es) es.textContent = "继续爬塔：第 " + run.floor + " 层 · HP " + run.hp + " · 本层 " + run.floorOk + "/" + run.floorN;
-    if (bn) bn.textContent = "爬塔中";
-    return;
-  }
-  if (run && (run.status === "playing" || run.status === "paused") && run.idx < run.queue.length) {
-    if (es) es.textContent = "继续：第 " + (run.idx + 1) + " / " + run.queue.length + " 题 · HP " + run.hp + " · 进度 " + Math.min(100, Math.round(run.prog)) + "%";
-    if (bn) bn.textContent = "未完成";
-  } else if (run && run.status === "paused") {
-    if (es) es.textContent = "已中断保存，点进去继续这一局";
-    if (bn) bn.textContent = "中断";
-  }
+  if (bn) bn.textContent = "20题";
+  if (es) es.textContent = "答对推进度、连击暴击、词根共鸣；不影响学习排期";
 }
 function rogueRender() {
   (function () {
@@ -5874,24 +5920,14 @@ function rogueRender() {
     qtEl.textContent = "第 " + (num(run.idx, 0) + 1) + " 题 · " + nm;
   }
   var optsEl = $("#rogue-opts");
-  var isPick = !!(it && (it.qt === "mean" || it.qt === "word") && it.opts && it.opts.length === 4);
-  if (optsEl) {
-    optsEl.classList.add("show");
-    if (isPick) {
-      optsEl.style.display = "";
-      optsEl.innerHTML = it.opts.map(function (o) {
-        return '<button class="ropt" data-k="' + o.k + '">' + o.t + "</button>";
-      }).join("");
-    } else { optsEl.style.display = "none"; optsEl.innerHTML = ""; optsEl.classList.remove("show"); }
-  }
+  if (optsEl) { optsEl.classList.remove("show"); optsEl.style.display = "none"; optsEl.innerHTML = ""; }
   try { rogueCheckHide(); } catch (e) {}
   var rb = $("#scr-rogue .rbtns");
-  if (rb) rb.style.display = isPick ? "none" : "";
-  if (rb) { var sp=$("#btn-rogue-skip"); if(sp) sp.style.display = isPick?"none":""; var ud=$("#btn-rogue-undo"); if(ud) ud.style.display = isPick?"none":""; }
-  var rareEl = $("#rogue-rare");
-  var rareEl = $("#rogue-rare");
-  if (rareEl) rareEl.style.display = (it && it.rare) ? "inline-flex" : "none";
-  var QT_VIEW = { flash: { stem: "w", ph: 1 }, mean: { stem: "w", ph: 1 }, word: { stem: "m", ph: 0 } };
+  if (rb) rb.style.display = "";
+  var sp0 = $("#btn-rogue-skip"); if (sp0) sp0.style.display = "";
+  var ud0 = $("#btn-rogue-undo"); if (ud0) ud0.style.display = "";
+  var rareEl = $("#rogue-rare"); if (rareEl) rareEl.style.display = "none";
+  var QT_VIEW = { flash: { stem: "w", ph: 1 } };
   var qtv = QT_VIEW[(it && it.qt) || "flash"] || QT_VIEW.flash;
   if (wEl) {
     wEl.textContent = it ? (qtv.stem === "m" ? it.m : it.w) : "—";
@@ -5967,32 +6003,14 @@ function wtQuota(w, total) {
   return out;
 }
 function rogueTypeDeck(run) {
-  var w = (S.rogue && S.rogue.settings && S.rogue.settings.qtW) || {};
-  var dflt = (run.src === "battle") ? { flash: 7, mean: 2, word: 1 } : { flash: 5, mean: 3, word: 2 };
-  var mix = { flash: Number(w.flash == null ? dflt.flash : w.flash), mean: Number(w.mean == null ? dflt.mean : w.mean), word: Number(w.word == null ? dflt.word : w.word) };
-  var base = wtQuota(mix, 10);
-  var need = Math.max(base.length, num(run.floorN, RQ.total) || RQ.total);
+  var n = Math.max(10, num(run.floorN, RQ.total) || RQ.total);
   var out = [];
-  while (out.length < need) out = out.concat(base);
-  for (var i = out.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = out[i]; out[i] = out[j]; out[j] = t; }
+  for (var i = 0; i < n; i++) out.push("flash");
   return out;
 }
 function rogueEnsureType(run, it) {
   if (!it) return it;
-  if (it.rare && it.qt !== "mean") it.qt = "mean";
-  if (!it.qt) {
-    if (!run.qtsDeck) { run.qtsDeck = rogueTypeDeck(run); run.qtsP = 0; }
-    var _qt = run.qtsDeck[run.qtsP % run.qtsDeck.length] || "flash";
-    run.qtsP = num(run.qtsP, 0) + 1;
-    it.qt = _qt;
-  }
-  if ((it.qt === "mean" || it.qt === "word") && !it.opts) it.opts = rogueBuildOpts(it, it.qt);
-  return it;
-  if (!run.qtsDeck) { run.qtsDeck = rogueTypeDeck(run); run.qtsP = 0; }
-  var qt = run.qtsDeck[run.qtsP % run.qtsDeck.length] || "flash";
-  run.qtsP = num(run.qtsP, 0) + 1;
-  it.qt = qt;
-  if ((qt === "mean" || qt === "word") && !it.opts) it.opts = rogueBuildOpts(it, qt);
+  it.qt = "flash";
   return it;
 }
 function rogueBuildOpts(it, qt) {
@@ -6176,7 +6194,7 @@ function rogueStart(opts) {
   if (mode === "tower") {
     if (!rogueTowerFloor(run)) { try { toast("这个词源里没有可用的词"); } catch (e) {} return; }
   } else {
-    run.queue = rogueMarkRare(run.queue);
+    run.queue.forEach(function (x) { x.qt = "flash"; x.rare = false; });
   run.queue = roguePrepare({ src: src, n: RQ.total });
     if (!run.queue.length) { try { toast("这个词源里没有可用的词"); } catch (e) {} return; }
   }
@@ -6623,6 +6641,7 @@ function rogueUndo() {
   var s = run.undo.snap;
   for (var k in s) run[k] = s[k];
   run.undo = null;
+  run.lastQKey = '';
   rogueStopTimer();
   rogueSave(); rogueRender(); rogueArmTimer();
   try { toast("已撤销，计时重置"); } catch (e) {}
@@ -6632,13 +6651,16 @@ function rogueSkip() {
   var r = rogueS(), run = r.run;
   if (!run || run.status !== "playing") return;
   var it = rogueCur(); if (!it) return;
+  var qkey = run.idx + ":" + (run.phase || "n") + ":" + num(run.bossIdx, 0);
+  if (run.lastQKey === qkey) return;
+  run.lastQKey = qkey;
   var used = {}; run.queue.forEach(function (x) { used[x.w] = 1; });
   var pool = roguePool().filter(function (x) { return !used[x.w]; });
   if (!pool.length) { try { toast("没有可换的词了"); } catch (e) {} return; }
   var nx = pool[Math.floor(Math.random() * pool.length)];
   run.queue[run.idx] = { k: nx.k, w: nx.w, m: nx.m, ph: nx.ph, pos: nx.pos, root: "", tier: "" };
   run.answered.push({ k: nx.k, w: nx.w, m: nx.m, pos: nx.pos, root: "", ok: true, skip: true, ms: 0 });
-  run.skipped++; run.undo = null;
+  run.skipped++; run.undo = null; run.lastQKey = '';
   rogueLog("skip");
   rogueSave(); rogueRender(); rogueArmTimer();
   try { toast("已跳过（不占题数、不加进度）"); } catch (e) {}
@@ -6776,7 +6798,7 @@ function rogueFinish(status) {
       : ("进度 " + Math.round(run.prog) + "% · 答对 " + run.correct + " · 答错 " + run.wrong + " · 超时 " + run.timeout + " · 跳过 " + run.skipped));
   }
   if (box) box.innerHTML = rogueStatsHtml(run);
-  var listEl = $("#rogue-over-list");
+  try { var listEl = $("#rogue-over-list"); } catch (e) { console.warn('report list', e); }
   if (listEl) listEl.innerHTML = rogueListHtml(run);
   var retry = $("#btn-rogue-retry");
   var wrongN = run.answered.filter(function (x) { return !x.ok; }).length;
@@ -6806,13 +6828,15 @@ function rogueFinish(status) {
   rogueSave();
 }
 function rogueQuit() {
-  var r = rogueS(), run = r.run;
-  if (!run) { show("home"); return; }
-  if (run.status === "playing") { run.status = "paused"; run.pausedAt = Date.now(); rogueLog("pause"); }
-  rogueStopTimer();
-  rogueSave();
+  var r = rogueS();
+  try { rogueStopTimer(); } catch (e) {}
+  r.run = null;
+  try { rogueSave(); } catch (e) {}
+  try { rogueHurtReset(); } catch (e) {}
   show("home"); renderHome();
+  try { toast("本局已作废，可从主页重新开局"); } catch (e) {}
 }
+
 function rogueResume() {
   var r = rogueS(), run = r.run;
   if (!run) { rogueStart(); return; }
@@ -6838,11 +6862,7 @@ function rogueSettingsHtml() {
     '<div class="tiny muted" style="margin:10px 0 4px">数值与题型</div>' +
     '<label class="row"><span>答错扣血</span><input type="range" data-dmg="dmgWrong" min="10" max="30" step="5" value="' + (r.settings.dmgWrong == null ? 20 : r.settings.dmgWrong) + '" style="width:40%"><b>' + (r.settings.dmgWrong == null ? 20 : r.settings.dmgWrong) + '</b></label>' +
     '<label class="row"><span>每层扣血递增</span><input type="range" data-dmg="dmgStep" min="0" max="5" step="1" value="' + (r.settings.dmgStep == null ? 2 : r.settings.dmgStep) + '" style="width:40%"><b>' + (r.settings.dmgStep == null ? 2 : r.settings.dmgStep) + '</b></label>' +
-    '<label class="row"><span>闪过 / 选义 / 选词</span></label>' +
-    '<label class="row"><span>闪过</span><input type="range" data-qtw="flash" min="0" max="10" step="1" value="' + ((r.settings.qtW && r.settings.qtW.flash) == null ? 5 : r.settings.qtW.flash) + '" style="width:34%"><b>' + ((r.settings.qtW && r.settings.qtW.flash) == null ? 5 : r.settings.qtW.flash) + '</b></label>' +
-    '<label class="row"><span>选义</span><input type="range" data-qtw="mean" min="0" max="10" step="1" value="' + ((r.settings.qtW && r.settings.qtW.mean) == null ? 3 : r.settings.qtW.mean) + '" style="width:34%"><b>' + ((r.settings.qtW && r.settings.qtW.mean) == null ? 3 : r.settings.qtW.mean) + '</b></label>' +
-    '<label class="row"><span>选词</span><input type="range" data-qtw="word" min="0" max="10" step="1" value="' + ((r.settings.qtW && r.settings.qtW.word) == null ? 2 : r.settings.qtW.word) + '" style="width:34%"><b>' + ((r.settings.qtW && r.settings.qtW.word) == null ? 2 : r.settings.qtW.word) + '</b></label>' +
-    '<div class="tiny muted" id="rogue-num-sum">' + (function(){var g=r.settings,d=g.dmgWrong==null?20:g.dmgWrong,e=g.dmgStep==null?2:g.dmgStep,q=g.qtW||{flash:5,mean:3,word:2};return "扣血 "+d+" · 递增 "+e+" · "+q.flash+"/"+q.mean+"/"+q.word;})() + '</div>' +
+    '<div class="tiny muted" id="rogue-num-sum">' + (function(){var g=r.settings,d=g.dmgWrong==null?20:g.dmgWrong,e=g.dmgStep==null?2:g.dmgStep;return "扣血 "+d+" · 递增 "+e;})() + '</div>' +
     '<button class="btn ghost small" id="btn-rogue-clean" style="margin-top:10px">纯净模式（全部关闭）</button>' +
     '</div>';
 }
@@ -6921,8 +6941,7 @@ function rogueBind() {
   });
   var entry = $("#btn-home-rogue");
   if (entry) entry.addEventListener("click", function () {
-    var run = rogueS().run;
-    if (run && (run.status === "playing" || run.status === "paused")) { rogueResume(); return; }
+    var rr = rogueS(); rr.run = null; try { rogueSave(); } catch (e) {}
     rogueOpenCfg();
   });
   var go = $("#btn-rogue-go");
@@ -6961,65 +6980,6 @@ function rogueBind() {
   if (back) back.addEventListener("click", function () { var m = $("#rogue-over"); if (m) m.classList.remove("on"); show("home"); renderHome(); });
   function click(id, fn) { var el = $(id); if (el) el.addEventListener("click", fn); }
   click("#btn-rogue-know", function () { rogueAnswer("know"); });
-  var optsBox = $("#rogue-opts");
-  if (optsBox) optsBox.addEventListener("click", function (ev) {
-    var b = ev.target && ev.target.closest ? ev.target.closest(".ropt") : null;
-    if (!b) return;
-    var r = rogueS().run; if (!r) return;
-    var it = r.queue[r.idx];
-    roguePick(it, num(b.getAttribute("data-k"), 0));
-  });
-  var bs=document.querySelectorAll("#btn-shop,#btn-shop3"); for (var i=0;i<bs.length;i++) (function(el){ el.addEventListener("click", shopOpen); })(bs[i]);
-  click("#btn-shop-close", function () { var m = $("#shop-mask"); if (m) m.classList.remove("on"); });
-  var shopM = $("#shop-mask");
-  if (shopM) shopM.addEventListener("click", function (ev) {
-    var b = ev.target && ev.target.closest ? ev.target.closest("[data-buy]") : null;
-    if (b) { shopBuy(b.getAttribute("data-buy")); return; }
-    if (ev.target === shopM) shopM.classList.remove("on");
-  });
-  click("#btn-immersive", function () {
-    if (!S.settings.immersive && !immScreenOk()) { toast("先进入答题界面再开沉浸模式"); return; }
-    S.settings.immersive = !S.settings.immersive;
-    applyImmersive(); saveNow(); sfx("coin");
-    toast(S.settings.immersive ? "沉浸模式：右上角 ✕ / Esc 退出" : "已退出沉浸模式");
-  });
-  var ix = $("#imm-exit");
-  if (ix) ix.addEventListener("click", function () {
-    S.settings.immersive = false; applyImmersive(); saveNow(); toast("已退出沉浸模式");
-  });
-  var iz = $("#imm-zone");
-  if (iz) iz.addEventListener("dblclick", function () {
-    if (!S.settings.immersive) return;
-    S.settings.immersive = false; applyImmersive(); saveNow();
-  });
-  document.addEventListener("keydown", function (ev) {
-    if (ev.key === "Escape" && S.settings.immersive) { S.settings.immersive = false; applyImmersive(); saveNow(); }
-  });
-  (function () {
-    var nb = $("#btn-rogue-no");
-    if (!nb) return;
-    var holdT = 0, holding = false;
-    function clearHold() { if (holdT) { clearTimeout(holdT); holdT = 0; } holding = false; nb.classList.remove("holding"); }
-    nb.addEventListener("pointerdown", function (ev) {
-      var rs = (S.rogue && S.rogue.settings) || {};
-      if (!rs.noMistap) return;
-      if (ev) ev.preventDefault();
-      holding = true; nb.classList.add("holding");
-      try { rogueStopTimer(); } catch (e) {}
-      holdT = setTimeout(function () {
-        holdT = 0; holding = false; nb.classList.remove("holding");
-        rogueAnswer("no");
-      }, 300);
-    });
-    ["pointerup", "pointercancel", "pointerleave"].forEach(function (t) {
-      nb.addEventListener(t, function () {
-        if (!holding) return;
-        clearHold();
-        try { rogueArmTimer(); } catch (e) {}
-        if (t !== "pointerleave") { try { toast("防手滑：长按 300ms 才生效"); } catch (e) {} }
-      });
-    });
-  })();
   click("#btn-rogue-flip", rogueFlip);
   click("#btn-rogue-skip", rogueSkip);
   click("#btn-rogue-undo", rogueUndo);
@@ -7029,7 +6989,7 @@ function rogueBind() {
     try { toast("已暂停，进度已保存"); } catch (e) {}
   });
   click("#btn-rogue-quit", rogueQuit);
-  window.addEventListener("pagehide", function () { var pr = rogueS().run; if (pr && pr.status === "playing") { pr.status = "paused"; pr.pausedAt = Date.now(); rogueLog("hide"); rogueSave(); } });
+  window.addEventListener("pagehide", function () { var pr = rogueS(); try { rogueStopTimer(); } catch (e) {} pr.run = null; try { rogueSave(); } catch (e) {} });
   document.addEventListener("visibilitychange", function () {
     var r = rogueS(), run = r.run;
     if (!run || run.status !== "playing") return;
@@ -7093,10 +7053,19 @@ function rogueBind() {
       saveNow(); renderSetup(); toast(S.settings.soundOn ? "音效已开启" : "音效已关闭");
     });
     var sp = $("#btn-shop4"); if (sp) sp.addEventListener("click", shopOpen);
-    var bx = $("#btn-exam"); if (bx) bx.addEventListener("click", examSheetOpen);
-    var bo = $("#btn-exam-ok"); if (bo) bo.addEventListener("click", examSheetOk);
-    var bc = $("#btn-exam-cancel"); if (bc) bc.addEventListener("click", examSheetClose);
-    var bm = $("#exam-mask"); if (bm) bm.addEventListener("click", function (ev) { if (ev.target && ev.target.id === "exam-mask") examSheetClose(); });
+    document.addEventListener("click", function (ev) {
+      var t = ev.target;
+      if (!t || !t.closest) return;
+      var b = t.closest("[data-exam]");
+      if (!b) return;
+      ev.preventDefault();
+      var y = b.getAttribute("data-exam");
+      S.settings.examDate = y + "-12-19";
+      saveNow();
+      try { renderSetup(); } catch (e) {}
+      try { renderHome(); } catch (e) {}
+      try { toast("考研日期：" + y + " 年 12 月 19 日"); } catch (e) {}
+    }, true);
   var sd = $("#btn-sfx-demo");
   if (sd) sd.addEventListener("click", function () {
     var old = S.settings.soundOn;
@@ -8751,41 +8720,8 @@ function renderTestQ() {
   if (it.opts || it.qt === "flash") startTestTimer(it);
 }
 
-function pinBars() {
-  var op = $("#opslot");
-  if (!op) return;
-  if (!op.style || typeof op.style.setProperty !== "function") return;
-  var cls = document.body.className || "";
-  var landscape = window.innerWidth > window.innerHeight;
-  var side = /pos-left|pos-right/.test(cls) && landscape;
-  op.style.setProperty("display", "flex", "important");
-  op.style.setProperty("flex-direction", "column", "important");
-  op.style.setProperty("justify-content", "flex-end", "important");
-  op.style.setProperty("align-items", "stretch", "important");
-  op.style.setProperty("box-sizing", "border-box", "important");
-  op.style.setProperty("width", side ? "50%" : "100%", "important");
-  op.style.setProperty("max-width", side ? "50%" : "none", "important");
-  op.style.setProperty("margin-left", /pos-right/.test(cls) && side ? "auto" : "0", "important");
-  op.style.setProperty("margin-right", /pos-left/.test(cls) && side ? "auto" : "0", "important");
-  op.style.setProperty("padding-left", "14px", "important");
-  op.style.setProperty("padding-right", "14px", "important");
-  ["#gbtns", "#fixbar"].forEach(function (sel) {
-    var el = $(sel);
-    if (!el) return;
-    el.style.setProperty("width", "100%", "important");
-    el.style.setProperty("max-width", "none", "important");
-    el.style.setProperty("margin", "0", "important");
-    el.style.setProperty("gap", "10px", "important");
-    el.style.setProperty("flex", "0 0 auto", "important");
-    el.style.setProperty("justify-content", "stretch", "important");
-    el.style.setProperty("box-sizing", "border-box", "important");
-    for (var i = 0; i < el.children.length; i++) {
-      var b = el.children[i];
-      b.style.setProperty("flex", "1 1 0", "important");
-      b.style.setProperty("min-width", "0", "important");
-    }
-  });
-}
+function pinBars() { return; }
+
 function fitTestWord(tries) {
   var el = document.querySelector("#scr-test .tword");
   if (!el) return;
