@@ -1867,6 +1867,13 @@ body.layout-left #scr-game #opslot .btns .big,body.layout-right #scr-game #opslo
 /* v40：作答键 / 改判条 只能出现一套（inline 控制，去掉容器强制 flex 后天然生效） */
 #opslot > .btns, #opslot > #fixbar{box-sizing:border-box}
 
+
+/* v41：层级表（内容 1 / 裂纹 2 / 迷雾 3 / 卡片 5 / 按钮 6 / 遮罩 60 / toast 85 / 沉浸退出 90） */
+.toast{z-index:85}
+#rogue-over{z-index:60}
+#imm-exit{z-index:90}
+.mask:not(.on){display:none !important;pointer-events:none !important}
+
 </style>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
@@ -5649,6 +5656,23 @@ var RQ = {
   floorTimeStep: 1000, minQTime: 3000, lenBonusPer3: 200, bossEvery: 5
 };
 var rogueTimer = 0, rogueTick = 0, rogueBound = false, rogueHiddenAt = 0, rogueAdvanceTimer = 0, rogueFlashTimer = 0, rogueCheckTimer = 0, rogueLateTimer = 0, rogueReviewTimer = 0;
+/* v41：肉鸽定时器统一登记（切题/退出/重开一律清空，防上一题定时器跳到下一题） */
+var RG_T = {};
+function rgSet(name, fn, ms) { rgClear(name); RG_T[name] = setTimeout(function () { RG_T[name] = 0; try { fn(); } catch (e) { console.warn("rgTimer", name, e); } }, ms); }
+function rgClear(name) { if (RG_T[name]) { try { clearTimeout(RG_T[name]); } catch (e) {} RG_T[name] = 0; } }
+function rgClearAll() {
+  Object.keys(RG_T).forEach(function (k) { rgClear(k); });
+  try { clearTimeout(rogueCheckTimer); } catch (e) {}
+  try { clearTimeout(rogueLateTimer); } catch (e) {}
+  try { clearTimeout(rogueReviewTimer); } catch (e) {}
+  try { clearTimeout(rogueAdvanceTimer); } catch (e) {}
+  try { clearTimeout(rogueFlashTimer); } catch (e) {}
+  rogueCheckTimer = 0; rogueLateTimer = 0; rogueReviewTimer = 0; rogueAdvanceTimer = 0; rogueFlashTimer = 0;
+}
+function rgResetQuestion(run) {
+  if (!run) return;
+  run.pending = null; run.revealing = false; run.picked = false; run.pickDelay = false;
+}
 
 function applyAccess(s) {
   s = s || {};
@@ -6622,6 +6646,7 @@ function rogueReviewDone(dead) {
 function rogueAdvance() {
   var r = rogueS(), run = r.run;
   if (!run || run.status !== "playing") return;
+  rgClearAll(); rgResetQuestion(run);
   if (run.pickDelay) {
     run.pickDelay = false;
     try { rogueStopTimer(); } catch (e) {}
@@ -6774,6 +6799,7 @@ function rogueTryLife(run) {
   return true;
 }
 function rogueFinish(status) {
+  rgClearAll();
   try { rogueCheckHide(); } catch (e) {}
   try { rogueReviewHide(); clearTimeout(rogueReviewTimer); } catch (e) {}
   var _fr = rogueS().run; if (_fr) _fr.revealing = false;
@@ -6841,6 +6867,7 @@ function rogueFinish(status) {
   rogueSave();
 }
 function rogueQuit() {
+  rgClearAll();
   var r = rogueS();
   try { rogueStopTimer(); } catch (e) {}
   r.run = null;
@@ -7109,6 +7136,8 @@ function rogueBindSetup() {
     listHtml: function () { try { return rogueListHtml(rogueS().run); } catch (e) { return "ERR:" + e.message; } },
     confirm: function () { try { rogueConfirmKnown(); } catch (e) { return "ERR:" + e.message; } },
   flip: function () { try { rogueFlip(); } catch (e) {} },
+  timers: function () { return { check: !!rogueCheckTimer, late: !!rogueLateTimer, review: !!rogueReviewTimer, adv: !!rogueAdvanceTimer, flash: !!rogueFlashTimer, reg: Object.keys(RG_T).length }; },
+  resetQ: function () { var r = rogueS().run; if (r) rgResetQuestion(r); return true; },
   wtQuota: wtQuota,
     forceQT: function (qt) { var r=rogueS().run; if(!r) return 0; var it=r.queue[r.idx]; if(!it) return 0; it.qt=qt; delete it.opts; rogueEnsureType(r,it); rogueRender(); return (it.opts||[]).length; },
     deck: function () { var r=rogueS().run; return r&&r.qtsDeck?r.qtsDeck.slice(0,10):[]; },
