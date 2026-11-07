@@ -365,7 +365,7 @@ body.wide.in-game .hint{display:none}
 /* ---------- 沙盒测试 ---------- */
 .herobtns{margin-top:8px}
 .btn.test{background:#7c5cff;color:#fff;box-shadow:none}
-.mask{position:fixed;inset:0;background:rgba(16,18,22,.45);z-index:60;display:flex;align-items:flex-end;justify-content:center}
+.mask{position:fixed;inset:0;background:rgba(16,18,22,.62);z-index:60;display:flex;align-items:flex-end;justify-content:center}
 .sheet{background:#fff;width:100%;max-width:560px;border-radius:18px 18px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));max-height:80vh;overflow-y:auto}
 .sect2{font-size:12.5px;color:#8a9099;margin:14px 0 8px}
 .topt{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
@@ -901,7 +901,7 @@ body.hand-left #scr-test .tqwrap{flex-direction:row !important}
   body.pos-left  #opslot>.btns,body.pos-left  #opslot>#fixbar{width:50% !important;max-width:none !important;margin-right:auto !important;margin-left:0 !important}
   body.pos-bottom #opslot>.btns,body.pos-bottom #opslot>#fixbar{width:100% !important;margin:0 !important}
 }
-#opslot #fixbar{display:flex !important;gap:10px !important;align-items:stretch}
+#opslot #fixbar{gap:10px !important;align-items:stretch}
 #opslot #fixbar .fix{flex:1 1 0 !important;width:auto !important;height:var(--app-btn-height,56px) !important;min-height:0 !important;font-size:16px;border-radius:14px;white-space:nowrap;padding:0 6px}
 /* 修正：按钮/改判条应填满 #opslot（#opslot 本身已是半屏），不要再各占 50% */
 @media (orientation: landscape){
@@ -1640,7 +1640,8 @@ body.immersive .tag,body.immersive .pill,body.immersive .rcnt{display:none !impo
   border:0;border-radius:50%;background:rgba(255,255,255,.14);color:rgba(255,255,255,.72);
   font-size:15px;line-height:1;pointer-events:auto}
 #imm-exit:active{background:rgba(255,255,255,.28)}
-.mask:not(.on){display:none !important}
+.mask{display:none}
+.mask.on{display:flex}
 
 
 /* 沉浸模式进度条对比 */
@@ -1796,8 +1797,8 @@ body.layout-left #scr-game #opslot .btns .big,body.layout-right #scr-game #opslo
     padding:0 12px calc(8px + env(safe-area-inset-bottom,0px)) !important;
     background:transparent !important;box-sizing:border-box !important;z-index:30 !important;
   }
-  body.layout-flash #scr-game #opslot .btns{display:flex !important;gap:8px !important;width:100% !important;margin:0 !important}
-  body.layout-flash #scr-game #opslot #fixbar{width:100% !important;margin:0 !important;display:flex !important;gap:8px !important}
+  body.layout-flash #scr-game #opslot .btns{gap:8px !important;width:100% !important;margin:0 !important}
+  body.layout-flash #scr-game #opslot #fixbar{width:100% !important;margin:0 !important;gap:8px !important}
   body.layout-flash #scr-game #opslot .big,
   body.layout-flash #scr-game #opslot .fix{flex:1 1 0 !important;min-width:0 !important;min-height:56px !important;font-size:16px !important}
 
@@ -1855,6 +1856,17 @@ body.layout-left #scr-game #opslot .btns .big,body.layout-right #scr-game #opslo
     padding:0 12px 8px !important;box-sizing:border-box !important;background:transparent !important;
   }
 }
+
+/* v40：横屏首页单列 + 内容区不留底部空档 */
+@media (orientation: landscape){
+  #scr-home .hero{display:block !important}
+  #scr-home .hero .dday{flex-basis:auto !important;margin:2px 0 8px !important}
+  body.layout-flash #scr-game .gcol{padding-bottom:0 !important}
+  body.layout-flash #scr-game .gmain{align-items:center !important}
+}
+/* v40：作答键 / 改判条 只能出现一套（inline 控制，去掉容器强制 flex 后天然生效） */
+#opslot > .btns, #opslot > #fixbar{box-sizing:border-box}
+
 </style>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
@@ -2042,24 +2054,16 @@ body.layout-left #scr-game #opslot .btns .big,body.layout-right #scr-game #opslo
     <div class="mask" id="rogue-cfg">
       <div class="sheet rcfgsheet">
         <div class="h2">肉鸽挑战</div>
+        <div class="rreph">模式</div>
+        <div class="rchips" id="rcfg-mode">
+          <button class="chip" data-mode="tower">⛰️ 无尽爬塔</button>
+          <button class="chip" data-mode="battle">🏰 实战爬塔</button>
+        </div>
         <div class="rreph">词汇来源</div>
         <div class="rchips" id="rcfg-src">
           <button class="chip" data-src="pool">全词库</button>
-          <button class="chip" data-src="today">今日学习</button>
           <button class="chip" data-src="weak">生词本</button>
           <button class="chip" data-src="wrong">今日错词</button>
-        </div>
-        <div class="rreph">难度</div>
-        <div class="rchips" id="rcfg-diff">
-          <button class="chip" data-diff="easy">简单 150HP</button>
-          <button class="chip" data-diff="normal">普通 100HP</button>
-          <button class="chip" data-diff="hard">困难 50HP</button>
-        </div>
-        <div class="rreph">模式</div>
-        <div class="rchips" id="rcfg-mode">
-          <button class="chip" data-mode="single">单局挑战 20 题</button>
-          <button class="chip" data-mode="tower">无尽爬塔</button>
-          <button class="chip" data-mode="battle">🏰 实战爬塔</button>
         </div>
         <div class="tiny muted" id="rogue-cfg-hint" style="margin:8px 2px 0"></div>
         <button class="btn primary block" id="btn-rogue-go" style="margin-top:12px">开始挑战</button>
@@ -3734,11 +3738,14 @@ function renderHome() {
     $("#home-kicker").textContent = "今日任务（含上次未完成）";
     $("#hb-new").textContent = newLeftReal;
     $("#hb-rev").textContent = revLeftReal;
-    $("#home-heroline").textContent = "上次未完成：已答 " + (live.firstDone || 0) + " / 共 " + (live.firstTotal || 0) + " 题";
+    var _fd = live.firstDone || 0, _ft = live.firstTotal || 0;
+    $("#home-heroline").textContent = _fd === 0
+      ? ("上次点了开始还没答题：共 " + _ft + " 题")
+      : ("上次未完成：已答 " + _fd + " / 共 " + _ft + " 题");
     $("#home-today").textContent = liveLeft + " 题";
     $("#btn-start").disabled = false;
     $("#btn-start").textContent = "继续今日学习";
-    $("#home-sub").textContent = "暂停在「" + (live.cur && live.cur.w ? live.cur.w : "这一题") + "」";
+    $("#home-sub").textContent = _fd === 0 ? "点「继续今日学习」接着来" : ("暂停在「" + (live.cur && live.cur.w ? live.cur.w : "这一题") + "」");
     liveSessionOn = true;
   } else {
     liveSessionOn = false;
@@ -5661,7 +5668,8 @@ var ROGUE_DIFF = {
 function rogueDiff(id) { return ROGUE_DIFF[id] || ROGUE_DIFF.normal; }
 function rogueCfg() {
   var r = rogueS();
-  if (!r.cfg) r.cfg = { src: "pool", diff: "normal", mode: "single" };
+  if (!r.cfg) r.cfg = { src: "pool", diff: "normal", mode: "tower" };
+  if (r.cfg.mode === "single") r.cfg.mode = "tower";
   return r.cfg;
 }
 /* 词源池：复用测试页的口径（今日学习 / 生词本 / 今日错词） */
@@ -5851,9 +5859,11 @@ function rogueCfgPaint() {
       els[i].classList.toggle("on", els[i].getAttribute("data-" + attr) === val);
     }
   }
+  var isBattle = c.mode === "battle";
   mark("rcfg-src", "src", c.src);
-  mark("rcfg-diff", "diff", c.diff);
   mark("rcfg-mode", "mode", c.mode);
+  var srcWrap = $("#rcfg-src");
+  if (srcWrap) srcWrap.style.display = isBattle ? "none" : "";
   var hint = $("#rogue-cfg-hint");
   var dueN = 0;
   try { dueN = rogueBattlePool().length; } catch (e) {}
@@ -5873,7 +5883,7 @@ function rogueOpenCfg() {
 function rogueSyncHome() {
   var btn = $("#btn-home-rogue"); if (!btn) return;
   var es = $("#home-rogue-es"), bn = $("#home-rogue-n");
-  if (bn) bn.textContent = "20题";
+  if (bn) bn.textContent = "爬塔";
   if (es) es.textContent = "答对推进度、连击暴击、词根共鸣；不影响学习排期";
 }
 function rogueRender() {
@@ -5951,7 +5961,7 @@ function rogueRender() {
 }
 function rogueSanOn(run) {
   if (!run) return false;
-  return run.diff === "hard" || (run.mode === "tower" && num(run.floor, 1) >= 3);
+  return run.mode === "tower" && (num(run.floor, 1) >= 3 || num(run.sanWrong, 0) >= 2);
 }
 function rogueSanUpdate(run, opts) {
   var el = $("#rogue-san"); if (!el) return;
@@ -6178,7 +6188,7 @@ function rogueStart(opts) {
   var run = {
     id: "R" + Date.now().toString(36),
     queue: [], idx: 0,
-    hp: D.hp, maxHp: D.hp, dmgWrong: D.wrong, dmgTimeout: D.timeout, timeScale: D.timeScale,
+    hp: 100, maxHp: 100, dmgWrong: D.wrong, dmgTimeout: D.timeout, timeScale: D.timeScale,
     src: src, diff: diff, mode: mode,
     floor: 1, floorOk: 0, floorN: 0, floors: [], floorTimeBonus: 0,
     loot: { used: [], echo2: false, timeBonus: 0 },
@@ -6541,6 +6551,7 @@ function rogueAnswer(kind) {
       if (it.pos === "adj" || it.pos === "adv") run.addTime = Math.min(RQ.timeAddCap, run.addTime + RQ.timeAdd);
     }
     run.answered.push({ k: it.k, w: it.w, m: it.m, pos: it.pos, root: it.root, ok: true, at: Date.now(), ms: Date.now() - (run.qStart || Date.now()) });
+    try { if (run.mode === "tower" && run.floors && run.floors.length) run.floors[run.floors.length - 1].answered.push(run.answered[run.answered.length - 1]); } catch (e) {}
     rogueLog("answer");
     if (d.echo) { try { sfx("echo"); } catch (e) {} }
     if (d.echo) rogueFlash("⚡ 词根共鸣触发：" + it.root, "+" + RQ.echoAdd + " 进度 · 本局 " + run.echoUsed + "/" + RQ.echoMax);
@@ -6558,6 +6569,7 @@ function rogueAnswer(kind) {
     else run.hp -= (run.dmgWrong || RQ.dmgWrong);
     run.combo = 0; run.critStreak = 0; run.lastPos = "";
     run.answered.push({ k: it.k, w: it.w, m: it.m, pos: it.pos, root: it.root, ok: false, kind: kind, flip: !!run.flipped, at: Date.now(), ms: Date.now() - (run.qStart || Date.now()) });
+    try { if (run.mode === "tower" && run.floors && run.floors.length) run.floors[run.floors.length - 1].answered.push(run.answered[run.answered.length - 1]); } catch (e) {}
     rogueLog("wrong");
     rogueRender();
     rogueSave();
@@ -6660,6 +6672,7 @@ function rogueSkip() {
   var nx = pool[Math.floor(Math.random() * pool.length)];
   run.queue[run.idx] = { k: nx.k, w: nx.w, m: nx.m, ph: nx.ph, pos: nx.pos, root: "", tier: "" };
   run.answered.push({ k: nx.k, w: nx.w, m: nx.m, pos: nx.pos, root: "", ok: true, skip: true, ms: 0 });
+    try { if (run.mode === "tower" && run.floors && run.floors.length) run.floors[run.floors.length - 1].answered.push(run.answered[run.answered.length - 1]); } catch (e) {}
   run.skipped++; run.undo = null; run.lastQKey = '';
   rogueLog("skip");
   rogueSave(); rogueRender(); rogueArmTimer();
@@ -6710,7 +6723,7 @@ function rogueListHtml(run) {
           '<span class="rtag ' + t2[0] + '">' + t2[1] + '</span></button>';
       });
     });
-    return '<div class="rlist">' + html + '</div>';
+    if (html) return '<div class="rlist">' + html + '</div>';
   }
   var rows = order.map(function (w) {
     var e = map[w], x = e.x, t = rogueTagOf(x);
@@ -7093,7 +7106,10 @@ function rogueBindSetup() {
   });
 }
   window.__rogueTest = {
-    wtQuota: wtQuota,
+    listHtml: function () { try { return rogueListHtml(rogueS().run); } catch (e) { return "ERR:" + e.message; } },
+    confirm: function () { try { rogueConfirmKnown(); } catch (e) { return "ERR:" + e.message; } },
+  flip: function () { try { rogueFlip(); } catch (e) {} },
+  wtQuota: wtQuota,
     forceQT: function (qt) { var r=rogueS().run; if(!r) return 0; var it=r.queue[r.idx]; if(!it) return 0; it.qt=qt; delete it.opts; rogueEnsureType(r,it); rogueRender(); return (it.opts||[]).length; },
     deck: function () { var r=rogueS().run; return r&&r.qtsDeck?r.qtsDeck.slice(0,10):[]; },
     san: function (n, glitch) { var r=rogueS().run; if(!r) return; r.sanWrong=n; rogueSanUpdate(r,{glitch:!!glitch}); },
