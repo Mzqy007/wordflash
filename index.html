@@ -2319,7 +2319,7 @@ window.WORD_DATA={"id":"hongbaoshu","name":"红宝书考研词汇","words":[{"w"
    ============================================================ */
 
 /* ---------------- 版本（唯一真源：改版本只改这里 + sw.js 的 CACHE 后缀，构建脚本会校验两者一致） ---------------- */
-var APP_VERSION = "v44";
+var APP_VERSION = "v45";
 var BUILD_DATE = "2026-11-09";
 
 /* ---------------- 工具 ---------------- */
@@ -2809,7 +2809,8 @@ function pruneForSpace() {
       var r = m[wk];
       if (!r || !Array.isArray(r.hist)) continue;
       var cap = r.graduated ? 1 : 5;
-      if (r.hist.length > cap) { r.hist = r.hist.slice(-cap); changed = true; }
+      var trimmed = trimHist(r.hist, cap);
+      if (trimmed.length !== r.hist.length) { r.hist = trimmed; changed = true; }
     }
   }
   return changed;
@@ -3259,6 +3260,18 @@ function histDecode(h) {
     ms: num(p[2], 0)
   };
 }
+/* v45：清理历史时永远保留「今天」的流水，否则今天的错次会被 20 条上限吃掉 */
+function trimHist(hist, cap) {
+  if (!Array.isArray(hist) || hist.length <= cap) return hist;
+  var t = today(), keep = [], old = [];
+  for (var i = 0; i < hist.length; i++) {
+    var x = histDecode(hist[i]);
+    if (x && x.d === t) keep.push(hist[i]); else old.push(hist[i]);
+  }
+  var room = cap - keep.length;
+  if (room < 0) room = 0;
+  return old.slice(old.length - room).concat(keep);
+}
 function pushHist(key, kind, ms) {
   /* v43：没有进行中的会话（实战爬塔 / 详情页再考一次）时，退回第一本词书，别把历史写丢 */
   var did = (S.session && S.session.deckId) || (S.decks[0] && S.decks[0].id) || "";
@@ -3267,7 +3280,7 @@ function pushHist(key, kind, ms) {
   if (!Array.isArray(r.hist)) r.hist = [];
   r.hist.push(histEncode(today(), kind, ms));
   var cap = r.graduated ? 3 : 20;
-  if (r.hist.length > cap) r.hist = r.hist.slice(-cap);
+  r.hist = trimHist(r.hist, cap);
 }
 
 /* 作答：kind = fast（认识·快）| slow（认识·慢）| know（认识·背记）| fuzzy（模糊）| no（不认识）| timeout（超时） */
@@ -3456,6 +3469,9 @@ function submitAnswer(kind, ms) {
     sess.results.push({ k: key, mode: mode, kind: out.kind, ms: ms, score: 0, replayFail: !rok });
 
   } else if (mode === "relearn") {
+    /* v45：巩固环节的每一次作答同样留痕。原来这里不写 hist，
+       同一个词今天被连点 3 次「不认识」也只算 1 次，仇恨榜因此永远全是「错 1 次」。 */
+    pushHist(key, kind, ms);
     var rl = sess.relearn[key] || { progress: 0, fails: 1 };
     sess.relearn[key] = rl;
     out.prevProgress = rl.progress;
@@ -8286,7 +8302,7 @@ function renderList(kind) {
         if (r1.graduated) continue;
         if (num(r1.L, 0) !== num(mLevel[1], 0)) continue;
       } else {
-        var h = r1.hist || [], lastKind = h.length ? (histDecode(h[h.length - 1]) || {}).k : "";
+        var h = r1.hist || [], lastKind = h.length ? (histDecode(h[h.length - 1]) || {}).kind : "";
         if (lastKind !== mKind[1]) continue;
       }
       pool.push(k1);
@@ -8441,19 +8457,21 @@ function todayWrongList() {
   for (var k in recs) {
     var r = recs[k];
     if (!r || !Array.isArray(r.hist)) continue;
-    var n = 0;
-    for (var i = r.hist.length - 1; i >= 0; i--) {
+    /* v45：全量扫描今天的每一条流水做绝对累加（不再遇到旧日期就 break，
+       老存档里 hist 顺序不保证严格升序，break 会漏算） */
+    var n = 0, last = -1;
+    for (var i = 0; i < r.hist.length; i++) {
       var x = histDecode(r.hist[i]);
       if (!x) continue;
-      if (x.d < t) break;
-      if (x.d === t && BAD[x.kind]) n++;
+      if (x.d === t && BAD[x.kind]) { n++; last = i; }
     }
     if (!n) continue;
     var w = wordByKey(deck.id, k);
     if (!w || !w.w) continue;
-    out.push({ k: k, w: w.w, m: w.m || "", n: n, L: num(r.L, 0) });
+    out.push({ k: k, w: w.w, m: w.m || "", n: n, last: last, L: num(r.L, 0) });
   }
-  out.sort(function (a, b) { return b.n - a.n || a.L - b.L || (a.w < b.w ? -1 : a.w > b.w ? 1 : 0); });
+  /* v45：次数降序；次数相同则「今天最近一次答错」的排前面，榜单不再像随机顺序 */
+  out.sort(function (a, b) { return b.n - a.n || b.last - a.last || a.L - b.L || (a.w < b.w ? -1 : a.w > b.w ? 1 : 0); });
   return out;
 }
 function todayWrongCardHtml() {
@@ -8467,8 +8485,8 @@ function todayWrongCardHtml() {
       '<span class="tiny muted">错 ' + x.n + ' 次</span></div>';
   }).join("");
   return '<div class="card" style="margin-top:12px"><h2 style="margin:0 0 6px">今日错词 · 仇恨榜</h2>' +
-    '<div class="tiny muted" style="margin-bottom:8px">共 ' + list.length + ' 个，' +
-    (list.length > 12 ? '这里显示前 12 个，' : '') + '按今天答错次数排序（只读，不改排期）</div>' +
+    '<div class="tiny muted" style="margin-bottom:8px">共 ' + list.length + ' 个今日错词，按今日累计出错次数降序排列' +
+    (list.length > 12 ? '（这里显示前 12 个）' : '') + '（只读，不改排期）</div>' +
     rows +
     '<button class="btn primary" id="btn-ai-prompt" style="margin-top:12px">📋 复制错词，生成 AI 阅读文章</button>' +
     '<div class="tiny muted" style="margin-top:6px">最多取 ' + Math.min(list.length, 20) + ' 个词，复制后粘给任意 AI 即可</div></div>';
@@ -8490,10 +8508,9 @@ function todayWrongKeys() {
   for (var k in recs) {
     var r = recs[k];
     if (!r || !Array.isArray(r.hist)) continue;
-    for (var i = r.hist.length - 1; i >= 0; i--) {
+    for (var i = 0; i < r.hist.length; i++) {
       var x = histDecode(r.hist[i]);
       if (!x) continue;
-      if (x.d < t) break;
       if (x.d === t && BAD[x.kind]) { out[k] = 1; break; }
     }
   }
