@@ -2319,7 +2319,7 @@ window.WORD_DATA={"id":"hongbaoshu","name":"红宝书考研词汇","words":[{"w"
    ============================================================ */
 
 /* ---------------- 版本（唯一真源：改版本只改这里 + sw.js 的 CACHE 后缀，构建脚本会校验两者一致） ---------------- */
-var APP_VERSION = "v45";
+var APP_VERSION = "v47";
 var BUILD_DATE = "2026-11-09";
 
 /* ---------------- 工具 ---------------- */
@@ -2342,6 +2342,36 @@ function logicalDate() {
 }
 /* 兼容旧名：历史代码里 today() 有几处调用，统一转发到 logicalDate，避免一次性大改 */
 function today() { return logicalDate(); }
+/* v46 读取期 due 防御：把老存档里的各种历史写法归一成 YYYY-MM-DD 再比较。
+   只做读取归一，绝不改任何 r.due = ... 的写入逻辑，避免任何数据被静默改写。
+   兼容：YYYY-MM-DD / YYYY/MM/DD / YYYY.MM.DD / 带 T 的 ISO 串 / 毫秒或秒时间戳 / YYYYMMDD / YYMMDD / MM/DD/YYYY */
+function dueDayOf(v) {
+  if (v == null || v === "") return "";
+  if (typeof v === "number" || /^\d+$/.test(String(v).trim())) {
+    var n = Number(v);
+    if (!isFinite(n) || n <= 0) return "";
+    var sn = String(Math.floor(n));
+    if (sn.length === 8) return sn.slice(0, 4) + "-" + sn.slice(4, 6) + "-" + sn.slice(6, 8);   // YYYYMMDD
+    if (sn.length === 6) return "20" + sn.slice(0, 2) + "-" + sn.slice(2, 4) + "-" + sn.slice(4, 6); // YYMMDD
+    var dt = new Date(n > 1e11 ? n : n * 1000);   // 毫秒 / 秒时间戳
+    return isNaN(dt.getTime()) ? "" : fmtDate(dt);
+  }
+  var str = String(v).trim();
+  var m = str.match(/^(\d{4})[-/.](\d{1,2})[-/.](\d{1,2})/);
+  if (m) return m[1] + "-" + pad(Number(m[2])) + "-" + pad(Number(m[3]));
+  m = str.match(/^(\d{4})(\d{2})(\d{2})$/);
+  if (m) return m[1] + "-" + m[2] + "-" + m[3];
+  m = str.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})/);   // 09/11/2026
+  if (m) return m[3] + "-" + pad(Number(m[2])) + "-" + pad(Number(m[1]));
+  return "";
+}
+/* 到期判断的唯一入口：无法识别的脏值按「未到期」处理（宁可不出题，也不误改数据/误清队列） */
+function isDueOn(r, t) {
+  if (!r || r.graduated || !r.due) return false;
+  var day = dueDayOf(r.due);
+  if (!day) return false;
+  return day <= (t || today());
+}
 function addDays(ds, n) {
   var p = ds.split("-").map(Number);
   var d = new Date(p[0], p[1] - 1, p[2]);
@@ -3043,7 +3073,7 @@ function dueList(deckId) {
   for (var i = 0; i < ws.length; i++) {
     var k = normKey(ws[i].w);
     var r = recs[k];
-    if (r && !r.graduated && r.due && r.due <= t) out.push({ w: ws[i], k: k, due: r.due });
+    if (r && isDueOn(r, t)) out.push({ w: ws[i], k: k, due: dueDayOf(r.due) || r.due });
   }
   out.sort(function (a, b) {
     if (a.due !== b.due) return a.due < b.due ? -1 : 1;
@@ -3731,7 +3761,7 @@ function deckStats(deck) {
     if (!r) continue;
     learned++;
     if (r.graduated) graduated++;
-    else if (r.due && r.due <= t) due++;
+    else if (isDueOn(r, t)) due++;
     if (!r.graduated && r.L <= 1) l0++;
     ms += masteryOf(r);
   }
@@ -3853,10 +3883,18 @@ function renderHome() {
   var newTake = plan.newTake;
   var total = plan.total;
   var blN = plan.backlog;
-  var dueReal = num(s.due, 0);
-  var newReal = Math.min(num(s.fresh, 0), num(S.settings.newPerDay, 20));
-  var revLeftReal = Math.max(dueReal - num(d.reviewDone, 0), 0);
-  var newLeftReal = Math.max(newReal - num(d.newDone, 0), 0);
+  var dueReal = num(s.due, 0);        // 剩余到期（存量）
+  var newFresh = num(s.fresh, 0);
+  var newCap = num(S.settings.newPerDay, 20);
+  var newDoneN = num(d.newDone, 0);
+  var reviewDoneN = num(d.reviewDone, 0);
+  /* v46：分母 = 今日累计 + 今日剩余，分子分母数据源彻底分离（旧写法分子累计/分母存量 → 做完必然 X / 0） */
+  var newTotal = Math.max(newDoneN, Math.min(newDoneN + newFresh, newCap));
+  if (!(newTotal > 0)) newTotal = 1;                        // 零兜底：任何情况都不出现 X / 0
+  var reviewTotal = reviewDoneN + dueReal;
+  if (!(reviewTotal > 0)) reviewTotal = Math.max(reviewDoneN, dueReal, 1);
+  var revLeftReal = dueReal;          // v46：dueReal 本身就是剩余量，禁止再减 reviewDone（重复扣减）
+  var newLeftReal = Math.max(newTotal - newDoneN, 0);
   $("#home-today").textContent = (revTake + newTake) + " 题";
   var bO = $("#btn-orient"); if (bO) bO.textContent = isWideNow() ? "竖屏" : "横屏";
   try { rogueSyncHome(); } catch (e) {}
@@ -3933,8 +3971,8 @@ function renderHome() {
   var revCap = num(S.settings.reviewPerDay, 100);
   var over = Math.max(dueReal - revCap, 0);
   $("#home-stats").innerHTML = [
-    cell(num(d.newDone, 0) + " / " + newReal, "今日新学", "todayNew"),
-    cell(num(d.reviewDone, 0) + " / " + dueReal, "今日复习", "todayReview",
+    cell(newDoneN + " / " + newTotal, "今日新学", "todayNew"),
+    cell(reviewDoneN + " / " + reviewTotal, "今日复习", "todayReview",
       over > 0 ? ("⚠️ 超出每日上限 " + over + " 词") : ""),
     cell(String(s.due), "到期积压", "due"),
     cell(String(s.graduated), "已掌握", "mastered"),
@@ -6504,7 +6542,7 @@ function rogueBattlePool() {
   return roguePool().filter(function (it) {
     var k = normKey(it.w);
     var r = recs[k] || recs[it.w];
-    return !!(r && r.due && String(r.due) <= t);
+    return isDueOn(r, t);
   });
 }
 function rogueBattleApply(run, it, kind) {
@@ -7396,11 +7434,11 @@ function bind() {
     var b = countBounds();
     var inp = $("#cnt-input");
     if (inp) { inp.min = b.lo; inp.max = b.hi; inp.value = String(curCount()); }
-    var m = $("#cnt-mask"); if (m) m.style.display = "flex";
+    var m = $("#cnt-mask"); if (m) { m.classList.add("on"); m.style.display = "flex"; }
     setTimeout(function () { if (inp) { try { inp.focus(); inp.select(); } catch (e) {} } }, 60);
   });
-  on("#btn-cnt-close", "click", function () { var m = $("#cnt-mask"); if (m) m.style.display = "none"; });
-  on("#cnt-mask", "click", function (ev) { if (ev.target && ev.target.id === "cnt-mask") ev.target.style.display = "none"; });
+  on("#btn-cnt-close", "click", function () { var m = $("#cnt-mask"); if (m) { m.classList.remove("on"); m.style.display = "none"; } });
+  on("#cnt-mask", "click", function (ev) { if (ev.target && ev.target.id === "cnt-mask") { ev.target.classList.remove("on"); ev.target.style.display = "none"; } });
   on("#btn-cnt-ok", "click", function () {
     var b = countBounds(), inp = $("#cnt-input");
     var v = Math.round(num(inp && inp.value, curCount()));
@@ -7409,7 +7447,7 @@ function bind() {
       return;
     }
     setCount(v);
-    var m = $("#cnt-mask"); if (m) m.style.display = "none";
+    var m = $("#cnt-mask"); if (m) { m.classList.remove("on"); m.style.display = "none"; }
   });
   on("#home-mode", "click", function (ev) {
     var b = ev.target.closest && ev.target.closest(".chip[data-mode]");
@@ -8552,12 +8590,15 @@ function testPool() {
 function openTestSheet() {
   var m = $("#test-mask");
   if (!m) return;
+  /* v47：.mask 的可见性由 class="on" 控制（style.css 里有 `.mask:not(.on){display:none!important}`，
+     纯内联 display 会被 !important 压掉 → 点了“没反应”）。内联 display 保留作兜底。 */
+  m.classList.add("on");
   m.style.display = "flex";
   renderTestSheet();
 }
 function closeTestSheet() {
   var m = $("#test-mask");
-  if (m) m.style.display = "none";
+  if (m) { m.classList.remove("on"); m.style.display = "none"; }
 }
 function renderTestSheet() {
   $$("#test-src .chip").forEach(function (b) { b.classList.toggle("on", b.getAttribute("data-src") === testCfg.src); });
