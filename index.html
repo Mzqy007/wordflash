@@ -1543,9 +1543,6 @@ body.immersive .immzone{display:block}
   #scr-rogue .rsub{margin-top:2px}
   .san.on{backdrop-filter:none !important;-webkit-backdrop-filter:none !important}
   #rogue-hint,#btn-rogue-skip,#btn-rogue-undo,#rogue-tag,#rogue-fam{position:relative;z-index:4}
-  /* 三题型：横屏选项两列 */
-  #rogue-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  #rogue-opts .ropt{height:48px;font-size:14px;padding:0 10px}
 }
 @media (orientation: landscape){
   #scr-rogue{padding:0 10px 2px !important}
@@ -1564,30 +1561,11 @@ body.immersive .immzone{display:block}
   #rogue-cfg .btn{height:44px !important;font-size:15px !important}
 }
 
-/* ===== 三题型 ===== */
-.rqt{font-size:11.5px;color:#8a9099;font-weight:600}
-body.immersive .rqt{color:#8fa0b6}
-.ropts{display:none;position:relative;z-index:5;margin-top:8px;width:100%;gap:8px}
-.ropts .ropt{display:flex;align-items:center;justify-content:center;width:100%;min-height:52px;
-  padding:8px 12px;border-radius:12px;border:1px solid #e3e7ec;background:#fff;
-  font-size:15px;line-height:1.35;color:#23262b;text-align:center;white-space:normal;word-break:break-word}
-.ropts .ropt:active{background:#eef4ff;border-color:#9cc0ff}
-@media (prefers-color-scheme: dark){.ropts .ropt{background:#171a1f;border-color:#2a2f38;color:#e6e8ec}}
-body.immersive .ropts .ropt{background:#111419;border-color:#262b34;color:#eef3fa}
 
 
-/* 选择题时单词卡加高上限，横屏两列选项不溢出 */
-@media (orientation: landscape){
-  #scr-rogue .ropts{margin-top:4px;gap:6px}
-  #scr-rogue .ropts .ropt{height:44px;min-height:44px;font-size:13.5px}
-}
-
-
-/* v29: 横屏结算列表/校验层/选项/飘字/主页 D-Day */
+/* v29: 横屏结算列表/校验层/飘字/主页 D-Day */
 #rogue-over .rover-list{flex:1 1 120px;min-height:120px;max-height:none !important}
-#rogue-opts.show{display:grid !important;grid-template-columns:1fr 1fr;gap:8px}
 @media (orientation: portrait){
-  #rogue-opts.show{display:flex !important;flex-direction:column}
   .toast{top:60px !important}
 }
 @media (orientation: landscape){
@@ -1602,17 +1580,6 @@ body.immersive .ropts .ropt{background:#111419;border-color:#262b34;color:#eef3f
 }
 
 
-/* v29: 题型彩色胶囊标签 */
-#rogue-qt{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700}
-#rogue-qt.pill{background:#eef1f6;color:#3a4351;border-radius:999px;padding:4px 10px}
-#rogue-qt.pill.q-mean{background:#efe9ff;color:#5b3fd6}
-#rogue-qt.pill.q-word{background:#e6f0ff;color:#1f66d0}
-#rogue-qt.pill.q-flash{background:#eef1f6;color:#495264}
-@media (prefers-color-scheme: dark){
-  #rogue-qt.pill.q-mean{background:#2a2340;color:#b9a6ff}
-  #rogue-qt.pill.q-word{background:#16243a;color:#8fbcff}
-  #rogue-qt.pill.q-flash{background:#22262e;color:#c7cedb}
-}
 
 /* v30a 可访问性：关闭特效（由 body class 驱动） */
 body.no-san .san{display:none !important}
@@ -1878,7 +1845,6 @@ body.layout-left #scr-game #opslot .btns .big,body.layout-right #scr-game #opslo
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-180.png">
-<meta name="theme-color" content="#2f6bff">
 </head>
 <body>
 <div id="app">
@@ -1985,7 +1951,7 @@ body.layout-left #scr-game #opslot .btns .big,body.layout-right #scr-game #opslo
         <button class="chip" data-mode="flash">闪过</button>
       </div>
     </div>
-    <div class="tiny muted" style="margin-top:16px;text-align:center">单词闪过 · 纯前端 · 离线可用 · v6.2 · 2026-11-07</div>
+    <div class="tiny muted" style="margin-top:16px;text-align:center">单词闪过 · 纯前端 · 离线可用 · <span id="app-ver"></span></div>
     <input type="file" id="file-import" accept=".json" hidden>
   </section>
 
@@ -2000,7 +1966,7 @@ body.layout-left #scr-game #opslot .btns .big,body.layout-right #scr-game #opslo
     </div>
 
     <div class="card rbar">
-      <div class="rrow"><span class="rqt" id="rogue-qt"></span>
+      <div class="rrow">
         <span class="rfloor" id="rogue-floor" style="display:none"></span>
         <span class="rhp">HP <b id="rogue-hp">100</b></span>
         <span class="rmeta"><span id="rogue-idx">1 / 20</span><span id="rogue-combo">连击 0</span></span>
@@ -2352,6 +2318,10 @@ window.WORD_DATA={"id":"hongbaoshu","name":"红宝书考研词汇","words":[{"w"
    规则见 SPEC-v3.md
    ============================================================ */
 
+/* ---------------- 版本（唯一真源：改版本只改这里 + sw.js 的 CACHE 后缀，构建脚本会校验两者一致） ---------------- */
+var APP_VERSION = "v44";
+var BUILD_DATE = "2026-11-09";
+
 /* ---------------- 工具 ---------------- */
 var pad = function (n) { return String(n).padStart(2, "0"); };
 var $ = function (s, r) { return (r || document).querySelector(s); };
@@ -2363,12 +2333,15 @@ var ROGUE_FAM = {"high":{"stat":["state","statement","statesman","station","stat
 var ENT = { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" };
 var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return ENT[c]; }); };
 function fmtDate(d) { return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()); }
-/* 一天从几点开始：默认凌晨 4 点，0 点之后但没到 4 点仍算前一天 */
-function today() {
+/* 逻辑日期是唯一的「今天」口径：一天从 dayCutoff（默认凌晨 4 点）算起。
+   任何排期 / 统计 / 词源筛选用到的日期都必须走这里，禁止在别处手拼日期串。 */
+function logicalDate() {
   var cut = 0;
   try { if (typeof S !== "undefined" && S && S.settings) cut = clamp(num(S.settings.dayCutoff, 4), 0, 6); } catch (e) {}
   return fmtDate(new Date(Date.now() - cut * 3600000));
 }
+/* 兼容旧名：历史代码里 today() 有几处调用，统一转发到 logicalDate，避免一次性大改 */
+function today() { return logicalDate(); }
 function addDays(ds, n) {
   var p = ds.split("-").map(Number);
   var d = new Date(p[0], p[1] - 1, p[2]);
@@ -2510,8 +2483,11 @@ function defaultSettings() {
 
 /* ---------------- 存储 ---------------- */
 var LS_KEY = "wordflash.v3";
+var LS_CORRUPT_KEY = "wordflash.v3.corrupted";   // 损坏存档的异地备份（绝不与主键混存）
+var SCHEMA_VERSION = 4;                          // v43：存档结构版本；旧档无此字段按 0 处理
 var S = null;
 var memStore = null;
+var corruptInfo = null;                          // 最近一次读到的损坏存档 { raw, reason, at }
 
 function storageGet(k) {
   try { return window.localStorage.getItem(k); }
@@ -2588,7 +2564,7 @@ function speakWord(txt) {
 
 function freshState() {
   return {
-    version: 3, updatedAt: 0,
+    version: SCHEMA_VERSION, updatedAt: 0,
     settings: defaultSettings(),
     decks: [], records: {}, daily: {}, session: null, lastExportAt: null,
     backlog: {},
@@ -2596,12 +2572,14 @@ function freshState() {
   };
 }
 
-function loadState() {
+/* 唯一迁移入口：localStorage 与 IndexedDB 读出来的对象都必须过这里，
+   否则「从 IDB 恢复」会绕过迁移，把旧结构直接塞进运行态。 */
+function migrateState(o) {
+  if (!o || typeof o !== "object" || Array.isArray(o)) return null;
   var st = freshState();
-  var raw = storageGet(LS_KEY);
-  if (raw) {
-    try {
-      var o = JSON.parse(raw);
+  var fromV = num(o.version, 0);
+  /* 比当前更新的存档（可能是新版写的）：不猜语义，原样接受并保留更高版本号 */
+  var FUTURE = fromV > SCHEMA_VERSION;
       if (o && typeof o === "object") {
         // 迁移（必须在合并默认值之前判断）：v3 初版回显时间太短，来不及看清释义再改判
         if (o.settings && !o.settings.revealMsV) {
@@ -2692,16 +2670,103 @@ function loadState() {
           if (!isFinite(cvFix) || cvFix < 5) st.settings.countValue = 20;
         }
       }
-    } catch (e) { /* 损坏则重置 */ }
-  }
-  // 确保内置词库存在
+  st.version = FUTURE ? fromV : SCHEMA_VERSION;
+  return st;
+}
+
+/* 收尾：内置词库、历史误设修复。任何来源的存档都要过这里 */
+function finalizeState(st) {
+  if (!Array.isArray(st.decks)) st.decks = [];
+  if (!st.settings || typeof st.settings !== "object") st.settings = defaultSettings();
   if (window.WORD_DATA) {
-    var has = st.decks.some(function (d) { return d.id === window.WORD_DATA.id; });
+    var has = st.decks.some(function (d) { return d && d.id === window.WORD_DATA.id; });
     if (!has) {
       st.decks.unshift({ id: window.WORD_DATA.id, name: window.WORD_DATA.name, builtin: true, words: [], createdAt: Date.now() });
     }
   }
+  if (st.settings.countValue !== "all") {
+    var cvFix = num(st.settings.countValue, 20);
+    if (!isFinite(cvFix) || cvFix < 5) st.settings.countValue = 20;
+  }
   return st;
+}
+
+/* 把损坏的原始串备份下来：先写独立的 localStorage 键，再塞一份进 IndexedDB。
+   v43 铁律：宁可备份占空间，也不许静默把用户数据清空。 */
+function backupCorrupted(raw, reason) {
+  var s = String(raw == null ? "" : raw);
+  corruptInfo = { raw: s, reason: String(reason || "parse-failed"), at: Date.now(), persisted: false, idbBacked: false };
+  try { window.localStorage.setItem(LS_CORRUPT_KEY, s); corruptInfo.persisted = true; } catch (e) {}
+  try {
+    IDB.put("state.corrupted", s).then(function () { if (corruptInfo) corruptInfo.idbBacked = true; })
+      .catch(function () { if (corruptInfo) corruptInfo.idbBacked = false; });
+  } catch (e) {}
+  return corruptInfo;
+}
+
+/* 从 localStorage 读主状态。读不出来就备份原始串并返回初始状态，绝不静默丢弃。 */
+function loadState() {
+  var raw = null;
+  try { raw = storageGet(LS_KEY); } catch (e) { raw = null; }
+  if (raw) {
+    var why = "";
+    var o = null;
+    try { o = JSON.parse(raw); } catch (e) { why = "JSON.parse: " + (e && e.message ? e.message : e); }
+    if (!why) {
+      var st = null;
+      try { st = migrateState(o); } catch (e) { why = "migrate: " + (e && e.message ? e.message : e); }
+      if (st && !why) {
+        try { return finalizeState(st); } catch (e) { why = "finalize: " + (e && e.message ? e.message : e); }
+      } else if (!why) { why = "not-object"; }
+    }
+    backupCorrupted(raw, why);
+  }
+  return finalizeState(freshState());
+}
+
+/* IDB 里那份也走同一套迁移 + 收尾 */
+function stateFromRaw(raw) {
+  var o = null;
+  try { o = JSON.parse(raw); } catch (e) { return null; }
+  var st = null;
+  try { st = migrateState(o); } catch (e) { return null; }
+  if (!st) return null;
+  try { return finalizeState(st); } catch (e) { return null; }
+}
+function recCount(s) {
+  var n = 0, recs = (s && s.records) || {};
+  for (var d in recs) { var m = recs[d]; if (m && typeof m === "object") n += Object.keys(m).length; }
+  return n;
+}
+/* LS ↔ IDB 统一比对（boot 里只调用这一处，不再自己比 updatedAt）：
+   - 本机存档损坏：无条件用 IDB 救援；
+   - 正常情况：谁新用谁；时间戳相同则记录更全的那份优先；
+   - 收尾统一 saveNow()，把最终态双写回去。 */
+function reconcileStorage(lsStamp, done) {
+  var settled = false;
+  function finish(adopted) {
+    if (settled) return; settled = true;
+    try { saveNow(); } catch (e) {}
+    if (done) { try { done(!!adopted); } catch (e) {} }
+  }
+  try {
+    if (!IDB.supported()) { finish(false); return; }
+    IDB.get("state").then(function (raw) {
+      if (!raw) { finish(false); return; }
+      var st = stateFromRaw(raw);
+      if (!st) { finish(false); return; }
+      var same = num(st.updatedAt, 0) === num(lsStamp, 0);
+      var adopt = corruptInfo ? true : (num(st.updatedAt, 0) > num(lsStamp, 0) || (same && recCount(st) > recCount(S)));
+      if (!adopt) { finish(false); return; }
+      S = st;
+      try { mapCache = {}; } catch (e) {}
+      try { applyLayout(); } catch (e) {}
+      try { applyAccess((S.rogue && S.rogue.settings) || {}); } catch (e) {}
+      try { renderHome(); show("home"); } catch (e) {}
+      if (corruptInfo) { try { toast("已从本地数据库恢复上次存档，本机损坏的存档已另存备份"); } catch (e) {} }
+      finish(true);
+    }).catch(function () { finish(false); });
+  } catch (e) { finish(false); }
 }
 
 var saveTimer = null;
@@ -2776,6 +2841,13 @@ function hideStoreWarn() {
 }
 function saveNow() {
   clearTimeout(saveTimer);
+  /* v43：本机原始损坏串还没备份成功时，先别动任何存储（LS 和 IDB 都不写），
+     宁可暂缓保存，也不让原始数据被覆盖。备份一完成（persisted/idbBacked）自动恢复写入。 */
+  if (corruptInfo && !corruptInfo.persisted && !corruptInfo.idbBacked && !corruptInfo.allowOverwrite) {
+    if (!storeWarn) { storeWarn = true; try { toast("存档已损坏且备份未完成，本次保存暂缓（原始数据仍在）"); } catch (e) {} }
+    showStoreWarn();
+    return false;
+  }
   S.updatedAt = Date.now();
   var payload = JSON.stringify(S);
   IDB.saveSoon(payload);
@@ -3188,7 +3260,9 @@ function histDecode(h) {
   };
 }
 function pushHist(key, kind, ms) {
-  var r = getRec(S.session ? S.session.deckId : "", key);
+  /* v43：没有进行中的会话（实战爬塔 / 详情页再考一次）时，退回第一本词书，别把历史写丢 */
+  var did = (S.session && S.session.deckId) || (S.decks[0] && S.decks[0].id) || "";
+  var r = getRec(did, key);
   if (!r) return;
   if (!Array.isArray(r.hist)) r.hist = [];
   r.hist.push(histEncode(today(), kind, ms));
@@ -3466,6 +3540,46 @@ function finishSession() {
   show("result", { noPush: true });
 }
 
+/* ---------------- v43：全局兜底（任何意外报错只提示，不白屏、不丢数据） ---------------- */
+var crashBar = null, crashLast = 0;
+function crashBarShow(err) {
+  var now = Date.now();
+  if (now - crashLast < 3000) return;   // 连续报错只提示一次，避免刷屏
+  crashLast = now;
+  var msg = "";
+  try { msg = String((err && (err.message || (err.reason && err.reason.message))) || err || "未知错误"); } catch (e) {}
+  try { if (window.console && console.error) console.error("[wordflash]", err); } catch (e) {}
+  try {
+    if (!crashBar || !crashBar.parentNode) {
+      crashBar = document.createElement("div");
+      crashBar.id = "crash-bar";
+      crashBar.style.cssText = "position:fixed;left:0;right:0;bottom:0;z-index:99999;background:#f5c542;color:#3a2c00;" +
+        "font:13px/1.45 system-ui,-apple-system,sans-serif;padding:8px 12px;display:flex;gap:8px;align-items:center;" +
+        "box-shadow:0 -2px 10px rgba(0,0,0,.18);padding-bottom:calc(8px + env(safe-area-inset-bottom,0px));";
+      crashBar.innerHTML = '<span style="flex:1">⚠️ 程序开小差了，已记录。你的学习数据仍在本地。</span>' +
+        '<button id="crash-reload" style="border:0;background:#3a2c00;color:#f5c542;padding:6px 10px;border-radius:8px;font-size:13px">重新加载</button>' +
+        '<button id="crash-close" style="border:0;background:transparent;color:#3a2c00;font-size:16px;padding:2px 4px">✕</button>';
+      if (document.body && document.body.appendChild) document.body.appendChild(crashBar);
+      var b1 = crashBar.querySelector ? crashBar.querySelector("#crash-reload") : null;
+      var b2 = crashBar.querySelector ? crashBar.querySelector("#crash-close") : null;
+      if (b1) b1.onclick = function () { try { location.reload(); } catch (e) {} };
+      if (b2) b2.onclick = function () { try { crashBar.style.display = "none"; } catch (e) {} };
+      var tip = crashBar.querySelector ? crashBar.querySelector("span") : null;
+      if (tip && msg) tip.title = msg.slice(0, 300);
+    }
+    crashBar.style.display = "flex";
+  } catch (e) { try { alert("程序开小差了：" + msg); } catch (e2) {} }
+}
+function initCrashGuard() {
+  if (window.__wfCrashGuard) return;
+  window.__wfCrashGuard = true;
+  window.addEventListener("error", function (ev) {
+    // 静态资源（图片/脚本）加载失败不算崩溃，交给各自兜底
+    if (ev && ev.target && ev.target !== window && ev.target.tagName) return;
+    crashBarShow(ev && (ev.error || ev.message));
+  });
+  window.addEventListener("unhandledrejection", function (ev) { crashBarShow(ev && ev.reason); });
+}
 /* ---------------- 界面：通用 ---------------- */
 var toastTimer = null;
 function toast(msg) {
@@ -3677,17 +3791,13 @@ var ROGUE_TIPS = [
 ];
 function examLeftDays() {
   var s = S.settings;
+  var ld = logicalDate();
   var t = s.examDate || "";
-  if (!t) {
-    var y = new Date().getFullYear();
-    t = y + "-12-19";
-    var d0 = new Date(t + "T00:00:00");
-    if (isNaN(d0.getTime())) t = y + "-12-21";
-  }
+  if (!t) t = num(ld.slice(0, 4), 2026) + "-12-19";
   var d = new Date(t + "T00:00:00");
   if (isNaN(d.getTime())) return null;
-  var now = new Date();
-  now.setHours(0, 0, 0, 0);
+  /* v43：倒计时用逻辑日期（04:00 切天），避免凌晨时和首页说的「今天」差一天 */
+  var now = new Date(ld + "T00:00:00");
   return Math.round((d - now) / 86400000);
 }
 function rogueMoodLine(score) {
@@ -4369,7 +4479,8 @@ function todayCardHtml() {
     '<div class="cell"><div class="n">' + fmtDur(sumDays("ms")) + '</div><div class="l">累计用时</div></div>' +
     '<div class="cell"><div class="n">' + (num(d.reviewTot, 0) ? Math.round(num(d.reviewOk, 0) / num(d.reviewTot, 0) * 100) + '%' : '-') + '</div><div class="l">今日复习正确率</div></div>' +
     '</div>' +
-    '<div class="tiny muted" style="margin-top:10px">额度：新学 ' + num(dl.newDone, 0) + '/' + num(S.settings.newPerDay, 20) + ' · 复习 ' + num(dl.reviewDone, 0) + '/' + num(S.settings.reviewPerDay, 100) + '</div></div>';
+    '<div class="tiny muted" style="margin-top:10px">额度：新学 ' + num(dl.newDone, 0) + '/' + num(S.settings.newPerDay, 20) + ' · 复习 ' + num(dl.reviewDone, 0) + '/' + num(S.settings.reviewPerDay, 100) + '</div></div>' +
+    todayWrongCardHtml();
 }
 function showEbbingCard(k) {
   var m = ebbingBuckets()[k];
@@ -4473,6 +4584,7 @@ function renderMe() {
     '<div class="leechrow" data-me-act="settings"><span>学习设置</span><span class="tiny muted">题数 / 时限 / 计分 / 全部参数 ›</span></div>' +
     '<div class="leechrow" data-me-act="reset-adv"><span>恢复默认数值</span><span class="tiny muted">只改参数，不动学习记录 ›</span></div>' +
     '<div class="leechrow" data-me-act="clear"><span style="color:#c0342b">清空学习数据</span><span class="tiny muted">保设置，清记录 ›</span></div>' +
+    (corruptInfo ? '<div class="leechrow" data-me-act="corrupt"><span>下载损坏备份</span><span class="tiny muted">存档曾损坏 · 原始数据 ›</span></div>' : '') +
     '</div>';
   body.innerHTML = installCardHtml() + html;
 }
@@ -4623,7 +4735,7 @@ function examSheetOpen() {
   var mask = $("#exam-mask");
   if (!mask) return;
   var cur = S.settings.examDate || "";
-  var nowY = new Date().getFullYear();
+  var nowY = num(logicalDate().slice(0, 4), new Date().getFullYear());
   var defY = cur ? num(cur.slice(0, 4), nowY) : nowY;
   var defM = cur ? num(cur.slice(5, 7), 12) : 12;
   var defD = cur ? num(cur.slice(8, 10), 19) : 19;
@@ -4800,8 +4912,8 @@ function renderSetup(deckId) {
 /* ---------------- 界面：游戏 ---------------- */
 var G = { answered: true, raf: 0, revealTimer: 0, startAt: 0, invalid: 0, lastClick: 0, revealing: false, undoDeadline: 0, canUndo: false, snap: null, stack: [] };
 
-function startSession(deckId, mode) {
-  var sess = buildSession(deckId, mode);
+function startSession(deckId, mode, customKeys) {
+  var sess = buildSession(deckId, mode, customKeys);
   if (!sess) {
     toast(mode === "normal" ? "今天没有要学的词了，可以点「加练」" : "没有符合条件的词");
     return;
@@ -5671,7 +5783,7 @@ function rgClearAll() {
 }
 function rgResetQuestion(run) {
   if (!run) return;
-  run.pending = null; run.revealing = false; run.picked = false; run.pickDelay = false;
+  run.pending = null; run.revealing = false; run.picked = false;
 }
 
 function applyAccess(s) {
@@ -5690,6 +5802,34 @@ var ROGUE_DIFF = {
   hard: { hp: 50, wrong: 25, timeout: 20, timeScale: 0.8 }
 };
 function rogueDiff(id) { return ROGUE_DIFF[id] || ROGUE_DIFF.normal; }
+/* v43：扣血 = min(基础 + (层数-1)×每层递增, 封顶)。
+   设置页「答错扣血 / 每层扣血递增」两个滑杆从这里真正生效。 */
+function rogueDmgBase(run, kind) {
+  return kind === "timeout" ? num(run.dmgTimeout, RQ.dmgTimeout) : num(run.dmgWrong, RQ.dmgWrong);
+}
+function rogueDmg(run, kind) {
+  var base = Math.max(0, rogueDmgBase(run, kind));
+  var step = Math.max(0, num(run.dmgStep, RQ.towerDmgStep));
+  var fl = Math.max(1, num(run.floor, 1));
+  var cap = Math.max(base, num(run.dmgCap, RQ.towerDmgCap));
+  return Math.min(Math.round(base + (fl - 1) * step), Math.round(cap));
+}
+/* 把设置页滑杆同步进当前 run（开局、每层开始各同步一次） */
+function rogueApplyDmgSettings(run) {
+  if (!run) return;
+  try {
+    var gs = (S.rogue && S.rogue.settings) || {};
+    if (gs.dmgWrong != null && gs.dmgWrong !== "") {
+      var w0 = Number(gs.dmgWrong);
+      if (isFinite(w0) && w0 > 0) run.dmgWrong = Math.round(w0);
+    }
+    if (gs.dmgStep != null && gs.dmgStep !== "") {
+      var s0 = Number(gs.dmgStep);
+      if (isFinite(s0) && s0 >= 0) run.dmgStep = Math.round(s0);
+    }
+  } catch (e) {}
+  if (run.dmgStep == null) run.dmgStep = RQ.towerDmgStep;
+}
 function rogueCfg() {
   var r = rogueS();
   if (!r.cfg) r.cfg = { src: "pool", diff: "normal", mode: "tower" };
@@ -5948,30 +6088,17 @@ function rogueRender() {
     fm.className = "rfam" + (r.settings.colorblind ? " cb" : "");
   }
   var wEl = $("#rogue-word"), phEl = $("#rogue-ph");
-  var qtEl = $("#rogue-qt");
-  if (qtEl) {
-    var nm = it && it.qt === "mean" ? "选义" : it && it.qt === "word" ? "选词" : "闪过";
-    qtEl.textContent = "第 " + (num(run.idx, 0) + 1) + " 题 · " + nm;
-  }
-  var optsEl = $("#rogue-opts");
-  if (optsEl) { optsEl.classList.remove("show"); optsEl.style.display = "none"; optsEl.innerHTML = ""; }
   try { rogueCheckHide(); } catch (e) {}
   var rb = $("#scr-rogue .rbtns");
   if (rb) rb.style.display = "";
   var sp0 = $("#btn-rogue-skip"); if (sp0) sp0.style.display = "";
   var ud0 = $("#btn-rogue-undo"); if (ud0) ud0.style.display = "";
   var rareEl = $("#rogue-rare"); if (rareEl) rareEl.style.display = "none";
-  var QT_VIEW = { flash: { stem: "w", ph: 1 } };
-  var qtv = QT_VIEW[(it && it.qt) || "flash"] || QT_VIEW.flash;
-  if (wEl) {
-    wEl.textContent = it ? (qtv.stem === "m" ? it.m : it.w) : "—";
-    wEl.style.fontSize = qtv.stem === "m" ? "26px" : "";
-    wEl.style.lineHeight = qtv.stem === "m" ? "1.5" : "";
-  }
-  if (phEl) phEl.style.display = (it && qtv.ph) ? "" : "none";
+  if (wEl) wEl.textContent = it ? it.w : "—";
+  if (phEl) phEl.style.display = it ? "" : "none";
   if (phEl) phEl.textContent = it ? it.ph : "";
   var hint = $("#rogue-hint");
-  if (hint) hint.textContent = "认识 = 答对，不认识 = 扣 " + (run.dmgWrong || RQ.dmgWrong) + " 血；超时扣 " + (run.dmgTimeout || RQ.dmgTimeout) + " 血";
+  if (hint) hint.textContent = "认识 = 答对，不认识 = 扣 " + rogueDmg(run, "no") + " 血；超时扣 " + rogueDmg(run, "timeout") + " 血";
   var ub = $("#btn-rogue-undo");
   if (ub) ub.disabled = run.phase === "boss" || !(run.status === "playing" && run.undo && Date.now() <= run.undo.until);
   var sb = $("#btn-rogue-skip");
@@ -5979,7 +6106,7 @@ function rogueRender() {
   if (sb) sb.style.display = hideSub ? "none" : "";
   if (ub) ub.style.display = hideSub ? "none" : "";
   var hEl = $("#rogue-hint");
-  if (hEl && run.phase === "boss") hEl.textContent = "Boss 战：答对全部 Boss 词即通关，答错扣 " + RQ.dmgWrong + " 血";
+  if (hEl && run.phase === "boss") hEl.textContent = "Boss 战：答对全部 Boss 词即通关，答错扣 " + rogueDmg(run, "no") + " 血";
   rogueHurt(run);
   rogueSyncHome();
 }
@@ -6013,61 +6140,6 @@ function rogueSanClear(run) {
   setTimeout(function () { run.sanOff = false; }, 400);
   var d = $("#rogue-disperse");
   if (d) { d.classList.add("on"); setTimeout(function () { d.classList.remove("on"); }, 700); }
-}
-var QT_RATIO = { single: ["flash","flash","flash","flash","flash","mean","mean","mean","word","word"],
-                 tower: ["flash","flash","flash","flash","flash","flash","mean","mean","word","word"],
-                 battle: ["flash","flash","flash","flash","flash","flash","flash","mean","word"] };
-function wtQuota(w, total) {
-  var keys = ["flash", "mean", "word"];
-  var sum = 0, i;
-  for (i = 0; i < keys.length; i++) sum += Math.max(0, Number(w[keys[i]]) || 0);
-  if (sum <= 0) sum = 1;
-  var raw = [], got = 0, frac = [];
-  for (i = 0; i < keys.length; i++) {
-    var v = (Math.max(0, Number(w[keys[i]]) || 0) / sum) * total;
-    raw[i] = Math.floor(v);
-    got += raw[i];
-    frac.push({ i: i, f: v - Math.floor(v) });
-  }
-  frac.sort(function (x, y) { return y.f - x.f; });
-  var p = 0;
-  while (got < total && frac.length) { raw[frac[p % frac.length].i]++; got++; p++; }
-  var out = [];
-  for (i = 0; i < keys.length; i++) for (var k = 0; k < raw[i]; k++) out.push(keys[i]);
-  return out;
-}
-function rogueTypeDeck(run) {
-  var n = Math.max(10, num(run.floorN, RQ.total) || RQ.total);
-  var out = [];
-  for (var i = 0; i < n; i++) out.push("flash");
-  return out;
-}
-function rogueEnsureType(run, it) {
-  if (!it) return it;
-  it.qt = "flash";
-  return it;
-}
-function rogueBuildOpts(it, qt) {
-  var pool = roguePool();
-  var qt2 = (qt === "mean") ? "meaning" : "word";
-  var dis = pickDistractors({ w: it.w, m: it.m, g: it.g }, qt2, pool, 3);
-  var right = qt2 === "meaning" ? it.m : it.w;
-  var arr = dis.map(function (d) { return d.t; }).concat([right]);
-  for (var i = arr.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var t = arr[i]; arr[i] = arr[j]; arr[j] = t; }
-  return arr.map(function (txt, idx) { return { k: idx, t: txt, ok: txt === right }; });
-}
-function roguePick(it, idx) {
-  var run = rogueS().run; if (!run || run.status !== "playing") return;
-  if (run.revealing || run.pending) return;
-  var o = (it.opts || []).filter(function (x) { return x.k === idx; })[0];
-  if (!o) return;
-  run.confirmPass = true;
-  if (o.ok) { run.pickDelay = true; sfx("ok", run.combo + 1); rogueAnswer("know"); }
-  else {
-    run.lastPick = o.t;
-    sfx("no"); vib("no");
-    rogueAnswer("no");
-  }
 }
 function rogueHurt(run) {
   var el = $("#rogue-hurt");
@@ -6120,12 +6192,10 @@ function rogueArmTimer() {
   var run = rogueS().run;
   if (!run || run.status !== "playing") return;
   var it0 = rogueCur() || {};
-  try { if (it0 && run) rogueEnsureType(run, it0); } catch (e) {}
   var base = RQ.qTime * (run.timeScale || 1);
   if (run.mode === "tower") base -= (run.floor - 1) * RQ.floorTimeStep;
   var lenB = Math.floor(String(it0.w || "").length / 3) * RQ.lenBonusPer3;
-  var isPickQ = !!(it0 && (it0.qt === "mean" || it0.qt === "word"));
-  var total = Math.max(isPickQ ? 5000 : RQ.minQTime, base + lenB + num(run.floorTimeBonus, 0) + num(run.tBonus, 0) + (isPickQ ? 1500 : 0));
+  var total = Math.max(RQ.minQTime, base + lenB + num(run.floorTimeBonus, 0) + num(run.tBonus, 0));
   run.tBonus = 0;
   run.qDeadline = Date.now() + total;
   run.qTotal = total;
@@ -6224,11 +6294,12 @@ function rogueStart(opts) {
     status: "playing", startedAt: Date.now(), pausedAt: 0,
     correct: 0, wrong: 0, timeout: 0
   };
+  /* v43：开局就把滑杆数值带进 run（第 1 层也生效，不再等下一层） */
+  rogueApplyDmgSettings(run);
   if (opts.battle) { run.battle = true; run.reviewKilled = 0; run.bounced = 0; run.demotedGrad = 0; run.poolOverride = opts.pool || []; }
   if (mode === "tower") {
     if (!rogueTowerFloor(run)) { try { toast("这个词源里没有可用的词"); } catch (e) {} return; }
   } else {
-    run.queue.forEach(function (x) { x.qt = "flash"; x.rare = false; });
   run.queue = roguePrepare({ src: src, n: RQ.total });
     if (!run.queue.length) { try { toast("这个词源里没有可用的词"); } catch (e) {} return; }
   }
@@ -6290,13 +6361,8 @@ function rogueLootPick(id) {
   }
   var m = $("#rogue-loot"); if (m) m.classList.remove("on");
   run.floor++;
-  if (run.settings === undefined) run.settings = {};
-  try {
-    var gs = (S.rogue && S.rogue.settings) || {};
-    if (gs.dmgWrong) run.dmgWrong = Number(gs.dmgWrong);
-    if (gs.dmgStep != null) run.dmgStep = Number(gs.dmgStep);
-  } catch (e) {}
-  applyAccess(run.settings);
+  rogueApplyDmgSettings(run);
+  applyAccess((S.rogue && S.rogue.settings) || {});
   if (!rogueTowerFloor(run)) { rogueFinish("win"); return; }
   rogueSave();
   rogueRender();
@@ -6406,7 +6472,7 @@ function rogueFlip() {
   rogueAnswer("no");
   run.flipped = false;
   run.confirmPass = false;
-  rogueFlashBad("❌ 假认识：扣除 " + RQ.dmgWrong + " 血", "已按「不认识」结算");
+  rogueFlashBad("❌ 假认识：扣除 " + rogueDmg(run, "no") + " 血", "已按「不认识」结算");
 }
 function rogueFlashBad(main, sub) {
   var el = $("#rogue-flash");
@@ -6432,6 +6498,12 @@ function rogueBattleApply(run, it, kind) {
   var prevL = num(r.L, 0);
   applyReviewGrade(deck.id, key, kind === "timeout" ? "timeout" : (kind === "know" ? "know" : "no"), 0);
   if (kind === "know") { run.reviewKilled = num(run.reviewKilled, 0) + 1; return; }
+  /* 护肝茶：applyReviewGrade 已按「不降级、只顺延」处理，这里不得再覆盖（v42） */
+  if (S.rogue && S.rogue.teaDay === t) {
+    if (Array.isArray(run.queue)) run.queue = run.queue.filter(function (x) { return x.k !== key; });
+    rogueFlash("🍵 护肝茶生效", "今日答错不降级，明日再练");
+    return;
+  }
   r.L = Math.max(0, prevL - 1);
   r.stage = 0;
   r.due = addDays(t, 1);
@@ -6521,18 +6593,23 @@ function rogueAnswer(kind) {
   if (!isBoss) run.undo = { snap: rogueSnapshot(), until: Date.now() + RQ.undoMs, kind: kind };
   var cfg = r.settings;
   if (isBoss) {
-    if (kind === "know") { run.correct++; }
+    if (kind === "know") {
+      run.correct++;
+      /* v43：Boss 击杀奖励。原来那行写在普通分支里（run.phase 恒为 normal 时永远走不到），属于死代码 */
+      run.coinsEarn = num(run.coinsEarn, 0) + 30;
+      rogueAddCoins(30);
+      try { rogueFlash("👑 Boss 击杀 +30 金币", "这一层拿下了"); } catch (e) {}
+    }
     else {
       run.wrong++;
       run.sanWrong = num(run.sanWrong, 0) + 1;
       try { rogueSanUpdate(run, { glitch: run.sanWrong >= 2, boom: false }); } catch (e) {}
-      if (kind === "timeout") { run.timeout++; run.hp -= (run.dmgTimeout || RQ.dmgTimeout); } else run.hp -= (run.dmgWrong || RQ.dmgWrong);
+      if (kind === "timeout") { run.timeout++; run.hp -= rogueDmg(run, "timeout"); } else run.hp -= rogueDmg(run, "no");
       sfx("no"); vib("no");
       run.combo = 0; run.critStreak = 0; run.lastPos = "";
     }
     rogueLog(kind === "know" ? "boss_ok" : "boss_no");
     run.bossIdx++;
-    if (run.hp <= 0 && rogueTryLife(run)) { run.hp = 1; rogueRender(); rogueSave(); }
     if (run.hp <= 0 && rogueTryLife(run)) { run.hp = 1; rogueRender(); rogueSave(); }
     if (run.hp <= 0) { rogueRender(); rogueSave(); rogueFinish("over"); return; }
     if (run.bossIdx >= run.bossList.length) { rogueRender(); rogueSave(); rogueFinish("win"); return; }
@@ -6546,11 +6623,11 @@ function rogueAnswer(kind) {
     rogueAddCoins(cAdd);
     if (it && it.rare) { try { rogueFlash("💰 +6 金币", "伪装者 · 熟词僻义双倍", "rare"); } catch (e) {} }
     try { rogueSanClear(run); } catch (e) {}
-    if (run.combo % 5 === 0) { run.coinsEarn += 5; rogueAddCoins(5); }
-    if (run.phase === "boss") { run.coinsEarn += 30; rogueAddCoins(30); }
     sfx("ok", run.combo); vib("ok");
     if (run.mode === "tower" && run.phase !== "boss") run.floorOk++;
     run.combo++;
+    /* v43：连击奖励必须在 combo++ 之后判断，否则第一题（combo=0）就白送 5 金币 */
+    if (run.combo % 5 === 0) { run.coinsEarn += 5; rogueAddCoins(5); }
     if (run.combo > num(run.peakCombo, 0)) run.peakCombo = run.combo;
     run.critStreak = (it.pos === run.lastPos) ? (run.critStreak + 1) : 1;
     run.lastPos = it.pos;
@@ -6589,8 +6666,8 @@ function rogueAnswer(kind) {
     }
   } else {
     run.wrong++;
-    if (kind === "timeout") { run.timeout++; run.hp -= (run.dmgTimeout || RQ.dmgTimeout); }
-    else run.hp -= (run.dmgWrong || RQ.dmgWrong);
+    if (kind === "timeout") { run.timeout++; run.hp -= rogueDmg(run, "timeout"); }
+    else run.hp -= rogueDmg(run, "no");
     run.combo = 0; run.critStreak = 0; run.lastPos = "";
     run.answered.push({ k: it.k, w: it.w, m: it.m, pos: it.pos, root: it.root, ok: false, kind: kind, flip: !!run.flipped, at: Date.now(), ms: Date.now() - (run.qStart || Date.now()) });
     try { if (run.mode === "tower" && run.floors && run.floors.length) run.floors[run.floors.length - 1].answered.push(run.answered[run.answered.length - 1]); } catch (e) {}
@@ -6617,7 +6694,7 @@ function rogueReviewShow(it, kind, dead) {
   var r = rogueS(), run = r.run;
   clearTimeout(rogueReviewTimer);
   var box = $("#rogue-review"); if (!box) { if (dead) rogueFinish("over"); else rogueAdvance(); return; }
-  var pen = kind === "timeout" ? RQ.dmgTimeout : RQ.dmgWrong;
+  var pen = rogueDmg(run, kind);
   var w = $("#rogue-rv-w"), p = $("#rogue-rv-p"), mm = $("#rogue-rv-m"), ex = $("#rogue-rv-ex"), pn = $("#rogue-rv-pen");
   if (w) w.textContent = it.w || "";
   if (p) p.textContent = it.ph || "";
@@ -6647,12 +6724,6 @@ function rogueAdvance() {
   var r = rogueS(), run = r.run;
   if (!run || run.status !== "playing") return;
   rgClearAll(); rgResetQuestion(run);
-  if (run.pickDelay) {
-    run.pickDelay = false;
-    try { rogueStopTimer(); } catch (e) {}
-    setTimeout(function () { try { rogueAdvance(); } catch (e) {} }, 700);
-    return;
-  }
   if (run.mode === "tower") { rogueTowerAdvance(); return; }
   run.undo = null;
   run.idx++;
@@ -6813,13 +6884,13 @@ function rogueFinish(status) {
   if (run.status === "win") r.stats.wins++;
   r.stats.best = Math.max(num(r.stats.best, 0), Math.round(run.prog));
   r.stats.words = num(r.stats.words, 0) + num(run.correct, 0);
-  r.stats.coins = num(r.stats.coins, 0) + num(run.coins, 0);
+  r.stats.coins = num(r.stats.coins, 0) + num(run.coinsEarn, 0);   /* v43：本局金币在 coinsEarn，run.coins 从来不存在（恒 0） */
   r.stats.bestFloor = Math.max(num(r.stats.bestFloor, 0), num(run.floor, 0) || 1);
   r.stats.bestCombo = Math.max(num(r.stats.bestCombo, 0), num(run.peakCombo, 0) || num(run.combo, 0));
   try {
     var bads = (run.answered || []).filter(function (x) { return !x.ok; }).slice(0, 8).map(function (x) { return x.w; });
     r.history = (r.history || []).slice(0, 19);
-    r.history.unshift({ t: Date.now(), mode: run.mode, src: run.src, floor: run.floor || 1, killed: num(run.correct, 0), coins: num(run.coins, 0), items: bads });
+    r.history.unshift({ t: Date.now(), mode: run.mode, src: run.src, floor: run.floor || 1, killed: num(run.correct, 0), coins: num(run.coinsEarn, 0), items: bads });
   } catch (e) {}
   rogueLog(run.status === "win" ? "win" : "over");
   rogueSave();
@@ -6830,11 +6901,13 @@ function rogueFinish(status) {
     var uniq = {};
     (run.answered || []).forEach(function (x) { uniq[x.w] = 1; });
     var beat = Object.keys(uniq).length;
-    if (num(run.coinsEarn, 0) > 0) sub.textContent = "🪙 本局 +" + num(run.coinsEarn, 0) + " 金币 · ";
-    if (run.battle) sub.textContent = "📚 本次实战消灭了 " + num(run.reviewKilled, 0) + " 个复习词，将 " + num(run.bounced, 0) + " 个词打回了生词本" + (num(run.demotedGrad, 0) ? "（其中 " + num(run.demotedGrad, 0) + " 个是毕业词）" : "");
-    else if (run.mode === "tower"
+    var lines = [];
+    if (num(run.coinsEarn, 0) > 0) lines.push("🪙 本局 +" + num(run.coinsEarn, 0) + " 金币");
+    if (run.battle) lines.push("📚 本次实战消灭了 " + num(run.reviewKilled, 0) + " 个复习词，将 " + num(run.bounced, 0) + " 个词打回了生词本" + (num(run.demotedGrad, 0) ? "（其中 " + num(run.demotedGrad, 0) + " 个是毕业词）" : ""));
+    else lines.push(run.mode === "tower"
       ? ("到达第 " + run.floor + " 层 · 击败 " + beat + " 个单词 · HP " + Math.max(0, run.hp))
       : ("进度 " + Math.round(run.prog) + "% · 答对 " + run.correct + " · 答错 " + run.wrong + " · 超时 " + run.timeout + " · 跳过 " + run.skipped));
+    sub.textContent = lines.join(" · ");
   }
   if (box) box.innerHTML = rogueStatsHtml(run);
   try { var listEl = $("#rogue-over-list"); } catch (e) { console.warn('report list', e); }
@@ -6899,7 +6972,7 @@ function rogueSettingsHtml() {
     '<label class="rsw"><input type="checkbox" data-rg="noMistap"' + (r.settings.noMistap ? " checked" : "") + '> <span>防手滑（不认识需长按 300ms）</span></label>' +
     '<label class="rsw"><input type="checkbox" data-rg="noShake"' + (r.settings.noShake ? " checked" : "") + '> <span>关闭屏幕震动</span></label>' +
     '<label class="rsw"><input type="checkbox" data-rg="colorblind"' + (r.settings.colorblind ? " checked" : "") + '> <span>色盲模式（用文字标签）</span></label>' +
-    '<div class="tiny muted" style="margin:10px 0 4px">数值与题型</div>' +
+    '<div class="tiny muted" style="margin:10px 0 4px">数值</div>' +
     '<label class="row"><span>答错扣血</span><input type="range" data-dmg="dmgWrong" min="10" max="30" step="5" value="' + (r.settings.dmgWrong == null ? 20 : r.settings.dmgWrong) + '" style="width:40%"><b>' + (r.settings.dmgWrong == null ? 20 : r.settings.dmgWrong) + '</b></label>' +
     '<label class="row"><span>每层扣血递增</span><input type="range" data-dmg="dmgStep" min="0" max="5" step="1" value="' + (r.settings.dmgStep == null ? 2 : r.settings.dmgStep) + '" style="width:40%"><b>' + (r.settings.dmgStep == null ? 2 : r.settings.dmgStep) + '</b></label>' +
     '<div class="tiny muted" id="rogue-num-sum">' + (function(){var g=r.settings,d=g.dmgWrong==null?20:g.dmgWrong,e=g.dmgStep==null?2:g.dmgStep;return "扣血 "+d+" · 递增 "+e;})() + '</div>' +
@@ -7043,12 +7116,11 @@ function rogueBind() {
   });
   document.addEventListener("change", function (ev) {
     var t = ev.target;
-    if (!t || !t.getAttribute || !t.getAttribute("data-rg")) return;
+    if (!t || !t.getAttribute) return;
     var dq = t.getAttribute("data-dmg");
     if (dq) { var rs1 = rogueS(); rs1.settings[dq] = Number(t.value); rogueSave(); try { renderSetup(); } catch (e) {} return; }
-    var wq = t.getAttribute("data-qtw");
-    if (wq) { var rs2 = rogueS(); rs2.settings.qtW = rs2.settings.qtW || {}; rs2.settings.qtW[wq] = Number(t.value); rogueSave(); try { renderSetup(); } catch (e) {} return; }
     var key = t.getAttribute("data-rg");
+    if (!key) return;
     var r = rogueS();
     r.settings[key] = !!t.checked;
     rogueLog("setting");
@@ -7138,8 +7210,6 @@ function rogueBindSetup() {
   flip: function () { try { rogueFlip(); } catch (e) {} },
   timers: function () { return { check: !!rogueCheckTimer, late: !!rogueLateTimer, review: !!rogueReviewTimer, adv: !!rogueAdvanceTimer, flash: !!rogueFlashTimer, reg: Object.keys(RG_T).length }; },
   resetQ: function () { var r = rogueS().run; if (r) rgResetQuestion(r); return true; },
-  wtQuota: wtQuota,
-    forceQT: function (qt) { var r=rogueS().run; if(!r) return 0; var it=r.queue[r.idx]; if(!it) return 0; it.qt=qt; delete it.opts; rogueEnsureType(r,it); rogueRender(); return (it.opts||[]).length; },
     deck: function () { var r=rogueS().run; return r&&r.qtsDeck?r.qtsDeck.slice(0,10):[]; },
     san: function (n, glitch) { var r=rogueS().run; if(!r) return; r.sanWrong=n; rogueSanUpdate(r,{glitch:!!glitch}); },
     rare: function () { var r=rogueS().run; if(!r) return; var it=r.queue[r.idx]; if(it) it.rare=true; rogueRender(); return !!it; },
@@ -7189,6 +7259,8 @@ function bind() {
   });
   on("#stats-body", "click", function (ev) {
     var el = ev.target;
+    var ai = el && el.closest ? el.closest("#btn-ai-prompt") : null;
+    if (ai) { copyAiReadingPrompt(); return; }
     var g = el && el.closest ? el.closest("[data-gran]") : null;
     if (g) { chartGran = g.getAttribute("data-gran"); renderStats(); return; }
     var c = el && el.closest ? el.closest("[data-cmode]") : null;
@@ -7235,6 +7307,12 @@ function bind() {
     var row = ev.target.closest && ev.target.closest("[data-me-act]");
     if (row) {
       var act = row.getAttribute("data-me-act");
+      if (act === "corrupt") {
+        if (!corruptInfo) { toast("没有找到损坏的备份"); return; }
+        try { downloadText("单词闪过-_corrupted-" + logicalDate().replace(/-/g, "") + ".json", corruptInfo.raw); toast("已开始下载损坏备份"); }
+        catch (e) { toast("下载失败：" + (e && e.message ? e.message : e)); }
+        return;
+      }
       if (act === "export") { doExport(false); return; }
       if (act === "import") { var fi = $("#file-import"); if (fi) fi.click(); return; }
       if (act === "settings") { renderSetup(S.decks[0].id); show("setup"); return; }
@@ -7583,8 +7661,11 @@ function bind() {
 
   if (window.addEventListener) {
     window.addEventListener("popstate", onPopState);
-    window.addEventListener("orientationchange", function () { setTimeout(applyLayout, 150); });
-    window.addEventListener("resize", applyLayout);
+    /* v43：转屏 / 键盘弹出 / 全屏切换都会连发 resize，统一防抖 120ms，避免布局抖动与重复渲染 */
+    window.addEventListener("orientationchange", layoutSoon);
+    window.addEventListener("resize", layoutSoon);
+    try { document.addEventListener("fullscreenchange", layoutSoon); } catch (e) {}
+    try { document.addEventListener("webkitfullscreenchange", layoutSoon); } catch (e) {}
   }
 
   // 竖屏时从屏幕左缘往右滑 = 返回上一屏（横屏的左滑仍然是「上一词」）
@@ -7613,15 +7694,24 @@ function bind() {
   on("#btn-export", "click", function () { doExport(false); });
   on("#btn-export-slim", "click", function () { doExport(true); });
 
-  on("#btn-import", "click", function () { $("#file-import").click(); });
-  $("#file-import").addEventListener("change", function (ev) {
+  on("#btn-import", "click", function () { var fi = $("#file-import"); if (fi) fi.click(); });
+  var fiEl = $("#file-import");
+  if (fiEl && fiEl.addEventListener) fiEl.addEventListener("change", function (ev) {
     var f = ev.target.files && ev.target.files[0];
     if (!f) return;
+    ev.target.value = "";
+    /* v43：导入是唯一的外来数据入口，任何坏文件都只提示，不许把 App 打崩，也不许写脏数据 */
+    if (typeof FileReader === "undefined") { toast("这个浏览器不支持读取文件，换个浏览器再试"); return; }
+    if (f.size > 8 * 1024 * 1024) { toast("备份文件太大（超过 8MB），请确认选对了文件"); return; }
     var fr = new FileReader();
+    fr.onerror = function () { toast("读取文件失败，请重试"); };
     fr.onload = function () {
+      var o = null;
+      try { o = JSON.parse(fr.result); }
+      catch (e) { toast("导入失败：这不是有效的 JSON 备份，请重新选择文件"); return; }
+      if (!o || typeof o !== "object" || Array.isArray(o)) { toast("导入失败：备份格式不对（缺少存档对象）"); return; }
+      if (!Array.isArray(o.decks)) { toast("导入失败：备份里没有词书列表，可能不是单词闪过的存档"); return; }
       try {
-        var o = JSON.parse(fr.result);
-        if (!o || !Array.isArray(o.decks)) throw new Error("格式不对");
         // 三选一：合并（推荐）/ 覆盖 / 取消
         var pre = previewMerge(o);
         var doMerge = window.confirm(
@@ -7631,14 +7721,13 @@ function bind() {
         if (!doMerge) {
           if (!window.confirm("要用备份「完全覆盖」本机数据吗？\n\n覆盖后本机的学习进度会消失，只剩备份里的。")) return;
           var st = freshState();
-          st.settings = o.settings || defaultSettings();
-          var d = defaultSettings(); for (var k in d) if (!(k in st.settings)) st.settings[k] = d[k];
+          st.settings = (o.settings && typeof o.settings === "object") ? o.settings : defaultSettings();
           st.decks = o.decks;
-          st.records = o.records || {};
-          st.daily = o.daily || {};
-          if (!st.decks.some(function (x) { return x.builtin; }) && window.WORD_DATA) {
-            st.decks.unshift({ id: window.WORD_DATA.id, name: window.WORD_DATA.name, builtin: true, words: [], createdAt: Date.now() });
-          }
+          st.records = (o.records && typeof o.records === "object") ? o.records : {};
+          st.daily = (o.daily && typeof o.daily === "object") ? o.daily : {};
+          st.stats = (o.stats && typeof o.stats === "object") ? o.stats : st.stats;
+          st.rogue = (o.rogue && typeof o.rogue === "object") ? o.rogue : st.rogue;
+          st = finalizeState(st);   // 统一过一遍兜底：补内置词书、补 settings、修 countValue
           S = st; mapCache = {}; saveNow(); renderHome(); show("home");
           toast("已用备份覆盖（" + pre.total + " 条记录）");
           return;
@@ -7646,10 +7735,12 @@ function bind() {
         applyMerge(o);
         saveNow(); renderHome(); show("home");
         toast("合并完成：新增 " + pre.added + " · 更新 " + pre.updated);
-      } catch (e) { toast("导入失败：" + e.message); }
+      } catch (e) {
+        toast("导入失败：" + ((e && e.message) || "备份内容无法处理"));
+        try { if (window.console && console.error) console.error("[wordflash] import", e); } catch (e2) {}
+      }
     };
     fr.readAsText(f);
-    ev.target.value = "";
   });
 
   // 设置页（事件委托）
@@ -8078,11 +8169,20 @@ function isWideNow() {
   return landscape && window.innerHeight <= 560;
 }
 
+/* v43：布局重算防抖——转屏/键盘/全屏会连发多次 resize */
+var layoutTimer = null;
+function layoutSoon() {
+  clearTimeout(layoutTimer);
+  layoutTimer = setTimeout(function () {
+    try { applyLayout(); } catch (e) { crashBarShow(e); }
+  }, 120);
+}
+
 function applyLayout() {
   try {
     document.body.classList.toggle("wide", isWideNow());
   } catch (e) {}
-  var onecol = (typeof isWideNow === "function") && isWideNow() && (window.innerWidth >= 1000) && (S.settings.wideTwoCol !== true);
+  var onecol = (typeof isWideNow === "function") && isWideNow() && (window.innerWidth >= 1000) && !(S && S.settings && S.settings.wideTwoCol === true);
   try { document.body.classList.toggle("onecol", !!onecol); } catch (e) {}
   try { applyWideSwap(); } catch (e) {}
   try {
@@ -8329,6 +8429,57 @@ function allTestableWords(deckId) {
     if (w && w.w && w.m) out.push(w);
   }
   return out;
+}
+
+/* v43 新功能：今日错词清单（按今天答错次数从多到少排），供统计页「仇恨榜」与 AI 阅读 Prompt 使用。
+   纯读取：不写 records、不动排期。 */
+function todayWrongList() {
+  var deck = S.decks[0];
+  if (!deck) return [];
+  var t = today(), recs = S.records[deck.id] || {}, out = [];
+  var BAD = { fuzzy: 1, no: 1, timeout: 1 };
+  for (var k in recs) {
+    var r = recs[k];
+    if (!r || !Array.isArray(r.hist)) continue;
+    var n = 0;
+    for (var i = r.hist.length - 1; i >= 0; i--) {
+      var x = histDecode(r.hist[i]);
+      if (!x) continue;
+      if (x.d < t) break;
+      if (x.d === t && BAD[x.kind]) n++;
+    }
+    if (!n) continue;
+    var w = wordByKey(deck.id, k);
+    if (!w || !w.w) continue;
+    out.push({ k: k, w: w.w, m: w.m || "", n: n, L: num(r.L, 0) });
+  }
+  out.sort(function (a, b) { return b.n - a.n || a.L - b.L || (a.w < b.w ? -1 : a.w > b.w ? 1 : 0); });
+  return out;
+}
+function todayWrongCardHtml() {
+  var list = todayWrongList();
+  if (!list.length) {
+    return '<div class="card" style="margin-top:12px"><h2 style="margin:0 0 6px">今日错词</h2>' +
+      '<div class="empty" style="padding:10px">今天还没有错词，保持这个手感 👍</div></div>';
+  }
+  var rows = list.slice(0, 12).map(function (x, i) {
+    return '<div class="leechrow"><span>' + (i + 1) + '. ' + esc(x.w) + ' <span class="tiny muted">' + esc(x.m).slice(0, 18) + '</span></span>' +
+      '<span class="tiny muted">错 ' + x.n + ' 次</span></div>';
+  }).join("");
+  return '<div class="card" style="margin-top:12px"><h2 style="margin:0 0 6px">今日错词 · 仇恨榜</h2>' +
+    '<div class="tiny muted" style="margin-bottom:8px">共 ' + list.length + ' 个，' +
+    (list.length > 12 ? '这里显示前 12 个，' : '') + '按今天答错次数排序（只读，不改排期）</div>' +
+    rows +
+    '<button class="btn primary" id="btn-ai-prompt" style="margin-top:12px">📋 复制错词，生成 AI 阅读文章</button>' +
+    '<div class="tiny muted" style="margin-top:6px">最多取 ' + Math.min(list.length, 20) + ' 个词，复制后粘给任意 AI 即可</div></div>';
+}
+
+/* 生成给 AI 的阅读 prompt：只拼词表，不写回任何学习数据 */
+function aiReadingPromptText() {
+  var list = todayWrongList().slice(0, 20);
+  if (!list.length) return "";
+  var words = list.map(function (x) { return x.w; });
+  return "请帮我用以下考研词汇写一篇 200 词左右的英语阅读文章，文章要自然连贯、接近考研阅读难度，并在文后附中文译文和生词释义。\n\n词汇列表：" + words.join(", ");
 }
 
 function todayWrongKeys() {
@@ -9105,9 +9256,92 @@ function bookApply(act) {
   toast("已处理 " + keys.length + " 个词");
 }
 
+/* v43：本机存档损坏时绝不静默清空 —— 提示用户，并允许立刻下载损坏原始串 */
+function downloadText(name, text) {
+  var blob = new Blob([String(text == null ? "" : text)], { type: "application/json;charset=utf-8" });
+  var a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  try { document.body.appendChild(a); } catch (e) {}
+  a.click();
+  setTimeout(function () {
+    try { URL.revokeObjectURL(a.href); } catch (e) {}
+    try { if (a.parentNode) a.parentNode.removeChild(a); } catch (e) {}
+  }, 2000);
+}
+function corruptPrompt() {
+  var info = corruptInfo;
+  if (!info) return;
+  try { toast("⚠ 本机存档损坏，原始数据已另存备份"); } catch (e) {}
+  var want = false;
+  try {
+    want = window.confirm("检测到本机存档损坏（" + info.reason + "）。\n\n" +
+      "损坏的原始数据已另存备份，不会直接消失。\n现在下载一份 _corrupted.json 到本地吗？");
+  } catch (e) {}
+  if (want) {
+    try { downloadText("单词闪过-_corrupted-" + logicalDate().replace(/-/g, "") + "-" + Date.now() + ".json", info.raw); }
+    catch (e) { try { toast("下载失败，可在「我的 → 数据 → 下载损坏备份」再试"); } catch (e2) {} }
+  }
+  info.allowOverwrite = true;
+  try { saveNow(); } catch (e) {}
+}
+/* v43 新功能：复制到剪贴板（三级降级：navigator.clipboard → execCommand → 只读 textarea 弹层） */
+function showCopyFallback(text) {
+  var mask = $("#bar-mask");
+  if (!mask) { try { toast("复制失败，请手动选择文本"); } catch (e) {} return; }
+  mask.innerHTML = '<div class="barcard"><div class="barhd"><b>复制这段话给 AI</b><span class="tiny muted">长按选择 → 复制</span></div>' +
+    '<textarea id="copy-fallback" readonly style="width:100%;min-height:38vh;box-sizing:border-box;font-size:13px;line-height:1.55;padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,.15);resize:vertical;background:transparent;color:inherit">' +
+    esc(text) + '</textarea>' +
+    '<button class="btn ghost" id="btn-bar-close">关闭</button></div>';
+  mask.classList.add("on");
+  try { var ta = mask.querySelector("#copy-fallback"); if (ta) { ta.focus(); ta.select(); } } catch (e) {}
+}
+function copyTextSmart(text) {
+  if (!text) { try { toast("今天还没有错词"); } catch (e) {} return; }
+  var done = function () { try { toast("已复制，去粘给 AI 吧"); } catch (e) {} };
+  var legacyCopy = function () {
+    var ok = false;
+    try {
+      var ta = document.createElement("textarea");
+      ta.value = text; ta.readOnly = true;
+      ta.style.cssText = "position:fixed;left:-9999px;top:0;opacity:0";
+      document.body.appendChild(ta);
+      if (ta.select) ta.select();
+      if (ta.setSelectionRange) ta.setSelectionRange(0, text.length);
+      ok = document.execCommand("copy");
+      if (ta.parentNode) ta.parentNode.removeChild(ta);
+    } catch (e) { ok = false; }
+    if (ok) done(); else showCopyFallback(text);
+  };
+  try {
+    if (window.navigator && navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(legacyCopy);
+      return;
+    }
+  } catch (e) {}
+  legacyCopy();
+}
+function copyAiReadingPrompt() {
+  var text = "";
+  try { text = aiReadingPromptText(); }
+  catch (e) { try { toast("生成失败，稍后再试"); } catch (e2) {} return; }
+  copyTextSmart(text);
+}
 /* ---------------- 启动 ---------------- */
+/* 页脚版本号：版本真源在 APP_VERSION，index.html 只留一个空 span */
+function paintVersion() {
+  try {
+    var el = $("#app-ver");
+    if (el) el.textContent = APP_VERSION + " · " + BUILD_DATE;
+    document.documentElement.setAttribute("data-ver", APP_VERSION);
+  } catch (e) {}
+}
+
 function boot() {
+  initCrashGuard();   // 最先装上兜底：后面任何一步报错都只弹黄条，不白屏
+  paintVersion();
   S = loadState();
+  var lsStamp = num(S.updatedAt, 0);
   window.addEventListener("beforeinstallprompt", function (e) {
     try { e.preventDefault(); } catch (err) {}
     deferredInstall = e;
@@ -9125,21 +9359,12 @@ function boot() {
   renderHome();
   try { history.replaceState({ s: "home" }, ""); } catch (e) {}
   applyLayout();
-  // 无条件落库一次：让 loadState() 里的迁移（hist 紧凑编码、字段补齐）真正写回
-  saveNow();
+  // 迁移结果立即回写；本机存档损坏时先不覆盖原始串，等备份确认（v43）
+  if (!corruptInfo) { try { saveNow(); } catch (e) {} }
   checkStoreUsage();
-  // 异步从 IndexedDB 取最新快照：若比 localStorage 里的新（比如上次 localStorage 写失败），以 IDB 为准
-  try {
-    IDB.get("state").then(function (raw) {
-      if (!raw) { IDB.put("state", JSON.stringify(S)).catch(function () {}); return; }
-      var o = null; try { o = JSON.parse(raw); } catch (e) {}
-      if (o && typeof o === "object" && num(o.updatedAt, 0) > num(S.updatedAt, 0)) {
-        S = o; applyLayout(); show("home"); renderHome();
-      } else {
-        IDB.put("state", JSON.stringify(S)).catch(function () {});
-      }
-    }).catch(function () {});
-  } catch (e) {}
+  // LS ↔ IDB 的比对/救援统一收拢在 reconcileStorage（v43），这里不再自己比 updatedAt
+  try { reconcileStorage(lsStamp, function () { if (corruptInfo) corruptPrompt(); }); }
+  catch (e) { if (corruptInfo) corruptPrompt(); }
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
 else boot();
@@ -9149,21 +9374,20 @@ else boot();
 
 </script>
 
-<script>
-/* PWA：注册 Service Worker，三星/Chrome 才会给「安装到主屏幕」 */
-if ("serviceWorker" in navigator && location.protocol === "https:") {
-  window.addEventListener("load", function () {
-    navigator.serviceWorker.register("sw.js").catch(function () {});
-  });
-}
-</script>
 <div id="shop-mask" class="mask"><div class="sheet"><div class="barhd"><b>🛒 小卖部</b></div><div id="shop-body"></div><button class="btn ghost" id="btn-shop-close">关闭</button></div></div>
 <script>
-if ("serviceWorker" in navigator && location.protocol === "https:") {
+/* PWA：注册 Service Worker（https 与 localhost 才允许），注册成功即可「添加到主屏幕」 */
+(function () {
+  if (!("serviceWorker" in navigator)) return;
+  var host = location.hostname;
+  var okOrigin = location.protocol === "https:" || host === "localhost" || host === "127.0.0.1" || host === "[::1]";
+  if (!okOrigin) return;
   window.addEventListener("load", function () {
-    navigator.serviceWorker.register("sw.js").catch(function () {});
+    navigator.serviceWorker.register("sw.js").catch(function (e) {
+      if (window.console && console.warn) console.warn("[pwa] sw register failed:", e && e.message);
+    });
   });
-}
+})();
 </script>
 </body>
 </html>
