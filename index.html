@@ -2319,7 +2319,7 @@ window.WORD_DATA={"id":"hongbaoshu","name":"红宝书考研词汇","words":[{"w"
    ============================================================ */
 
 /* ---------------- 版本（唯一真源：改版本只改这里 + sw.js 的 CACHE 后缀，构建脚本会校验两者一致） ---------------- */
-var APP_VERSION = "v47";
+var APP_VERSION = "v48";
 var BUILD_DATE = "2026-11-09";
 
 /* ---------------- 工具 ---------------- */
@@ -8531,11 +8531,20 @@ function todayWrongCardHtml() {
 }
 
 /* 生成给 AI 的阅读 prompt：只拼词表，不写回任何学习数据 */
+/* v48：新 Prompt 模板。纯字符串常量，名单仍由 words.join(", ") 无缝拼在末尾。
+   注意：这里的模板不能出现 undefined；候选词为空时下方已提前 return ""。 */
+var AI_READING_PROMPT_TPL = "请用我随后提供的全部单词写一篇190–210词的考研风格英语短文。允许必要的词形变化，但不得替换为同义词。短文需有具体情境或鲜明观点，有趣味性，避免空洞说教和模板套话；结构为引入—展开—小结；语言地道，避免中式英语；至少自然出现一次倒装结构、非谓语结构和复合句，但不得为炫技硬塞。文末注明正文总词数（不含标题和标注）。单词列表：";
+
 function aiReadingPromptText() {
   var list = todayWrongList().slice(0, 20);
   if (!list.length) return "";
-  var words = list.map(function (x) { return x.w; });
-  return "请帮我用以下考研词汇写一篇 200 词左右的英语阅读文章，文章要自然连贯、接近考研阅读难度，并在文后附中文译文和生词释义。\n\n词汇列表：" + words.join(", ");
+  var words = [];
+  for (var i = 0; i < list.length; i++) {
+    var w = list[i] && list[i].w;
+    if (w) words.push(String(w));
+  }
+  if (!words.length) return "";
+  return AI_READING_PROMPT_TPL + words.join(", ");
 }
 
 function todayWrongKeys() {
