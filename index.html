@@ -43,7 +43,7 @@ input,textarea,select{font-family:inherit;font-size:inherit;color:inherit}
 .h1{font-size:22px;font-weight:750;letter-spacing:-.2px}
 h2{font-size:15px;font-weight:700;margin:0 0 10px}
 hr{border:none;border-top:1px solid #eef0f2;margin:14px 0}
-.toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);background:#22262c;color:#fff;padding:10px 16px;border-radius:10px;font-size:13px;opacity:0;pointer-events:none;transition:.22s;z-index:99;max-width:88%;text-align:center}
+.toast{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(20px);background:#22262c;color:#fff;padding:10px 16px;border-radius:10px;font-size:13px;opacity:0;pointer-events:none;transition:.22s;z-index:99;max-width:88%;text-align:center}
 .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 
 /* ---------- 首页 ---------- */
@@ -665,7 +665,7 @@ body.pos-bottom #scr-game .opslot{width:100%;padding:0}
 .cbar{height:100%;display:flex;flex-direction:column;justify-content:flex-end}
 .cbl{transform:rotate(-45deg);transform-origin:top right;font-size:9px;white-space:nowrap;margin-top:6px;height:26px;color:#8a9099}
 /* 学习情况大图：充满画面、柱间距、竖排日期 */
-.cw{height:calc(100vh - 300px) !important;min-height:300px;display:flex;gap:4px;align-items:flex-start}
+.cw{height:calc(100dvh - 300px) !important;min-height:300px;display:flex;gap:4px;align-items:flex-start}
 .caxis{flex:0 0 30px;height:100%;display:flex;flex-direction:column;justify-content:space-between;padding:4px 0;font-size:11px;color:#9aa1aa;text-align:right}
 .cscroll{flex:1 1 auto;height:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;padding-bottom:0}
 .cin{height:100%;display:flex;align-items:flex-end;gap:10px;padding:0 8px}
@@ -674,7 +674,7 @@ body.pos-bottom #scr-game .opslot{width:100%;padding:0}
 .cbar.today{box-shadow:0 0 0 2px rgba(56,148,255,.28)}
 .cbl{position:absolute;top:calc(100% + 6px);left:50%;transform:translateX(-50%);writing-mode:vertical-rl;text-orientation:mixed;font-size:10px;line-height:1;color:#8a9099;white-space:nowrap;height:auto;margin:0;rotate:180deg}
 /* 学习情况：柱列 = 柱体区(flex) + 竖排日期带 */
-.cw{height:calc(100vh - 300px) !important;min-height:300px;display:flex;gap:4px;align-items:stretch}
+.cw{height:calc(100dvh - 300px) !important;min-height:300px;display:flex;gap:4px;align-items:stretch}
 .caxis{flex:0 0 32px;display:flex;flex-direction:column;justify-content:space-between;padding:2px 2px 58px 0;font-size:11px;color:#9aa1aa;text-align:right}
 .cscroll{flex:1 1 auto;height:100%;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
 .cin{height:100%;display:flex;align-items:stretch;gap:10px;padding:0 8px}
@@ -1841,6 +1841,49 @@ body.layout-left #scr-game #opslot .btns .big,body.layout-right #scr-game #opslo
 #imm-exit{z-index:90}
 .mask:not(.on){display:none !important;pointer-events:none !important}
 
+/* ===== v51：横屏测试布局精修（左居中 / 右可滚 / 长释义不裁切） ===== */
+/* 说明：只做布局层覆盖，不改任何答题逻辑与计时器 */
+body.wide #scr-test .tqwrap{overflow:visible !important}
+body.wide #scr-test .tqcol{
+  justify-content:center !important;align-items:center !important;
+  height:100% !important;overflow:visible !important;
+}
+body.wide #scr-test .tocol{
+  justify-content:flex-start !important;
+  overflow-y:auto !important;overflow-x:hidden !important;
+  max-height:100% !important;padding-right:2px;
+  -webkit-overflow-scrolling:touch;
+}
+body.wide #scr-test .topt{
+  align-content:start !important;grid-auto-rows:min-content !important;
+  overflow:visible !important;min-height:0 !important;
+}
+/* 选项：高度由内容撑开，长释义必须能自动换行、绝不被行高裁掉 */
+#scr-test .topt .opt{
+  height:auto !important;max-height:none !important;
+  min-height:46px;align-self:start;
+  white-space:normal !important;word-break:break-word;overflow-wrap:anywhere;
+  overflow:visible !important;
+}
+/* v51 补充：不依赖 body.wide 的横屏兜底（真机横屏即生效） */
+@media (orientation: landscape){
+  #scr-test .tqcol{justify-content:center !important;align-items:center !important;height:100% !important;overflow:visible !important}
+  #scr-test .tocol{justify-content:flex-start !important;overflow-y:auto !important;overflow-x:hidden !important;max-height:100% !important;-webkit-overflow-scrolling:touch}
+  #scr-test .topt{align-content:start !important;grid-auto-rows:min-content !important;overflow:visible !important;min-height:0 !important}
+}
+/* v51 补充 2：横屏选项紧凑化，常规 4 个长释义也能一屏放下（极端情况仍可滚动，不裁切） */
+@media (orientation: landscape){
+  #scr-test .topt{gap:6px !important}
+  #scr-test .topt .opt{font-size:14px !important;padding:7px 10px !important;line-height:1.3 !important;min-height:42px !important}
+  #scr-test .tocol{gap:0 !important}
+}
+/* v51：学习页倒计时条移到题目下方后，给一点呼吸空间 */
+#scr-game .timer2{margin:10px 0 6px !important;border-radius:3px}
+/* v51：倒计时条挂在单词正下方（不再占顶部一条） */
+#scr-game .gcol-word .timer2{margin:12px auto 0 !important;max-width:520px;width:100%}
+#scr-game .gcol-word .timer2 > i{display:block;height:100%;width:0;background:#2f7cf6;border-radius:3px}
+/* v51：倒计时条在单词正下方居中（宽度按词栏自适应） */
+#scr-game .gcol-word .timer2{align-self:center !important;margin:12px auto 0 !important;width:min(520px,86%) !important;max-width:520px}
 </style>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
@@ -1971,7 +2014,7 @@ body.layout-left #scr-game #opslot .btns .big,body.layout-right #scr-game #opslo
         <span class="rhp">HP <b id="rogue-hp">100</b></span>
         <span class="rmeta"><span id="rogue-idx">1 / 20</span><span id="rogue-combo">连击 0</span></span>
       </div>
-      <div class="rprog"><div class="rprogfill" id="rogue-progfill"></div><span class="rprogtxt" id="rogue-progtxt">0%</span></div>
+
       <div class="rtags"><span id="rogue-tag"></span><span id="rogue-fam" class="rfam"></span></div>
     </div>
 
@@ -2090,8 +2133,7 @@ body.layout-left #scr-game #opslot .btns .big,body.layout-right #scr-game #opslo
           <button class="btn ghost small" id="btn-quit">结束本轮</button>
         </span>
       </div>
-      <div class="timer"><i id="tbar"></i></div>
-      <div class="timer2" id="timer2"><i id="tbar2"></i></div>
+
       <div class="gmain" id="game-main">
         <div class="gcol gcol-word">
           <div class="qbox" id="qbox">
@@ -2100,6 +2142,7 @@ body.layout-left #scr-game #opslot .btns .big,body.layout-right #scr-game #opslo
       <button class="spk" id="btn-speak" type="button" aria-label="发音">🔊</button>
             <div class="tag" id="gtag" style="display:none"></div>
           </div>
+          <div class="timer2" id="timer2"><i id="tbar2"></i></div>
         </div>
         <div class="gcol gcol-side">
           <div id="reveal-box"></div>
@@ -2319,8 +2362,8 @@ window.WORD_DATA={"id":"hongbaoshu","name":"红宝书考研词汇","words":[{"w"
    ============================================================ */
 
 /* ---------------- 版本（唯一真源：改版本只改这里 + sw.js 的 CACHE 后缀，构建脚本会校验两者一致） ---------------- */
-var APP_VERSION = "v48";
-var BUILD_DATE = "2026-11-09";
+var APP_VERSION = "v52";
+var BUILD_DATE = "2026-11-11";
 
 /* ---------------- 工具 ---------------- */
 var pad = function (n) { return String(n).padStart(2, "0"); };
@@ -2389,6 +2432,8 @@ function ensureStats() {
   var s = S.stats;
   if (!s.days || typeof s.days !== "object") s.days = {};
   if (!s.hours || typeof s.hours !== "object") s.hours = {};
+  /* v52：按小时记录「认识」次数（旧数据没有这一项，统计页会显示「-」而不是假 0%） */
+  if (!s.hoursOk || typeof s.hoursOk !== "object") s.hoursOk = {};
   if (!Array.isArray(s.logs)) s.logs = [];
   return s;
 }
@@ -2427,10 +2472,61 @@ function logAnswer(mode, kind, ms, L0, L1, key) {
   try {
     var h = new Date().getHours();
     s.hours[h] = num(s.hours[h], 0) + 1;
+    /* v52：认识率分子单独按小时累计（以前只记了总题数，分子恒缺 → 恒 0%） */
+    var oh = s.hoursOk[h];
+    if (!oh || typeof oh !== "object") oh = s.hoursOk[h] = { n: 0, ok: 0 };
+    oh.n = num(oh.n, 0) + 1;
+    if (kind === "fast" || kind === "slow" || kind === "know") oh.ok = num(oh.ok, 0) + 1;
   } catch (e) {}
   s.logs.push({ d: ds, m: mode, k: kind, ms: num(ms, 0), a: num(L0, 0), b: num(L1, 0), w: key || "" });
-  if (s.logs.length > 500) s.logs = s.logs.slice(s.logs.length - 500);
+  if (s.logs.length > 500) s.logs = trimLogs(s.logs, 500, ds);
   return d;
+}
+/* v50：保留「今天」的明细，只裁更早的。否则一天答满 500 题后，
+   最早的今日记录被裁掉，列表就会比实际少（主页 140 / 列表 84 的来源之一）。 */
+function trimLogs(arr, cap, ds) {
+  if (!Array.isArray(arr) || arr.length <= cap) return arr;
+  var keep = [], old = [];
+  for (var i = 0; i < arr.length; i++) {
+    var x = arr[i];
+    if (x && x.d === ds) keep.push(x);
+    else old.push(x);
+  }
+  var room = Math.max(cap - keep.length, 0);
+  return old.slice(Math.max(old.length - room, 0)).concat(keep);
+}
+/* v50：今日统计的唯一入口。主页两张卡的数字与两个列表，全部从这里出，保证永远一致。
+   规则（互斥）：新学 = 今天在 first 模式答过的去重词；复习 = 今天在 review 模式答过、
+   且今天没被当作新学教过的去重词。一个词今天无论被滚动重学/回放几遍，身份不变。 */
+function getTodayStats(deckId) {
+  var t = today();
+  var s = ensureStats();
+  var newMap = {}, revMap = {}, newTimes = 0, revTimes = 0, i, l;
+  for (i = 0; i < s.logs.length; i++) {
+    l = s.logs[i];
+    if (!l || l.d !== t || !l.w) continue;
+    if (l.m === "first") {
+      newTimes++;
+      newMap[l.w] = { w: l.w, kind: l.k, ms: num(l.ms, 0) };
+    } else if (l.m === "review") {
+      revTimes++;
+      revMap[l.w] = { w: l.w, kind: l.k, ms: num(l.ms, 0) };
+    }
+  }
+  for (var rk in revMap) {
+    if (Object.prototype.hasOwnProperty.call(revMap, rk) && newMap[rk]) delete revMap[rk];
+  }
+  var newWords = [], reviewWords = [];
+  for (var nk in newMap) if (Object.prototype.hasOwnProperty.call(newMap, nk)) newWords.push(newMap[nk]);
+  for (var rk2 in revMap) if (Object.prototype.hasOwnProperty.call(revMap, rk2)) reviewWords.push(revMap[rk2]);
+  var out = { newCount: newWords.length, reviewCount: reviewWords.length, newWords: newWords, reviewWords: reviewWords, newTimes: newTimes, reviewTimes: revTimes };
+  /* 今日额度用的计数也跟显示同源：否则会出现「主页 140、列表 84」这种打架 */
+  if (deckId && S.daily && S.daily[deckId]) {
+    var dl = daily(deckId);
+    dl.newDone = out.newCount;
+    dl.reviewDone = out.reviewCount;
+  }
+  return out;
 }
 /* 到期日：受「最大间隔」上限约束 */
 function intervalOf(st, stage, level) {
@@ -2598,7 +2694,7 @@ function freshState() {
     settings: defaultSettings(),
     decks: [], records: {}, daily: {}, session: null, lastExportAt: null,
     backlog: {},
-    stats: { days: {}, hours: {}, logs: [] }
+    stats: { days: {}, hours: {}, hoursOk: {}, logs: [] }
   };
 }
 
@@ -2687,6 +2783,7 @@ function migrateState(o) {
           st.stats = {
             days: (o.stats.days && typeof o.stats.days === "object") ? o.stats.days : {},
             hours: (o.stats.hours && typeof o.stats.hours === "object") ? o.stats.hours : {},
+            hoursOk: (o.stats.hoursOk && typeof o.stats.hoursOk === "object") ? o.stats.hoursOk : {},
             logs: Array.isArray(o.stats.logs) ? o.stats.logs.slice(-500) : []
           };
         }
@@ -2705,9 +2802,70 @@ function migrateState(o) {
 }
 
 /* 收尾：内置词库、历史误设修复。任何来源的存档都要过这里 */
+/* v49：存档深度清洗。
+   顶层能 parse 不代表结构可用：decks 里混了 null、records[deck] 是个数组、daily 是数字……
+   都会在渲染时把首页打成"反复报错"。这里逐层自愈，并把「严重修复」次数记到 sanitizeSevere，
+   boot / 导入据此决定是否进安全模式——宁可少显示一屏，也别让用户对着黄条死循环。 */
+var sanitizeSevere = 0;
 function finalizeState(st) {
-  if (!Array.isArray(st.decks)) st.decks = [];
-  if (!st.settings || typeof st.settings !== "object") st.settings = defaultSettings();
+  sanitizeSevere = 0;
+  if (!st || typeof st !== "object" || Array.isArray(st)) { st = freshState(); sanitizeSevere++; }
+  /* decks：剔除坏条目、按 id 去重、补 words/name */
+  var decks = [];
+  if (Array.isArray(st.decks)) {
+    for (var i = 0; i < st.decks.length; i++) {
+      var d = st.decks[i];
+      if (!d || typeof d !== "object" || Array.isArray(d) || typeof d.id !== "string" || !d.id) { sanitizeSevere++; continue; }
+      var dup = false;
+      for (var j = 0; j < decks.length; j++) if (decks[j].id === d.id) { dup = true; break; }
+      if (dup) { sanitizeSevere++; continue; }
+      if (!Array.isArray(d.words)) d.words = [];
+      if (!d.name) d.name = d.id;
+      decks.push(d);
+    }
+  } else if (typeof st.decks !== "undefined") sanitizeSevere++;
+  st.decks = decks;
+  if (!st.settings || typeof st.settings !== "object" || Array.isArray(st.settings)) st.settings = defaultSettings();
+  else {
+    if (typeof st.settings.mode !== "string") st.settings.mode = "flash";
+    if (!st.settings.revealMs || typeof st.settings.revealMs !== "object") st.settings.revealMs = defaultSettings().revealMs;
+  }
+  /* records：词书桶必须是对象，每条记录必须是对象，数值字段夹到合法区间 */
+  var recs = st.records;
+  if (!recs || typeof recs !== "object" || Array.isArray(recs)) { if (typeof recs !== "undefined") sanitizeSevere++; recs = {}; }
+  var cleanRecs = {};
+  for (var dk in recs) {
+    var m = recs[dk];
+    if (!m || typeof m !== "object" || Array.isArray(m)) { sanitizeSevere++; continue; }
+    var cm = {};
+    for (var wk in m) {
+      var rr = m[wk];
+      if (!rr || typeof rr !== "object" || Array.isArray(rr)) { sanitizeSevere++; continue; }
+      rr.L = clamp(num(rr.L, 0), 0, 5);
+      rr.stage = clamp(num(rr.stage, 0), 0, 6);
+      if (!Array.isArray(rr.hist)) rr.hist = [];
+      rr.graduated = !!rr.graduated;
+      rr.due = (typeof rr.due === "string" && rr.due) ? rr.due : (dueDayOf(rr.due) || today());
+      cm[wk] = rr;
+    }
+    cleanRecs[dk] = cm;
+  }
+  st.records = cleanRecs;
+  /* daily */
+  var daily = st.daily;
+  if (!daily || typeof daily !== "object" || Array.isArray(daily)) { if (typeof daily !== "undefined") sanitizeSevere++; daily = {}; }
+  for (var dd in daily) {
+    var de = daily[dd];
+    if (!de || typeof de !== "object" || Array.isArray(de)) { delete daily[dd]; sanitizeSevere++; continue; }
+    de.newDone = num(de.newDone, 0); de.reviewDone = num(de.reviewDone, 0); de.streak = num(de.streak, 0);
+    if (typeof de.date !== "string" || !de.date) de.date = today();
+  }
+  st.daily = daily;
+  /* 其余容器：类型不对就重置成空壳，绝不留着到渲染层炸 */
+  if (st.session !== null && typeof st.session !== "undefined" && (typeof st.session !== "object" || Array.isArray(st.session))) { st.session = null; sanitizeSevere++; }
+  if (st.stats && (typeof st.stats !== "object" || Array.isArray(st.stats))) st.stats = { days: {}, hours: {}, hoursOk: {}, logs: [] };
+  if (st.rogue && (typeof st.rogue !== "object" || Array.isArray(st.rogue))) st.rogue = undefined;
+  if (st.backlog && (typeof st.backlog !== "object" || Array.isArray(st.backlog))) st.backlog = {};
   if (window.WORD_DATA) {
     var has = st.decks.some(function (d) { return d && d.id === window.WORD_DATA.id; });
     if (!has) {
@@ -2861,6 +3019,8 @@ function showStoreWarn() {
 function checkStoreUsage() {
   var bytes = usedBytes();
   if (bytes <= 4 * 1024 * 1024) return;
+  /* v49：4MB 以上不只 toast 一次，常驻黄条 + 导出入口，直到用户处理 */
+  try { showStoreWarn(); } catch (e) {}
   if (storeHinted) return;
   storeHinted = true;
   toast("存档已用 " + fmtSize(bytes) + "，接近浏览器上限，建议导出备份");
@@ -2870,6 +3030,15 @@ function hideStoreWarn() {
   var el = document.querySelector("#store-warn");
   if (el) el.style.display = "none";
 }
+/* v49：只读存储里的 updatedAt，不做整份 parse（300KB 的 JSON.parse 每次保存都做太贵） */
+function peekStoredUpdatedAt() {
+  var raw = null;
+  try { raw = storageGet(LS_KEY); } catch (e) { return 0; }
+  if (!raw) return 0;
+  var m = String(raw).match(/"updatedAt"\s*:\s*(\d+)/);
+  return m ? num(m[1], 0) : 0;
+}
+var tabWarnAt = 0;
 function saveNow() {
   clearTimeout(saveTimer);
   /* v43：本机原始损坏串还没备份成功时，先别动任何存储（LS 和 IDB 都不写），
@@ -2878,6 +3047,28 @@ function saveNow() {
     if (!storeWarn) { storeWarn = true; try { toast("存档已损坏且备份未完成，本次保存暂缓（原始数据仍在）"); } catch (e) {} }
     showStoreWarn();
     return false;
+  }
+  /* v49：多标签页/多设备保护。写盘前先看存储里那份是不是比本页内存新；
+     若更新：本页没有进行中的一轮 → 以较新存档为准 + 合并本页记录；
+     本页正在做题（内存态不能换）→ 暂缓本次写入并提示，绝不用旧内存覆盖新数据。 */
+  var storedAt = peekStoredUpdatedAt();
+  if (storedAt > num(S.updatedAt, 0) + 50) {
+    if (S.session && !S.session.finished) {
+      if (!tabWarnAt || Date.now() - tabWarnAt > 8000) {
+        tabWarnAt = Date.now();
+        try { toast("另一个标签页有新进度，本页暂不覆盖"); } catch (e) {}
+      }
+      return false;
+    }
+    var stored = null;
+    try { stored = loadState(); } catch (e) { stored = null; }
+    if (stored) {
+      var mine = S;
+      mine.updatedAt = storedAt;
+      S = stored;
+      try { applyMerge(mine); } catch (e) {}
+      mapCache = {};
+    }
   }
   S.updatedAt = Date.now();
   var payload = JSON.stringify(S);
@@ -2896,12 +3087,63 @@ function saveNow() {
   return ok;
 }
 
+/* ---------------- v49：安全模式 ----------------
+   存档结构被修坏、或者首页渲染抛错时，常规界面会变成"黄条死循环"。
+   安全模式只保留「我的」页，给出导出 / 重试 / 重置三条生路，绝不静默清数据。 */
+var safeMode = false;
+function isSafeMode() { return safeMode; }
+function safeModeHtml(reason) {
+  return '<div class="card"><h2 style="margin:0 0 8px">⚠️ 安全模式</h2>' +
+    '<div class="tiny muted" style="line-height:1.7">首页渲染失败，或者存档里有异常数据。为保护你的学习记录，常规界面已暂停。<br>' +
+    (reason ? '原因：' + esc(String(reason)).slice(0, 200) + '<br>' : '') +
+    '你的原始数据没有被删除：可以先导出备份，再重试；确认不要了再重置。</div>' +
+    '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">' +
+    '<button class="btn primary" data-me-act="safe-export">导出备份</button>' +
+    '<button class="btn" data-me-act="safe-retry">重试恢复</button>' +
+    '<button class="btn" data-me-act="safe-reset">重置存档</button></div></div>';
+}
+function enterSafeMode(reason, err) {
+  safeMode = true;
+  try { if (window.console && console.error) console.error("[wordflash] safe-mode:", reason, err); } catch (e) {}
+  try {
+    curScreen = "me";
+    $$(".screen").forEach(function (s) { if (s && s.classList) s.classList.toggle("on", s.id === "scr-me"); });
+    var tb = $("#tabs");
+    if (tb && tb.classList) tb.classList.add("on");
+    if (tb && tb.style) tb.style.display = "none";
+    var body = $("#me-body");
+    if (body) body.innerHTML = safeModeHtml(reason || "");
+  } catch (e) {}
+  try { applyLayout(); } catch (e) {}
+}
+/* v49：导入「完全覆盖」的提交路径（抽成函数，单测可以直接喂脏对象）。
+   显式导入视为权威：updatedAt 取「现在」与「存储里较新值 + 1」的较大者，避免被多标签守卫回退。 */
+function applyOverwriteImport(o, pre) {
+  var st = freshState();
+  st.settings = (o && o.settings && typeof o.settings === "object" && !Array.isArray(o.settings)) ? o.settings : defaultSettings();
+  st.decks = (o && Array.isArray(o.decks)) ? o.decks : [];
+  st.records = (o && o.records && typeof o.records === "object" && !Array.isArray(o.records)) ? o.records : {};
+  st.daily = (o && o.daily && typeof o.daily === "object" && !Array.isArray(o.daily)) ? o.daily : {};
+  st.stats = (o && o.stats && typeof o.stats === "object" && !Array.isArray(o.stats)) ? o.stats : st.stats;
+  st.rogue = (o && o.rogue && typeof o.rogue === "object" && !Array.isArray(o.rogue)) ? o.rogue : undefined;
+  st = finalizeState(st);
+  var sev = sanitizeSevere;
+  var total = num(pre && pre.total, recCount(st));
+  S = st; mapCache = {};
+  try { st.updatedAt = Math.max(Date.now(), peekStoredUpdatedAt() + 1); } catch (e) {}
+  try { saveNow(); } catch (e) {}
+  if (sev) { enterSafeMode("备份里有 " + sev + " 处异常数据，已清洗并隔离"); return false; }
+  try { renderHome(); show("home"); } catch (e) { enterSafeMode("首页渲染失败", e); return false; }
+  try { toast("已用备份覆盖（" + total + " 条记录）"); } catch (e) {}
+  return true;
+}
+
 function doExport(slim) {
   var copy = JSON.parse(JSON.stringify(S));
   if (copy.rogue) { copy.rogue.logs = []; copy.rogue.history = []; }
   copy.lastExportAt = Date.now();
   if (slim) {
-    copy.stats = { days: copy.stats ? copy.stats.days : {}, hours: copy.stats ? copy.stats.hours : {}, logs: [] };
+    copy.stats = { days: copy.stats ? copy.stats.days : {}, hours: copy.stats ? copy.stats.hours : {}, hoursOk: copy.stats ? copy.stats.hoursOk : {}, logs: [] };
     var recs = copy.records || {};
     for (var dk in recs) {
       var m = recs[dk];
@@ -3592,6 +3834,8 @@ function crashBarShow(err) {
   var now = Date.now();
   if (now - crashLast < 3000) return;   // 连续报错只提示一次，避免刷屏
   crashLast = now;
+  /* v49：先把内存里的进度落盘，再弹黄条——「数据仍在本地」这句承诺必须先做到 */
+  try { if (S) saveNow(); } catch (e2) {}
   var msg = "";
   try { msg = String((err && (err.message || (err.reason && err.reason.message))) || err || "未知错误"); } catch (e) {}
   try { if (window.console && console.error) console.error("[wordflash]", err); } catch (e) {}
@@ -3866,6 +4110,7 @@ function renderHome() {
     return;
   }
   var s = deckStats(deck);
+  var ts = getTodayStats(deck.id);   // v50：先同步今日去重计数，planRound 再用同一份数据
   var plan = planRound(deck.id);     // 与真正出题共用同一份计算
   var dd = $("#home-dday");
   if (dd) {
@@ -3886,8 +4131,8 @@ function renderHome() {
   var dueReal = num(s.due, 0);        // 剩余到期（存量）
   var newFresh = num(s.fresh, 0);
   var newCap = num(S.settings.newPerDay, 20);
-  var newDoneN = num(d.newDone, 0);
-  var reviewDoneN = num(d.reviewDone, 0);
+  var newDoneN = ts.newCount;
+  var reviewDoneN = ts.reviewCount;
   /* v46：分母 = 今日累计 + 今日剩余，分子分母数据源彻底分离（旧写法分子累计/分母存量 → 做完必然 X / 0） */
   var newTotal = Math.max(newDoneN, Math.min(newDoneN + newFresh, newCap));
   if (!(newTotal > 0)) newTotal = 1;                        // 零兜底：任何情况都不出现 X / 0
@@ -4426,14 +4671,21 @@ function ebbingHtml() {
 }
 function timeBuckets() {
   var s = ensureStats();
-  var hours = s.hours || {};
-  var map = {}, maxN = 0;
-  for (var h = 0; h < 24; h++) map[h] = { n: 0, ok: 0 };
+  var hours = s.hours || {}, okHours = s.hoursOk || {};
+  var map = {};
+  for (var h = 0; h < 24; h++) map[h] = { n: 0, okN: 0, okOk: 0, hasOk: false };
   Object.keys(hours).forEach(function (k) {
     var hh = String(k).slice(0, 2);
-    var v = hours[k];
-    var n = num(v, 0);
-    if (map[hh] != null && n) { map[hh].n += n; if (n > maxN) maxN = n; }
+    var n = num(hours[k], 0);
+    if (map[hh] != null && n) map[hh].n += n;
+  });
+  /* v52：新格式按小时同时记「做题数 + 认识数」，避免拿旧累计题数当分母算出假 0% */
+  Object.keys(okHours).forEach(function (k) {
+    var hh = String(k).slice(0, 2);
+    var o = okHours[k];
+    if (map[hh] == null || !o || typeof o !== "object") return;
+    var on = num(o.n, 0);
+    if (on > 0) { map[hh].okN += on; map[hh].okOk += num(o.ok, 0); map[hh].hasOk = true; }
   });
   return map;
 }
@@ -4443,8 +4695,10 @@ function timeHtml() {
   var bars = "";
   for (var i = 0; i < 24; i++) {
     var v = m[i], hh = v.n ? Math.max(3, Math.round(v.n / maxN * 100)) : 0;
-    var acc = v.n ? Math.round(v.ok / v.n * 100) : 0;
-    bars += '<button class="hbar" data-hour="' + i + '" data-tip="' + (v.n ? ("做题 " + v.n + " 题，认识率 " + acc + "%") : "没有记录") +
+    /* 认识率只在「本版开始按小时记录认识数」之后才有意义；旧数据没有分子，显示「-」而不是假 0% */
+    var acc = v.hasOk && v.okN ? Math.round(v.okOk / v.okN * 100) : null;
+    var tip = !v.n ? "没有记录" : ("做题 " + v.n + " 题，" + (acc == null ? "认识率统计从本版开始（旧记录未分时段）" : "认识率 " + acc + "%"));
+    bars += '<button class="hbar" data-hour="' + i + '" data-tip="' + tip +
       '" title="' + i + '点 · ' + v.n + ' 题" style="height:100%"><span class="hbi' + (v.n ? "" : " empty") + '" style="height:' + hh + '%"></span><span class="hbl">' + i + '</span></button>';
   }
   return '<div class="card"><b>你什么时段最清醒</b>' +
@@ -4964,7 +5218,7 @@ function renderSetup(deckId) {
 }
 
 /* ---------------- 界面：游戏 ---------------- */
-var G = { answered: true, raf: 0, revealTimer: 0, startAt: 0, invalid: 0, lastClick: 0, revealing: false, undoDeadline: 0, canUndo: false, snap: null, stack: [] };
+var G = { answered: true, raf: 0, revealTimer: 0, startAt: 0, invalid: 0, lastClick: 0, revealing: false, undoDeadline: 0, canUndo: false, snap: null, stack: [], awayAt: 0 };
 
 function startSession(deckId, mode, customKeys) {
   var sess = buildSession(deckId, mode, customKeys);
@@ -4975,7 +5229,7 @@ function startSession(deckId, mode, customKeys) {
   S.session = sess;
   saveNow();
   show("game");
-  G = { answered: true, raf: 0, revealTimer: 0, startAt: 0, invalid: 0, lastClick: 0, revealing: false, undoDeadline: 0, canUndo: false, snap: null, stack: [] };
+  G = { answered: true, raf: 0, revealTimer: 0, startAt: 0, invalid: 0, lastClick: 0, revealing: false, undoDeadline: 0, canUndo: false, snap: null, stack: [], awayAt: 0 };
   nextQuestion();
 }
 
@@ -4988,7 +5242,7 @@ function resumeSession() {
     sess.day = t;              // 用户定：继续算新一天，只提醒一句
   }
   show("game");
-  G = { answered: true, raf: 0, revealTimer: 0, startAt: 0, invalid: 0, lastClick: 0, revealing: false, undoDeadline: 0, canUndo: false, snap: null, stack: [] };
+  G = { answered: true, raf: 0, revealTimer: 0, startAt: 0, invalid: 0, lastClick: 0, revealing: false, undoDeadline: 0, canUndo: false, snap: null, stack: [], awayAt: 0 };
   nextQuestion();
   toast("已恢复上一轮进度");
 }
@@ -5102,13 +5356,11 @@ function nextQuestion() {
     $("#btn-show").style.display = "";
     $("#btn-fuzzy").disabled = false;
     $("#ghint").textContent = "先在脑子里想一下，再点「显示释义」";
-    $(".timer").style.display = "none";
     var t2h = $("#timer2"); if (t2h) t2h.style.display = "none";
   } else {
     $("#gbtns").style.display = "";
     $("#btn-show").style.display = "none";
     $("#ghint").textContent = TOUCH ? "凭第一反应，别纠结" : "1 认识 · 2 模糊 · 3 不认识 · Esc 结束";
-    $(".timer").style.display = "";
     var t2s = $("#timer2"); if (t2s) t2s.style.display = "";
     var b2 = $("#tbar2"); if (b2) b2.style.width = "0%";
   }
@@ -5118,8 +5370,6 @@ function nextQuestion() {
 
   var remaining = sess.queue.length + sess.pending.length + (sess.cur ? 1 : 0);
   $("#gstat").textContent = statLine(sess, remaining);
-  var tbP = $("#tbar");
-  if (tbP) { tbP.style.width = sessionPct(sess, remaining) + "%"; }
 
   G.answered = false;
   G.revealing = false;
@@ -5129,7 +5379,7 @@ function nextQuestion() {
   G.startAt = performance.now();
   cancelAnimationFrame(G.raf);
   if (!learnMode) G.raf = requestAnimationFrame(tickTimer);
-  else { var tb = $("#tbar"); if (tb) { tb.style.width = sessionPct(sess, 0) + "%"; } }
+  else { /* v51：顶部进度条已移除 */ }
 }
 
 /* 背记模式：点「显示释义」先把含义/例句放出来，再让用户选 */
@@ -5190,8 +5440,6 @@ function tickTimer() {
   var st = S.settings;
   var el = performance.now() - G.startAt;
   var pct = Math.min(100, el / st.limitMs * 100);
-  var bar = $("#tbar");
-  bar.className = pct > 75 ? "danger" : (pct > 50 ? "warn" : "");
   var bar2 = $("#tbar2");
   if (bar2) {
     bar2.style.width = pct + "%";
@@ -5251,7 +5499,6 @@ function doAnswer(kind) {
   G.answered = true;
   if (S.session) S.session.done0 = num(S.session.done0, 0) + 1;
   cancelAnimationFrame(G.raf);
-  var tbNow = $("#tbar"); if (tbNow) tbNow.style.width = sessionPct(S.session, 0) + "%";
 
   // 作答前存一份快照：改判时回滚到这一刻，再用另一种判定重算
   G.snap = takeSnap(S.session.cur.k);
@@ -5822,12 +6069,10 @@ var RQ = {
   floorTimeStep: 1000, minQTime: 3000, lenBonusPer3: 200, bossEvery: 5
 };
 var rogueTimer = 0, rogueTick = 0, rogueBound = false, rogueHiddenAt = 0, rogueAdvanceTimer = 0, rogueFlashTimer = 0, rogueCheckTimer = 0, rogueLateTimer = 0, rogueReviewTimer = 0;
-/* v41：肉鸽定时器统一登记（切题/退出/重开一律清空，防上一题定时器跳到下一题） */
-var RG_T = {};
-function rgSet(name, fn, ms) { rgClear(name); RG_T[name] = setTimeout(function () { RG_T[name] = 0; try { fn(); } catch (e) { console.warn("rgTimer", name, e); } }, ms); }
-function rgClear(name) { if (RG_T[name]) { try { clearTimeout(RG_T[name]); } catch (e) {} RG_T[name] = 0; } }
+/* v49：删除 v41 遗留的定时器注册表（RG_T/rgSet/rgClear）。它从未被任何地方调用，
+   RG_T 永远是空对象——留着只会让后来人误以为「定时器已经统一管理」。
+   现在切题/退出统一走下面的 rgClearAll()，逐个清真实句柄。 */
 function rgClearAll() {
-  Object.keys(RG_T).forEach(function (k) { rgClear(k); });
   try { clearTimeout(rogueCheckTimer); } catch (e) {}
   try { clearTimeout(rogueLateTimer); } catch (e) {}
   try { clearTimeout(rogueReviewTimer); } catch (e) {}
@@ -6128,12 +6373,7 @@ function rogueRender() {
     else fl.style.display = "none";
   }
   if (cb) cb.textContent = "连击 " + run.combo + (run.critStreak >= 3 ? " · 暴击" : "");
-  var pf = $("#rogue-progfill"), pt = $("#rogue-progtxt");
-  var pct = run.mode === "tower"
-    ? (run.floorN ? (run.floorOk / run.floorN) * 100 : 0)
-    : Math.max(0, Math.min(100, run.prog));
-  if (pf) pf.style.width = pct + "%";
-  if (pt) pt.textContent = Math.round(pct) + "%";
+  /* v51：顶部答题进度条已移除，只保留题目下方的倒计时条 */
   var tg = $("#rogue-tag"), fm = $("#rogue-fam");
   if (tg) tg.textContent = it ? (it.pos === "v" ? "动词" : it.pos === "n" ? "名词" : it.pos === "adj" ? "形容词" : it.pos === "adv" ? "副词" : "") : "";
   if (fm) {
@@ -7262,7 +7502,7 @@ function rogueBindSetup() {
     listHtml: function () { try { return rogueListHtml(rogueS().run); } catch (e) { return "ERR:" + e.message; } },
     confirm: function () { try { rogueConfirmKnown(); } catch (e) { return "ERR:" + e.message; } },
   flip: function () { try { rogueFlip(); } catch (e) {} },
-  timers: function () { return { check: !!rogueCheckTimer, late: !!rogueLateTimer, review: !!rogueReviewTimer, adv: !!rogueAdvanceTimer, flash: !!rogueFlashTimer, reg: Object.keys(RG_T).length }; },
+  timers: function () { return { check: !!rogueCheckTimer, late: !!rogueLateTimer, review: !!rogueReviewTimer, adv: !!rogueAdvanceTimer, flash: !!rogueFlashTimer }; },
   resetQ: function () { var r = rogueS().run; if (r) rgResetQuestion(r); return true; },
     deck: function () { var r=rogueS().run; return r&&r.qtsDeck?r.qtsDeck.slice(0,10):[]; },
     san: function (n, glitch) { var r=rogueS().run; if(!r) return; r.sanWrong=n; rogueSanUpdate(r,{glitch:!!glitch}); },
@@ -7367,6 +7607,25 @@ function bind() {
         catch (e) { toast("下载失败：" + (e && e.message ? e.message : e)); }
         return;
       }
+      if (act === "safe-export") { doExport(false); return; }
+      if (act === "safe-retry") {
+        safeMode = false;
+        try {
+          S = loadState(); mapCache = {};
+          renderHome(); renderMe(); show("home");
+          try { var tb = $("#tabs"); if (tb && tb.style) tb.style.display = ""; } catch (e) {}
+          toast("已恢复正常界面");
+        } catch (e) { enterSafeMode("重试仍然失败，存档可能已损坏", e); }
+        return;
+      }
+      if (act === "safe-reset") {
+        if (!window.confirm("重置为全新存档？\n\n当前的异常存档会先下载一份备份再清空。")) return;
+        try { if (corruptInfo && corruptInfo.raw) downloadText("单词闪过-_corrupted-" + logicalDate().replace(/-/g, "") + ".json", corruptInfo.raw); } catch (e) {}
+        S = freshState(); mapCache = {}; safeMode = false;
+        try { saveNow(); } catch (e) {}
+        try { location.reload(); } catch (e) { try { renderMe(); show("me"); } catch (e2) {} }
+        return;
+      }
       if (act === "export") { doExport(false); return; }
       if (act === "import") { var fi = $("#file-import"); if (fi) fi.click(); return; }
       if (act === "settings") { renderSetup(S.decks[0].id); show("setup"); return; }
@@ -7384,7 +7643,7 @@ function bind() {
         if (!window.confirm("清空全部学习记录？（生词本、排期、统计都会清掉，设置保留）")) return;
         if (!window.confirm("再确认一次：清空后无法恢复，想留档就先导出备份。继续？")) return;
         S.records = {}; S.daily = {}; S.backlog = {}; S.session = null;
-        S.stats = { days: {}, hours: {}, logs: [] };
+        S.stats = { days: {}, hours: {}, hoursOk: {}, logs: [] };
         S.lastExportAt = 0;
         saveNow(); renderMe(); renderHome();
         toast("学习数据已清空（设置保留）");
@@ -7723,18 +7982,19 @@ function bind() {
   }
 
   // 竖屏时从屏幕左缘往右滑 = 返回上一屏（横屏的左滑仍然是「上一词」）
-  var edgeX = 0, edgeT = 0;
+  var edgeX = 0, edgeY = 0, edgeT = 0;
   on("#app", "touchstart", function (ev) {
     var tp = ev.touches && ev.touches[0];
     if (!tp) return;
-    edgeX = tp.clientX; edgeT = Date.now();
+    edgeX = tp.clientX; edgeY = tp.clientY; edgeT = Date.now();
   });
   on("#app", "touchend", function (ev) {
     var tp = ev.changedTouches && ev.changedTouches[0];
     if (!tp) return;
-    var dx = tp.clientX - edgeX, dy = Math.abs(tp.clientY - (tp.clientY || 0));
+    /* v49：原来 dy 恒为 0（自己减自己），斜着划也会触发返回；现在按真实竖直位移判定 */
+    var dx = tp.clientX - edgeX, dy = Math.abs(tp.clientY - edgeY);
     if (isWideNow()) return;
-    if (edgeX <= 34 && dx > 70 && Date.now() - edgeT < 600) {
+    if (edgeX <= 34 && dx > 70 && dy < 40 && Date.now() - edgeT < 600) {
       if (curScreen !== "game") { goBack(); }
     }
   });
@@ -7774,24 +8034,21 @@ function bind() {
           "点「取消」＝ 再选是否用备份整个覆盖");
         if (!doMerge) {
           if (!window.confirm("要用备份「完全覆盖」本机数据吗？\n\n覆盖后本机的学习进度会消失，只剩备份里的。")) return;
-          var st = freshState();
-          st.settings = (o.settings && typeof o.settings === "object") ? o.settings : defaultSettings();
-          st.decks = o.decks;
-          st.records = (o.records && typeof o.records === "object") ? o.records : {};
-          st.daily = (o.daily && typeof o.daily === "object") ? o.daily : {};
-          st.stats = (o.stats && typeof o.stats === "object") ? o.stats : st.stats;
-          st.rogue = (o.rogue && typeof o.rogue === "object") ? o.rogue : st.rogue;
-          st = finalizeState(st);   // 统一过一遍兜底：补内置词书、补 settings、修 countValue
-          S = st; mapCache = {}; saveNow(); renderHome(); show("home");
-          toast("已用备份覆盖（" + pre.total + " 条记录）");
+          applyOverwriteImport(o, pre);
           return;
         }
         applyMerge(o);
-        saveNow(); renderHome(); show("home");
+        /* v49：合并完也过一遍深度清洗；备份里的坏结构不允许带进运行态 */
+        S = finalizeState(S);
+        var sevMerge = sanitizeSevere;
+        saveNow();
+        if (sevMerge) { enterSafeMode("合并后的存档里有 " + sevMerge + " 处异常数据，已清洗并隔离"); return; }
+        renderHome(); show("home");
         toast("合并完成：新增 " + pre.added + " · 更新 " + pre.updated);
       } catch (e) {
         toast("导入失败：" + ((e && e.message) || "备份内容无法处理"));
         try { if (window.console && console.error) console.error("[wordflash] import", e); } catch (e2) {}
+        try { if (sanitizeSevere) enterSafeMode("导入的数据无法安全渲染", e); } catch (e3) {}
       }
     };
     fr.readAsText(f);
@@ -8150,19 +8407,40 @@ document.addEventListener("keydown", function (ev) {
     else if (ev.key === "Backspace") { ev.preventDefault(); prevQuestion(); }
   });
 
-  // R1：切后台 / 失焦 = 本题超时（背记模式不计时，不做这个判定）
-  document.addEventListener("visibilitychange", function () {
-    if (S && S.settings && S.settings.mode === "learn") return;
-    if (document.hidden && S && S.session && !S.session.finished && !G.answered && !G.revealing && $("#scr-game").classList.contains("on")) {
-      doAnswer("timeout");
-    }
-  });
-  window.addEventListener("blur", function () {
-    if (S && S.settings && S.settings.mode === "learn") return;
-    if (S && S.session && !S.session.finished && !G.answered && !G.revealing && $("#scr-game").classList.contains("on")) {
-      doAnswer("timeout");
-    }
-  });
+  /* R1（v49 口径）：切后台/失焦 → 暂停计时。
+     5 分钟内切回 → 继续原倒计时（时间被扣掉，不许偷时间）；
+     超过 5 分钟切回 → 直接判超时并锁定该题。
+     背记模式（learn）不计时，不做这个判定。 */
+  var AWAY_MS = 5 * 60 * 1000;
+  function gameAway() {
+    try {
+      if (S && S.settings && S.settings.mode === "learn") return;
+      if (!S || !S.session || S.session.finished) return;
+      if (G.answered || G.revealing || G.paused) return;
+      if (!$("#scr-game") || !$("#scr-game").classList.contains("on")) return;
+      if (G.awayAt) return;
+      G.awayAt = performance.now();
+      cancelAnimationFrame(G.raf);
+    } catch (e) {}
+  }
+  function gameBack() {
+    try {
+      var at = G.awayAt;
+      if (!at) return;
+      G.awayAt = 0;
+      if (!S || !S.session || S.session.finished) return;
+      if (G.answered || G.revealing || G.paused) return;
+      var away = performance.now() - at;
+      if (away > AWAY_MS) { doAnswer("timeout"); return; }
+      G.startAt += away;
+      cancelAnimationFrame(G.raf);
+      G.raf = requestAnimationFrame(tickTimer);
+    } catch (e) {}
+  }
+  document.addEventListener("visibilitychange", function () { if (document.hidden) gameAway(); else gameBack(); });
+  window.addEventListener("blur", gameAway);
+  window.addEventListener("focus", gameBack);
+  window.addEventListener("pagehide", function () { try { if (S) saveNow(); } catch (e) {} });
   window.addEventListener("beforeunload", function () { if (S) saveNow(); });
 
   // 多标签页
@@ -8417,29 +8695,18 @@ function renderList(kind) {
     return;
   }
   if (kind === "todayNew" || kind === "todayReview") {
-    var want = (kind === "todayNew") ? "first" : "review";
-    var s = ensureStats();
-    var seen = {}, uniq = [], times = 0;
-    /* 从最新往前扫；同一个词只留最后一条（去重），并统计作答次数 */
-    for (var i = s.logs.length - 1; i >= 0; i--) {
-      var l = s.logs[i];
-      if (l.d !== t) continue;
-      var isNew = (l.m === "first");
-      if (want === "first" ? !isNew : isNew) continue;
-      if (!l.w) continue;
-      times++;
-      if (seen[l.w]) continue;
-      seen[l.w] = 1;
-      uniq.push(l);
-    }
-    for (var u = 0; u < uniq.length; u++) {
-      var l2 = uniq[u];
+    /* v50：列表与主页共用 getTodayStats()，并做互斥——今天教过的新词只进「新学」 */
+    var statsToday = getTodayStats(deck.id);
+    var pick = (kind === "todayNew") ? statsToday.newWords : statsToday.reviewWords;
+    var times = (kind === "todayNew") ? statsToday.newTimes : statsToday.reviewTimes;
+    for (var u = 0; u < pick.length; u++) {
+      var l2 = pick[u];
       var w = wordByKey(deck.id, l2.w);
-      rows.push(rowHtml(w, kindNameOf(l2.k), Math.round(num(l2.ms, 0)) + "ms", l2.w));
+      rows.push(rowHtml(w, kindNameOf(l2.kind), Math.round(num(l2.ms, 0)) + "ms", l2.w));
     }
     if (!rows.length) html = '<div class="empty">今天还没有' + (kind === "todayNew" ? "新学" : "复习") + '的词。</div>';
-    else html = '<div class="tiny muted" style="margin:4px 0 8px">共 ' + uniq.length + ' 个' +
-      (times > uniq.length ? '（作答 ' + times + ' 次，重复作答已合并）' : '') + ' · 点词看详情</div>' +
+    else html = '<div class="tiny muted" style="margin:4px 0 8px">共 ' + pick.length + ' 个' +
+      (times > pick.length ? '（作答 ' + times + ' 次，重复作答已合并）' : '') + ' · 点词看详情</div>' +
       '<div class="card">' + rows.join("") + '</div>';
   } else {
     var keys = Object.keys(recs);
@@ -8488,25 +8755,41 @@ function allTestableWords(deckId) {
 /* v43 新功能：今日错词清单（按今天答错次数从多到少排），供统计页「仇恨榜」与 AI 阅读 Prompt 使用。
    纯读取：不写 records、不动排期。 */
 function todayWrongList() {
-  var deck = S.decks[0];
-  if (!deck) return [];
-  var t = today(), recs = S.records[deck.id] || {}, out = [];
+  var t = today(), out = [], byWord = {};
   var BAD = { fuzzy: 1, no: 1, timeout: 1 };
-  for (var k in recs) {
-    var r = recs[k];
-    if (!r || !Array.isArray(r.hist)) continue;
-    /* v45：全量扫描今天的每一条流水做绝对累加（不再遇到旧日期就 break，
-       老存档里 hist 顺序不保证严格升序，break 会漏算） */
-    var n = 0, last = -1;
-    for (var i = 0; i < r.hist.length; i++) {
-      var x = histDecode(r.hist[i]);
-      if (!x) continue;
-      if (x.d === t && BAD[x.kind]) { n++; last = i; }
+  var decks = (S && Array.isArray(S.decks)) ? S.decks : [];
+  /* v49：遍历全部词书（原来只看 S.decks[0]，第二本书的错词永远进不了榜）。
+     同一个单词（小写归一）在多本书里出现时合并次数、取最近一次、取更低 L。 */
+  for (var di = 0; di < decks.length; di++) {
+    var deck = decks[di];
+    if (!deck || !deck.id) continue;
+    var recs = (S.records && S.records[deck.id]) || {};
+    for (var k in recs) {
+      var r = recs[k];
+      if (!r || !Array.isArray(r.hist)) continue;
+      /* v45：全量扫描今天的每一条流水做绝对累加（不再遇到旧日期就 break，
+         老存档里 hist 顺序不保证严格升序，break 会漏算） */
+      var n = 0, last = -1;
+      for (var i = 0; i < r.hist.length; i++) {
+        var x = histDecode(r.hist[i]);
+        if (!x) continue;
+        if (x.d === t && BAD[x.kind]) { n++; last = i; }
+      }
+      if (!n) continue;
+      var w = wordByKey(deck.id, k);
+      if (!w || !w.w) continue;
+      var wkey = String(w.w).toLowerCase();
+      var hit = byWord[wkey];
+      if (hit) {
+        hit.n += n;
+        if (last > hit.last) hit.last = last;
+        if (num(r.L, 0) < hit.L) hit.L = num(r.L, 0);
+      } else {
+        hit = { k: k, w: w.w, m: w.m || "", n: n, last: last, L: num(r.L, 0) };
+        byWord[wkey] = hit;
+        out.push(hit);
+      }
     }
-    if (!n) continue;
-    var w = wordByKey(deck.id, k);
-    if (!w || !w.w) continue;
-    out.push({ k: k, w: w.w, m: w.m || "", n: n, last: last, L: num(r.L, 0) });
   }
   /* v45：次数降序；次数相同则「今天最近一次答错」的排前面，榜单不再像随机顺序 */
   out.sort(function (a, b) { return b.n - a.n || b.last - a.last || a.L - b.L || (a.w < b.w ? -1 : a.w > b.w ? 1 : 0); });
@@ -8944,7 +9227,6 @@ function renderTestQ() {
   var it = T.items[T.idx];
   T.reveal = false;
   $("#test-title").textContent = "测试 · " + qtName(it.qt) + " " + (T.idx + 1) + "/" + T.items.length;
-  var pct = Math.round(T.idx / T.items.length * 100);
   var left = "", right = "";
   var bar = testLimit(it.qt) ? ('<div class="tbar" id="test-bar"><i class="run" style="animation-duration:' + testLimit(it.qt) + 'ms"></i></div>') : '';
   if (it.opts) {
@@ -8975,8 +9257,7 @@ function renderTestQ() {
   }
   var hint = it.opts ? "选一个，自动下一题 · 超时算错"
     : (it.qt === "learn" ? "先自己回想，点开释义再自评（点开后才计时）" : "限时抢答，超时算错");
-  body.innerHTML = '<div class="tprog"><i style="width:' + pct + '%"></i></div>' +
-    '<div class="tqwrap"><div class="tqcol">' + left + '</div><div class="tocol">' + right + '</div></div>' +
+  body.innerHTML = '<div class="tqwrap"><div class="tqcol">' + left + '</div><div class="tocol">' + right + '</div></div>' +
     '<div class="tiny muted thint" style="margin-top:14px;text-align:center">' + hint + '</div>';
   fitTestWord(0);
   requestAnimationFrame(function () { fitTestWord(1); });
@@ -9407,8 +9688,14 @@ function paintVersion() {
 function boot() {
   initCrashGuard();   // 最先装上兜底：后面任何一步报错都只弹黄条，不白屏
   paintVersion();
-  S = loadState();
-  var lsStamp = num(S.updatedAt, 0);
+  var lsStamp = 0;
+  try { S = loadState(); lsStamp = num(S.updatedAt, 0); }
+  catch (e) { S = freshState(); enterSafeMode("读取存档时发生异常", e); }
+  /* v49：结构被深度修复过 → 先把原始串另存一份再继续（绝不静默覆盖） */
+  var sevBoot = sanitizeSevere;
+  if (!corruptInfo && sevBoot) {
+    try { backupCorrupted(storageGet(LS_KEY) || "", "structure-repair"); } catch (e) {}
+  }
   window.addEventListener("beforeinstallprompt", function (e) {
     try { e.preventDefault(); } catch (err) {}
     deferredInstall = e;
@@ -9423,14 +9710,21 @@ function boot() {
   // 开机永远先进首页：不再自动跳进答题页（安卓切方向/全屏/后台回来都会重载页面，
   // 以前这里 resumeSession() 会导致「莫名其妙跳出背单词界面」）
   show("home");
-  renderHome();
+  try { renderHome(); } catch (e) { enterSafeMode("首页渲染失败，已进入安全模式", e); }
   try { history.replaceState({ s: "home" }, ""); } catch (e) {}
-  applyLayout();
+  try { applyLayout(); } catch (e) {}
   // 迁移结果立即回写；本机存档损坏时先不覆盖原始串，等备份确认（v43）
   if (!corruptInfo) { try { saveNow(); } catch (e) {} }
   checkStoreUsage();
+  /* v49：4MB 占用不再只在开机查一次（开着页面写一整天也一样要能发现） */
+  try { setInterval(checkStoreUsage, 10 * 60 * 1000); } catch (e) {}
   // LS ↔ IDB 的比对/救援统一收拢在 reconcileStorage（v43），这里不再自己比 updatedAt
-  try { reconcileStorage(lsStamp, function () { if (corruptInfo) corruptPrompt(); }); }
+  try {
+    reconcileStorage(lsStamp, function () {
+      if (corruptInfo) corruptPrompt();
+      if (sevBoot) enterSafeMode("存档结构已自动修复 " + sevBoot + " 处，原始数据已另存备份");
+    });
+  }
   catch (e) { if (corruptInfo) corruptPrompt(); }
 }
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
