@@ -2362,8 +2362,8 @@ window.WORD_DATA={"id":"hongbaoshu","name":"红宝书考研词汇","words":[{"w"
    ============================================================ */
 
 /* ---------------- 版本（唯一真源：改版本只改这里 + sw.js 的 CACHE 后缀，构建脚本会校验两者一致） ---------------- */
-var APP_VERSION = "v52";
-var BUILD_DATE = "2026-11-11";
+var APP_VERSION = "v53";
+var BUILD_DATE = "2026-11-14";
 
 /* ---------------- 工具 ---------------- */
 var pad = function (n) { return String(n).padStart(2, "0"); };
@@ -2385,6 +2385,64 @@ function logicalDate() {
 }
 /* 兼容旧名：历史代码里 today() 有几处调用，统一转发到 logicalDate，避免一次性大改 */
 function today() { return logicalDate(); }
+
+/* v53：切天自检 ------------------------------------------------------------
+   背景：设置页「一天从几点开始」是个 number 输入框，被清空时 Number("") === 0，
+   会把这个值当成合法的 0 点切天写进设置 → 凌晨 0–4 点的作答全部算到新的一天，
+   表现为「0 点一到主页任务重置、统计图多出一根今天的柱」。
+   这里给出只读自检信息，供设置页展示 / 诊断用。 */
+function dayCutoffNow() {
+  var cut = 4;
+  try { if (typeof S !== "undefined" && S && S.settings) cut = clamp(num(S.settings.dayCutoff, 4), 0, 6); } catch (e) {}
+  return cut;
+}
+function dayCutoffInfo() {
+  var cut = dayCutoffNow();
+  var ld = logicalDate();
+  var nat = fmtDate(new Date());
+  /* 无论当前设置是几点，都算出「若按 4 点切天，今天应该是哪天」——修复跨天错位以它为准 */
+  var fixed4 = fmtDate(new Date(Date.now() - 4 * 3600000));
+  var split = nat !== ld;
+  var nextBucket = false;
+  try { nextBucket = nat > fixed4 && !!(ensureStats().days || {})[nat]; } catch (e) {}
+  return { cut: cut, logical: ld, natural: nat, fixed4: fixed4, split: split, nextBucket: nextBucket, drifted: nat > fixed4 };
+}
+function dayCutoffHintText() {
+  var info = dayCutoffInfo();
+  var s = "当前逻辑日期：" + info.logical + "（切天 " + info.cut + " 点 · 手机自然日期 " + info.natural + "）";
+  if (info.cut === 0) s += " ⚠️ 0 点切天会让凌晨 0–4 点的数据算到新的一天，建议改回 4。";
+  if (info.drifted) s += " 检测到「" + info.natural + "」已有记录，可点下面的按钮并回 " + info.fixed4 + "（会把切天改回 4 点）。";
+  return s;
+}
+/* v53：把「0 点切天期间」被误记到次日 0–4 点的统计账并回前一天（按 4 点切天的口径）。
+   只合并统计桶（stats.days / stats.logs 的日期 / daily 的日期标记），
+   绝不改 records 里的 L / stage / due —— 复习排期一个字节都不动。 */
+function repairMidnightSplit() {
+  var ld = fmtDate(new Date(Date.now() - 4 * 3600000)), nat = fmtDate(new Date());
+  if (!(nat > ld)) return { ok: false, reason: "none" };
+  var s = ensureStats();
+  var merged = { days: 0, logs: 0, daily: 0 };
+  var src = s.days && s.days[nat];
+  if (src && typeof src === "object") {
+    var dst = s.days[ld];
+    if (!dst || typeof dst !== "object") dst = statDay(ld);
+    Object.keys(src).forEach(function (k) {
+      if (typeof src[k] === "number") dst[k] = num(dst[k], 0) + src[k];
+    });
+    delete s.days[nat];
+    merged.days = 1;
+  }
+  (s.logs || []).forEach(function (x) { if (x && x.d === nat) { x.d = ld; merged.logs++; } });
+  Object.keys(S.daily || {}).forEach(function (dk) {
+    var d = S.daily[dk];
+    if (d && d.date === nat) { d.date = ld; merged.daily++; }
+  });
+  S.settings.dayCutoff = 4;   // 顺手把被误触的切天改回 4 点
+  mapCache = {};
+  try { saveNow(); } catch (e) {}
+  return { ok: true, logical: ld, natural: nat, merged: merged };
+}
+
 /* v46 读取期 due 防御：把老存档里的各种历史写法归一成 YYYY-MM-DD 再比较。
    只做读取归一，绝不改任何 r.due = ... 的写入逻辑，避免任何数据被静默改写。
    兼容：YYYY-MM-DD / YYYY/MM/DD / YYYY.MM.DD / 带 T 的 ISO 串 / 毫秒或秒时间戳 / YYYYMMDD / YYMMDD / MM/DD/YYYY */
@@ -5182,6 +5240,8 @@ function renderSetup(deckId) {
   html += '<div class="advgrp"><div class="grid2">' +
     '<label class="advcell"><span class="tiny muted">毕业条件（阶段 ≥）</span><input type="number" id="adv-gradStage" value="' + num(st.gradStage, 3) + '"></label>' +
     '<label class="advcell"><span class="tiny muted">一天从几点开始（0–6 点）</span><input type="number" id="adv-dayCutoff" value="' + num(st.dayCutoff, 4) + '"></label>' +
+    '<div class="tiny muted" id="adv-dayCutoff-hint" style="grid-column:1/-1;line-height:1.6;margin:-2px 0 4px">' + esc(dayCutoffHintText()) + '</div>' +
+    (dayCutoffInfo().drifted ? '<button class="btn ghost small" id="btn-fix-daycut" style="grid-column:1/-1;margin:0 0 8px">修复跨天错位（把 0–4 点误记的数据并回前一天）</button>' : '') +
       '<label class="advcell"><span class="tiny muted">最大间隔（天）</span><input type="number" id="adv-maxInterval" value="' + num(st.maxInterval, 365) + '"></label>' +
       '<label class="advcell"><span class="tiny muted">答题主字号（px）</span><input type="number" id="adv-wordSize" step="2" min="32" max="80" value="' + clamp(num(st.wordSize, 44), 32, 80) + '"></label>' +
       '<label class="advcell"><span class="tiny muted">判定按钮高度（px）</span><input type="number" id="adv-btnHeight" step="4" min="60" max="120" value="' + clamp(num(st.btnHeight, 56), 44, 120) + '"></label>' +
@@ -7721,6 +7781,20 @@ function bind() {
     var deck = S.decks[0];
     if (deck && curScreen === "setup") renderSetup(deck.id);
   });
+  /* v53：一键把 0 点切天期间误记到次日的凌晨数据并回前一天（只动统计账，不动排期） */
+  on("#setup-body", "click", function (ev) {
+    var b = ev.target.closest && ev.target.closest("#btn-fix-daycut");
+    if (!b) return;
+    var info = dayCutoffInfo();
+    if (!info.drifted) { toast("当前没有需要合并的跨天记录"); return; }
+    if (!window.confirm("把「" + info.natural + "」凌晨的记录并回「" + info.fixed4 + "」？\n\n同时会把「一天从几点开始」改回 4 点；只合并统计与今日计数，不动任何单词的复习排期。")) return;
+    var r = repairMidnightSplit();
+    if (!r || !r.ok) { toast("当前没有需要合并的跨天记录"); return; }
+    var deck = S.decks[0];
+    try { if (deck && curScreen === "setup") renderSetup(deck.id); } catch (e) {}
+    try { renderHome(); } catch (e) {}
+    toast("已并回 " + r.logical + "：统计日 " + r.merged.days + " · 日志 " + r.merged.logs + " 条");
+  });
 
   /* ---- 沙盒测试 ---- */
   on("#btn-test", "click", openTestSheet);
@@ -8156,6 +8230,9 @@ function bind() {
     if (t.id === "set-replay-gap") { S.settings.knownReplayGap = clamp(Math.round(Number(t.value) || 10), 2, 60); settingsDirty = true; return; }
     if (t.id === "set-replay-times") { S.settings.knownReplayTimes = clamp(Math.round(Number(t.value) || 1), 0, 3); settingsDirty = true; return; }
     if (t.id.indexOf("adv-") === 0) {
+      // v53：输入框被清空时 Number("") === 0，会把「切天 0 点」这类值悄悄写进设置。
+      // 空值一律忽略，等用户输入有效数字再提交（4 点切天是默认语义，不能被误触抹掉）。
+      if (t.value == null || String(t.value).trim() === "") return;
       var sv = Number(t.value);
       if (!isFinite(sv)) return;
       if (t.id.indexOf("adv-reveal-") === 0) {
@@ -9718,6 +9795,14 @@ function boot() {
   checkStoreUsage();
   /* v49：4MB 占用不再只在开机查一次（开着页面写一整天也一样要能发现） */
   try { setInterval(checkStoreUsage, 10 * 60 * 1000); } catch (e) {}
+  // v53：切天时间被误设成 0 点时给一次明确提示（不静默改设置，只在界面上提示怎么修）
+  try {
+    if (num(S.settings && S.settings.dayCutoff, 4) === 0) {
+      setTimeout(function () {
+        try { toast("提示：切天时间被设为 0 点，凌晨 0–4 点的数据会算到新的一天。可到「学习设置」改回 4 点，并用一键修复并回前一天。"); } catch (e) {}
+      }, 1500);
+    }
+  } catch (e) {}
   // LS ↔ IDB 的比对/救援统一收拢在 reconcileStorage（v43），这里不再自己比 updatedAt
   try {
     reconcileStorage(lsStamp, function () {
