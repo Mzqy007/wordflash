@@ -1,4 +1,4 @@
-var CACHE = "wordflash-v47";
+var CACHE = "wordflash-v55";
 var ASSETS = ["./", "./index.html", "./manifest.json", "./icon-192.png", "./icon-512.png", "./icon-180.png", "./algo.js"];
 self.addEventListener("install", function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) {

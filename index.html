@@ -2362,7 +2362,7 @@ window.WORD_DATA={"id":"hongbaoshu","name":"红宝书考研词汇","words":[{"w"
    ============================================================ */
 
 /* ---------------- 版本（唯一真源：改版本只改这里 + sw.js 的 CACHE 后缀，构建脚本会校验两者一致） ---------------- */
-var APP_VERSION = "v53";
+var APP_VERSION = "v55";
 var BUILD_DATE = "2026-11-14";
 
 /* ---------------- 工具 ---------------- */
@@ -4846,7 +4846,8 @@ function todayCardHtml() {
     '<div class="cell"><div class="n">' + (num(d.reviewTot, 0) ? Math.round(num(d.reviewOk, 0) / num(d.reviewTot, 0) * 100) + '%' : '-') + '</div><div class="l">今日复习正确率</div></div>' +
     '</div>' +
     '<div class="tiny muted" style="margin-top:10px">额度：新学 ' + num(dl.newDone, 0) + '/' + num(S.settings.newPerDay, 20) + ' · 复习 ' + num(dl.reviewDone, 0) + '/' + num(S.settings.reviewPerDay, 100) + '</div></div>' +
-    todayWrongCardHtml();
+    todayWrongCardHtml() +
+    todayWeeklyCardHtml();
 }
 function showEbbingCard(k) {
   var m = ebbingBuckets()[k];
@@ -7615,6 +7616,8 @@ function bind() {
     var el = ev.target;
     var ai = el && el.closest ? el.closest("#btn-ai-prompt") : null;
     if (ai) { copyAiReadingPrompt(); return; }
+    var wk = el && el.closest ? el.closest("#btn-weekly-copy") : null;
+    if (wk) { copyWeeklyNewWords(); return; }
     var g = el && el.closest ? el.closest("[data-gran]") : null;
     if (g) { chartGran = g.getAttribute("data-gran"); renderStats(); return; }
     var c = el && el.closest ? el.closest("[data-cmode]") : null;
@@ -8886,15 +8889,106 @@ function todayWrongCardHtml() {
     '<div class="tiny muted" style="margin-bottom:8px">共 ' + list.length + ' 个今日错词，按今日累计出错次数降序排列' +
     (list.length > 12 ? '（这里显示前 12 个）' : '') + '（只读，不改排期）</div>' +
     rows +
-    '<button class="btn primary" id="btn-ai-prompt" style="margin-top:12px">📋 复制错词，生成 AI 阅读文章</button>' +
-    '<div class="tiny muted" style="margin-top:6px">最多取 ' + Math.min(list.length, 20) + ' 个词，复制后粘给任意 AI 即可</div></div>';
+    '<button class="btn primary" id="btn-ai-prompt" style="margin-top:12px">📋 复制今日错词</button>' +
+    '<div class="tiny muted" style="margin-top:6px">最多取 ' + Math.min(list.length, 20) + ' 个词，纯单词列表，不带任何提示词</div></div>';
 }
 
-/* 生成给 AI 的阅读 prompt：只拼词表，不写回任何学习数据 */
-/* v48：新 Prompt 模板。纯字符串常量，名单仍由 words.join(", ") 无缝拼在末尾。
-   注意：这里的模板不能出现 undefined；候选词为空时下方已提前 return ""。 */
-var AI_READING_PROMPT_TPL = "请用我随后提供的全部单词写一篇190–210词的考研风格英语短文。允许必要的词形变化，但不得替换为同义词。短文需有具体情境或鲜明观点，有趣味性，避免空洞说教和模板套话；结构为引入—展开—小结；语言地道，避免中式英语；至少自然出现一次倒装结构、非谓语结构和复合句，但不得为炫技硬塞。文末注明正文总词数（不含标题和标注）。单词列表：";
+/* v54：过去 7 天「初次学习」的单词（纯读，不改 records / 排期 / 任何状态）。
+   判定顺序：① stats.logs 里 m === "first" 的日期（最准）；② 记录 hist 的最早日期落在窗口内，
+   且这个词仍处于新手阶段（stage <= 1 且 L <= 3），避免历史被裁断的老词误判成新词。
+   过滤毕业词（graduated），按小写词形去重，按历史错误次数降序取前 40。*/
+function getWeeklyNewWords() {
+  var t = today(), start = addDays(t, -6);   /* 含今天共 7 天 */
+  if (!S || !Array.isArray(S.decks)) return [];
+  var firstDayOf = {}, i, k, r, deck, recs, x;
+  /* ① 日志：初次学习（first）落在这 7 天内 */
+  var logs = (ensureStats().logs || []);
+  for (i = 0; i < logs.length; i++) {
+    var l = logs[i];
+    if (!l || l.m !== "first" || !l.w || !l.d) continue;
+    if (l.d < start || l.d > t) continue;
+    if (!firstDayOf[l.w] || l.d < firstDayOf[l.w]) firstDayOf[l.w] = l.d;
+  }
+  /* ② 记录：hist 最早日期在窗口内 + 仍是新手阶段 */
+  for (var di = 0; di < S.decks.length; di++) {
+    deck = S.decks[di];
+    if (!deck || !deck.id) continue;
+    recs = (S.records && S.records[deck.id]) || {};
+    for (k in recs) {
+      if (!Object.prototype.hasOwnProperty.call(recs, k)) continue;
+      r = recs[k];
+      if (!r || r.graduated) continue;
+      if (num(r.stage, 0) > 1 || num(r.L, 0) > 3) continue;
+      var earliest = "";
+      if (Array.isArray(r.hist)) {
+        for (var h = 0; h < r.hist.length; h++) {
+          x = histDecode(r.hist[h]);
+          if (x && x.d && (!earliest || x.d < earliest)) earliest = x.d;
+        }
+      }
+      if (earliest && earliest >= start && earliest <= t) {
+        if (!firstDayOf[k] || earliest < firstDayOf[k]) firstDayOf[k] = earliest;
+      }
+    }
+  }
+  /* ③ 汇总：找词形、过滤毕业、按小写去重 */
+  var byWord = {}, out = [];
+  for (var dk in firstDayOf) {
+    if (!Object.prototype.hasOwnProperty.call(firstDayOf, dk)) continue;
+    var hitDeck = null, hitRec = null;
+    for (var dj = 0; dj < S.decks.length; dj++) {
+      var dd = S.decks[dj];
+      var rc = dd && dd.id && S.records && S.records[dd.id] ? S.records[dd.id][dk] : null;
+      if (rc) { hitDeck = dd; hitRec = rc; break; }
+    }
+    if (!hitRec || hitRec.graduated) continue;
+    var w = wordByKey(hitDeck ? hitDeck.id : "", dk);
+    if (!w || !w.w) continue;
+    var wl = String(w.w).toLowerCase();
+    if (!byWord[wl]) {
+      byWord[wl] = { w: String(w.w), first: firstDayOf[dk], wrong: num(hitRec.wrongCount, 0), last: num(hitRec.lastSeen, 0) };
+      out.push(byWord[wl]);
+    } else if (firstDayOf[dk] < byWord[wl].first) {
+      byWord[wl].first = firstDayOf[dk];
+    }
+  }
+  /* 错误次数多的优先（都是新词，错得多说明更值得先复习），同分按最近作答时间 */
+  out.sort(function (a, b) { return b.wrong - a.wrong || b.last - a.last || (a.w < b.w ? -1 : a.w > b.w ? 1 : 0); });
+  var words = [];
+  for (i = 0; i < out.length && i < 40; i++) words.push(out[i].w);
+  return words;
+}
+/* 纯词表文本：只有 "word1, word2, word3"，绝不拼任何 Prompt 模板 */
+function weeklyWordsText() {
+  var words = getWeeklyNewWords();
+  return words.length ? words.join(", ") : "";
+}
+function todayWeeklyCardHtml() {
+  var words = getWeeklyNewWords();
+  var n = words.length, enough = n >= 10;
+  return '<div class="card" style="margin-top:12px"><h2 style="margin:0 0 6px">📚 本周新学精选</h2>' +
+    '<div class="tiny muted" style="margin-bottom:8px">提取过去 7 天初次学习的新词（最多 40 个）</div>' +
+    '<div class="tiny muted" style="margin-bottom:10px">本周已提取 ' + n + ' 个' + (n > 40 ? '（只取前 40）' : '') + '（只读，不改排期）</div>' +
+    '<button class="btn primary" id="btn-weekly-copy"' + (enough ? '' : ' disabled') + '>' +
+    (enough ? '📋 复制本周 ' + Math.min(n, 40) + ' 新词' : '本周新学词数不足') + '</button>' +
+    '<div class="tiny muted" style="margin-top:6px">' +
+    (enough ? '纯单词列表，不含任何 Prompt，复制后可自配指令' : '至少积累 10 个本周新词后可用（现在 ' + n + ' 个）') +
+    '</div></div>';
+}
+function copyWeeklyNewWords() {
+  try {
+    var text = weeklyWordsText();
+    if (!text) { toast("本周还没有新词，先学几个再来"); return; }
+    copyTextSmart(text);
+    toast("✅ 已复制本周纯单词列表，去让 AI 生成内容吧！");
+  } catch (e) {
+    console.warn("[weekly] copy failed:", e && e.message);
+    toast("复制失败，请重试");
+  }
+}
 
+/* v55：每日错词导出只给纯单词列表 —— 不内置任何 Prompt / 指令 / 废话。
+   词表 = 今日错词（按今日累计次数降序）前 20 个，用 ", " 拼接；没词时返回 ""。 */
 function aiReadingPromptText() {
   var list = todayWrongList().slice(0, 20);
   if (!list.length) return "";
@@ -8904,7 +8998,7 @@ function aiReadingPromptText() {
     if (w) words.push(String(w));
   }
   if (!words.length) return "";
-  return AI_READING_PROMPT_TPL + words.join(", ");
+  return words.join(", ");
 }
 
 function todayWrongKeys() {
@@ -9714,7 +9808,7 @@ function corruptPrompt() {
 function showCopyFallback(text) {
   var mask = $("#bar-mask");
   if (!mask) { try { toast("复制失败，请手动选择文本"); } catch (e) {} return; }
-  mask.innerHTML = '<div class="barcard"><div class="barhd"><b>复制这段话给 AI</b><span class="tiny muted">长按选择 → 复制</span></div>' +
+  mask.innerHTML = '<div class="barcard"><div class="barhd"><b>复制这段内容</b><span class="tiny muted">长按选择 → 复制</span></div>' +
     '<textarea id="copy-fallback" readonly style="width:100%;min-height:38vh;box-sizing:border-box;font-size:13px;line-height:1.55;padding:10px;border-radius:10px;border:1px solid rgba(0,0,0,.15);resize:vertical;background:transparent;color:inherit">' +
     esc(text) + '</textarea>' +
     '<button class="btn ghost" id="btn-bar-close">关闭</button></div>';
@@ -9723,7 +9817,7 @@ function showCopyFallback(text) {
 }
 function copyTextSmart(text) {
   if (!text) { try { toast("今天还没有错词"); } catch (e) {} return; }
-  var done = function () { try { toast("已复制，去粘给 AI 吧"); } catch (e) {} };
+  var done = function () { try { toast("✅ 已复制纯单词列表"); } catch (e) {} };
   var legacyCopy = function () {
     var ok = false;
     try {
